@@ -343,39 +343,14 @@
         }
 
         // ── Cloud Score Storage (JSONBin.io) ────────────────────────────────────
-        // All scores stored in a shared cloud bin — visible across all devices.
-        // Bin ID is created automatically on first use and cached in localStorage.
-        // API key is public/read-write scoped to this bin only (no account access).
+        // Single hardcoded shared bin — every device reads/writes the same data.
         // ────────────────────────────────────────────────────────────────────────
         const JSONBIN_API = "https://api.jsonbin.io/v3";
-        const JSONBIN_KEY = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm"; // ← REPLACE THIS (see setup note)
-        const BIN_ID_KEY  = "vsp_scores_bin_id";
-
-        async function _getBinId() {
-            // Return cached bin ID, or create a new bin on first run
-            const cached = localStorage.getItem(BIN_ID_KEY);
-            if (cached) return cached;
-
-            const res = await fetch(`${JSONBIN_API}/b`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Master-Key": JSONBIN_KEY,
-                    "X-Bin-Name": "vsp-foh-scores",
-                    "X-Bin-Private": "false"
-                },
-                body: JSON.stringify({ scores: [] })
-            });
-            if (!res.ok) throw new Error("Failed to create score bin");
-            const data = await res.json();
-            const newId = data.metadata.id;
-            localStorage.setItem(BIN_ID_KEY, newId);
-            return newId;
-        }
+        const JSONBIN_KEY = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
+        const JSONBIN_BIN = "6a3b7210da38895dfef59f58";
 
         async function _readScores() {
-            const binId = await _getBinId();
-            const res = await fetch(`${JSONBIN_API}/b/${binId}/latest`, {
+            const res = await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}/latest`, {
                 headers: { "X-Master-Key": JSONBIN_KEY }
             });
             if (!res.ok) throw new Error("Failed to read scores");
@@ -384,8 +359,7 @@
         }
 
         async function _writeScores(scores) {
-            const binId = await _getBinId();
-            const res = await fetch(`${JSONBIN_API}/b/${binId}`, {
+            const res = await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -395,7 +369,6 @@
             });
             if (!res.ok) throw new Error("Failed to write scores");
         }
-        // ─────────────────────────────────────────────────────────────────────────
 
         async function endQuizAndSave() {
             document.getElementById('quiz-play-screen').classList.add('hidden');
