@@ -339,18 +339,37 @@
         let correctAnswersCount = 0;
         let shuffledQuiz = []; // [{q, a, correctIdx}] in random order for this session
 
-        function _buildShuffledQuiz() {
-            // Fisher-Yates shuffle of question indices
-            const indices = quizData.map((_, i) => i);
-            for (let i = indices.length - 1; i > 0; i--) {
+        function _shuffleArray(arr) {
+            // Fisher-Yates in-place shuffle, returns new array
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [indices[i], indices[j]] = [indices[j], indices[i]];
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            shuffledQuiz = indices.map(origIdx => ({
-                q: quizData[origIdx].q.replace(/^\d+\.\s*/, ''),  // strip original number
-                a: quizData[origIdx].a,
-                correctIdx: _dc(origIdx)
-            }));
+            return a;
+        }
+
+        function _buildShuffledQuiz() {
+            // Shuffle question order
+            const indices = quizData.map((_, i) => i);
+            const shuffledIndices = _shuffleArray(indices);
+
+            shuffledQuiz = shuffledIndices.map(origIdx => {
+                const origCorrect = _dc(origIdx);         // correct answer index in original order
+                const opts = quizData[origIdx].a;
+
+                // Build option indices [0,1,2,3] and shuffle them
+                const optOrder = _shuffleArray([0, 1, 2, 3]);
+
+                // Find where the correct answer ended up after shuffle
+                const newCorrectIdx = optOrder.indexOf(origCorrect);
+
+                return {
+                    q: quizData[origIdx].q.replace(/^\d+\.\s*/, ''),
+                    a: optOrder.map(i => opts[i]),         // reordered options
+                    correctIdx: newCorrectIdx              // correct answer in new position
+                };
+            });
         }
 
         function startVSPQuiz() {
