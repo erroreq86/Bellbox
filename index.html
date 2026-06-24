@@ -607,7 +607,14 @@
                 }
             }
 
-            scoresList.sort((a, b) => b.score - a.score);
+            // Keep only the highest score per crew ID
+            const bestByID = {};
+            scoresList.forEach(entry => {
+                if (!bestByID[entry.id] || entry.score > bestByID[entry.id].score) {
+                    bestByID[entry.id] = entry;
+                }
+            });
+            scoresList = Object.values(bestByID).sort((a, b) => b.score - a.score);
 
             if (scoresList.length === 0) {
                 container.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">
