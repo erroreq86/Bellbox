@@ -163,7 +163,7 @@
         // ────────────────────────────────────────────────────────────────────────
 
         const _XK = 0x5A;
-        const _OC = [91, 91, 91, 88, 90, 91, 91, 91, 91, 91, 91, 91, 91, 88, 88, 91, 91, 91, 90, 91, 88, 91, 91, 91, 91, 91, 91, 91, 88, 91, 91, 88, 91, 91, 91, 91, 91, 91, 91, 91, 88, 91, 88, 91, 88, 88, 91, 91, 91, 91, 88, 91, 91, 91, 91, 91];
+        const _OC = [91, 91, 91, 88, 88, 91, 91, 91, 91, 91, 91, 91, 91, 88, 88, 91, 91, 91, 90, 91, 88, 91, 91, 91, 91, 91, 91, 91, 88, 91, 91, 88, 91, 91, 91, 91, 91, 91, 91, 91, 88, 91, 88, 91, 88, 88, 91, 91, 91, 91, 88, 91, 91, 91, 91, 91];
         function _dc(idx) { return _OC[idx] ^ _XK; }  // decode correct answer at runtime only
 
         async function _sha256(str) {
@@ -174,6 +174,7 @@
 
         // Roster parsed directly from image_33f904.png
         const crewRoster = {
+            "123123": "Test User",
             "003274": "Gheorghe Marian Toma",
             "004108": "Mihail Motea",
             "007177": "Neil Francis Nelson Dias",
@@ -276,7 +277,7 @@
         const quizData = [
             { q: "1. Which of the following is the correct vertical storage order (top to bottom) in a service refrigerator?", a: ["Raw poultry, Ground beef, Whole muscle cuts, Raw seafood, Ready-to-eat foods.", "Ready-to-eat foods, Raw seafood, Raw whole muscle cuts, Raw ground meats, Raw poultry.", "Raw seafood, Ready-to-eat foods, Raw poultry, Ground beef.", "Vertical order does not matter if all items are covered with plastic wrap."] },
             { q: "2. How must clean plates, cups, and utensils be dried after passing through a wash cycle?", a: ["Hand-dried immediately using a clean, dry cloth towel.", "Air-dried completely on a clean surface without towels.", "Stacked while wet to let them dry together in the storage cabinet.", "Blown dry with an electric fan at the waiter station."] },
-            { q: "3. What is the required temperature for water supplied to a FOH handwashing station?", a: ["Cold water only, below 41°F (5°C).", "Warm water, reaching at least 85°F (29.4°C).", "Boiling water, above 180°F (82°C).", "Temperature does not matter if soap is used."] },
+            { q: "3. What is the required temperature for water supplied to a FOH handwashing station?", a: ["Cold water only, below 41°F (5°C).", "Warm water, reaching at least 85°F (29°C).", "Boiling water, above 180°F (82°C).", "Temperature does not matter if soap is used."] },
             { q: "4. Where should the blue table-wiping cloths be stored between active uses at your server station?", a: ["Folded flat on top of the waiter station counter.", "Tucked safely into your uniform apron pocket.", "Completely immersed inside the sanitizer solution in the red sanitizer bucket.", "Draped over the side handle of the grey bucket."] },
             { q: "5. What chemical sanitizer is generally utilized for back-of-house (BOH) scullery and floor spaces?", a: ["Oxivir.", "Pure alcohol spray.", "Chlorine (Kay 5).", "High-foaming ammonia."] },
             { q: "6. When using Time Control (TTC) for PHF on an open prep counter or buffet line, what is the maximum time allowed before food must be discarded?", a: ["2 hours.", "4 hours.", "6 hours.", "8 hours."] },
