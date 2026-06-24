@@ -89,6 +89,19 @@
                         <div id="answers-container" class="grid grid-cols-1 gap-2.5">
                             <!-- Options injected by JS -->
                         </div>
+
+                        <!-- Confirm / Next action bar -->
+                        <div id="quiz-action-bar" class="pt-1 space-y-2">
+                            <button id="btn-confirm" onclick="confirmAnswer()"
+                                class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                                <i class="fa-solid fa-check mr-1.5"></i> Confirm Answer
+                            </button>
+                            <div id="answer-feedback" class="hidden rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2"></div>
+                            <button id="btn-next" onclick="nextQuestion()"
+                                class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                                Next Question <i class="fa-solid fa-chevron-right ml-1"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -301,39 +314,126 @@
             loadQuestion();
         }
 
+        let selectedAnswerIdx = null; // tracks which option the user tapped
+
         function loadQuestion() {
             const data = quizData[currentQuestionIndex];
-            
+            selectedAnswerIdx = null;
+
             document.getElementById('question-counter').innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
             document.getElementById('score-counter').innerText = `Correct: ${correctAnswersCount}`;
             document.getElementById('question-text').innerText = data.q;
-            
-            const pct = ((currentQuestionIndex) / quizData.length) * 100;
+
+            const pct = (currentQuestionIndex / quizData.length) * 100;
             document.getElementById('quiz-progress').style.width = `${pct}%`;
+
+            // Reset action bar
+            document.getElementById('btn-confirm').classList.add('hidden');
+            document.getElementById('btn-next').classList.add('hidden');
+            document.getElementById('answer-feedback').classList.add('hidden');
 
             const container = document.getElementById('answers-container');
             container.innerHTML = "";
-            
+
             const labels = ["A", "B", "C", "D"];
             data.a.forEach((option, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "w-full text-left p-3.5 bg-slate-800 active:bg-slate-700 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
+                btn.id = `opt-btn-${idx}`;
+                btn.className = "w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
                 btn.innerHTML = `
-                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 group-hover:bg-emerald-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 group-hover:text-white transition-colors">${labels[idx]}</span>
+                    <span id="opt-badge-${idx}" class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors">${labels[idx]}</span>
                     <span class="flex-1 leading-snug">${option}</span>
-                    <i class="fa-regular fa-circle text-slate-500 group-hover:text-slate-300 flex-shrink-0"></i>`;
-                btn.onclick = () => selectAnswer(idx);
+                    <i id="opt-icon-${idx}" class="fa-regular fa-circle text-slate-500 flex-shrink-0"></i>`;
+                btn.onclick = () => selectOption(idx);
                 container.appendChild(btn);
             });
         }
 
-        function selectAnswer(chosenIdx) {
-            // Correct answer decoded at runtime from obfuscated array — never stored plaintext
-            const correctIdx = _dc(currentQuestionIndex);
-            if (chosenIdx === correctIdx) {
-                correctAnswersCount++;
+        function selectOption(idx) {
+            // Deselect all first
+            for (let i = 0; i < 4; i++) {
+                const b = document.getElementById(`opt-btn-${i}`);
+                const badge = document.getElementById(`opt-badge-${i}`);
+                const icon  = document.getElementById(`opt-icon-${i}`);
+                if (!b) continue;
+                b.className = "w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
+                badge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors";
+                icon.className  = "fa-regular fa-circle text-slate-500 flex-shrink-0";
             }
 
+            // Highlight selected
+            const selBtn   = document.getElementById(`opt-btn-${idx}`);
+            const selBadge = document.getElementById(`opt-badge-${idx}`);
+            const selIcon  = document.getElementById(`opt-icon-${idx}`);
+            selBtn.className   = "w-full text-left p-3.5 bg-blue-900/40 border border-blue-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
+            selBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 border border-blue-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
+            selIcon.className  = "fa-solid fa-circle-dot text-blue-400 flex-shrink-0";
+
+            selectedAnswerIdx = idx;
+            document.getElementById('btn-confirm').classList.remove('hidden');
+        }
+
+        function confirmAnswer() {
+            if (selectedAnswerIdx === null) return;
+
+            const correctIdx = _dc(currentQuestionIndex);
+            const isCorrect  = selectedAnswerIdx === correctIdx;
+            if (isCorrect) correctAnswersCount++;
+
+            const labels = ["A", "B", "C", "D"];
+
+            // Lock all buttons — no more clicking
+            for (let i = 0; i < 4; i++) {
+                const b = document.getElementById(`opt-btn-${i}`);
+                if (b) b.onclick = null;
+            }
+
+            // Colour correct answer green
+            const correctBtn   = document.getElementById(`opt-btn-${correctIdx}`);
+            const correctBadge = document.getElementById(`opt-badge-${correctIdx}`);
+            const correctIcon  = document.getElementById(`opt-icon-${correctIdx}`);
+            if (correctBtn) {
+                correctBtn.className   = "w-full text-left p-3.5 bg-emerald-900/40 border border-emerald-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
+                correctBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
+                correctIcon.className  = "fa-solid fa-circle-check text-emerald-400 flex-shrink-0";
+            }
+
+            // If wrong, colour the chosen answer red
+            if (!isCorrect) {
+                const wrongBtn   = document.getElementById(`opt-btn-${selectedAnswerIdx}`);
+                const wrongBadge = document.getElementById(`opt-badge-${selectedAnswerIdx}`);
+                const wrongIcon  = document.getElementById(`opt-icon-${selectedAnswerIdx}`);
+                if (wrongBtn) {
+                    wrongBtn.className   = "w-full text-left p-3.5 bg-rose-900/40 border border-rose-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
+                    wrongBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-rose-600 border border-rose-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
+                    wrongIcon.className  = "fa-solid fa-circle-xmark text-rose-400 flex-shrink-0";
+                }
+            }
+
+            // Show feedback banner
+            const feedback = document.getElementById('answer-feedback');
+            feedback.className = isCorrect
+                ? "rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-emerald-900/50 border border-emerald-600 text-emerald-300"
+                : "rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-rose-900/50 border border-rose-600 text-rose-300";
+            feedback.innerHTML = isCorrect
+                ? `<i class="fa-solid fa-circle-check text-emerald-400"></i> Correct!`
+                : `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Incorrect — correct answer: <strong class="ml-1">${labels[correctIdx]}</strong>`;
+            feedback.classList.remove('hidden');
+
+            // Swap confirm → next
+            document.getElementById('btn-confirm').classList.add('hidden');
+
+            const isLast = currentQuestionIndex === quizData.length - 1;
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.innerHTML = isLast
+                ? `See Results <i class="fa-solid fa-flag-checkered ml-1"></i>`
+                : `Next Question <i class="fa-solid fa-chevron-right ml-1"></i>`;
+            nextBtn.classList.remove('hidden');
+
+            document.getElementById('score-counter').innerText = `Correct: ${correctAnswersCount}`;
+        }
+
+        function nextQuestion() {
             currentQuestionIndex++;
             if (currentQuestionIndex < quizData.length) {
                 loadQuestion();
