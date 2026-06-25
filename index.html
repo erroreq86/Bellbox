@@ -549,11 +549,11 @@
 
         async function _readScores() {
             const res = await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}/latest`, {
-                headers: { "X-Master-Key": JSONBIN_KEY }
+                headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
             });
-            if (!res.ok) throw new Error("Failed to read scores");
+            if (!res.ok) throw new Error(`Read failed: ${res.status}`);
             const data = await res.json();
-            return data.record.scores || [];
+            return data.record ? (data.record.scores || []) : (data.scores || []);
         }
 
         async function _writeScores(scores) {
@@ -561,11 +561,23 @@
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-Master-Key": JSONBIN_KEY
+                    "X-Master-Key": JSONBIN_KEY,
+                    "X-Bin-Versioning": "false"
                 },
                 body: JSON.stringify({ scores })
             });
-            if (!res.ok) throw new Error("Failed to write scores");
+            if (!res.ok) throw new Error(`Write failed: ${res.status}`);
+        }
+
+        // Retry helper — retries up to 3 times with backoff
+        async function _withRetry(fn, retries = 3, delay = 600) {
+            for (let i = 0; i < retries; i++) {
+                try { return await fn(); }
+                catch (e) {
+                    if (i === retries - 1) throw e;
+                    await new Promise(r => setTimeout(r, delay * (i + 1)));
+                }
+            }
         }
 
         async function endQuizAndSave() {
@@ -587,19 +599,33 @@
             };
 
             try {
-                const scores = await _readScores();
-                scores.push(newEntry);
-                scores.sort((a, b) => b.score - a.score);
-                await _writeScores(scores);
+                await _withRetry(async () => {
+                    const scores = await _readScores();
+
+                    // Merge: keep best score per ID, then add/update this entry
+                    const byId = {};
+                    scores.forEach(e => {
+                        if (!byId[e.id] || e.score > byId[e.id].score) byId[e.id] = e;
+                    });
+                    // Always update with latest attempt if it's better (or first time)
+                    if (!byId[newEntry.id] || newEntry.score >= byId[newEntry.id].score) {
+                        byId[newEntry.id] = newEntry;
+                    }
+                    const merged = Object.values(byId).sort((a, b) => b.score - a.score);
+                    await _writeScores(merged);
+                });
+
                 document.getElementById('final-meta-text').innerText =
-                    `Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${quizData.length} correct`;
+                    `Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct`;
             } catch (e) {
-                // Fallback: save locally if cloud fails
+                // Fallback: cache locally and sync next time
                 let local = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
-                local.push(newEntry);
+                // Remove older entry for same ID if this is better
+                local = local.filter(x => x.id !== newEntry.id || x.score > newEntry.score);
+                if (!local.find(x => x.id === newEntry.id)) local.push(newEntry);
                 localStorage.setItem('vsp_scores_fallback', JSON.stringify(local));
                 document.getElementById('final-meta-text').innerText =
-                    `Saved locally (no network) — ${currentCrewName} · ${correctAnswersCount}/${quizData.length}`;
+                    `Saved locally (no network) — syncs when online`;
             }
         }
 
@@ -616,7 +642,20 @@
 
             let scoresList = [];
             try {
-                scoresList = await _readScores();
+                scoresList = await _withRetry(_readScores);
+
+                // Flush any offline-cached scores into the cloud now that we have connectivity
+                const pending = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
+                if (pending.length > 0) {
+                    const byId = {};
+                    [...scoresList, ...pending].forEach(e => {
+                        if (!byId[e.id] || e.score > byId[e.id].score) byId[e.id] = e;
+                    });
+                    const merged = Object.values(byId);
+                    await _writeScores(merged);
+                    localStorage.removeItem('vsp_scores_fallback');
+                    scoresList = merged;
+                }
             } catch (e) {
                 // Fall back to any locally cached scores
                 scoresList = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
