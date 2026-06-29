@@ -23,13 +23,16 @@
                     <span class="text-[10px] sm:text-xs text-slate-400 block -mt-0.5 truncate">Food Safety Final Exam</span>
                 </div>
             </div>
-            <div class="flex space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700 flex-shrink-0">
-                <button onclick="switchTab('knowledge-test')" id="btn-knowledge-test" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md bg-emerald-600 text-white transition-all">
-                    <i class="fa-solid fa-graduation-cap mr-1 sm:mr-1.5"></i>Test
-                </button>
-                <button onclick="switchTab('leaderboard-tab')" id="btn-leaderboard-tab" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition-all">
-                    <i class="fa-solid fa-trophy mr-1 sm:mr-1.5"></i>Scores
-                </button>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="index.html" class="text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded hover:border-slate-500 transition-colors">← Back</a>
+                <div class="flex space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700">
+                    <button onclick="switchTab('knowledge-test')" id="btn-knowledge-test" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md bg-emerald-600 text-white transition-all">
+                        <i class="fa-solid fa-graduation-cap mr-1 sm:mr-1.5"></i>Test
+                    </button>
+                    <button onclick="switchTab('leaderboard-tab')" id="btn-leaderboard-tab" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition-all">
+                        <i class="fa-solid fa-trophy mr-1 sm:mr-1.5"></i>Scores
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -47,7 +50,7 @@
                     <div class="bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4">
                         <div>
                             <label class="block text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 font-bold mb-2">Crew ID Number</label>
-                            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="crew-id" placeholder="Enter 6-digit Crew ID"
+                            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="crew-id" placeholder="Enter Crew ID"
                                 onkeydown="if(event.key==='Enter')startQuiz()"
                                 oninput="document.getElementById('auth-error').classList.add('hidden')"
                                 class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white tracking-widest font-mono text-center focus:outline-none focus:border-emerald-500 transition-colors">
@@ -55,6 +58,9 @@
                         <div id="auth-error" class="hidden flex items-center gap-2 bg-rose-950/50 border border-rose-700/60 text-rose-300 text-xs rounded-lg px-3 py-2.5">
                             <i class="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0"></i>
                             <span id="auth-error-msg">Crew ID not found. Access denied.</span>
+                        </div>
+                        <div id="roster-loading" class="text-center text-xs text-slate-400 py-1">
+                            <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading crew roster…
                         </div>
                         <button onclick="startQuiz()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                             Start Assessment <i class="fa-solid fa-chevron-right ml-1"></i>
@@ -71,16 +77,14 @@
                             <span id="question-counter">Question 1 of 40</span>
                             <span id="score-counter" class="text-emerald-400">Correct: 0</span>
                         </div>
-                        <h2 id="question-text" class="text-sm sm:text-base font-semibold text-white leading-snug">Loading...</h2>
+                        <h2 id="question-text" class="text-sm sm:text-base font-semibold text-white leading-snug">Loading…</h2>
                         <div id="answers-container" class="grid grid-cols-1 gap-2.5"></div>
                         <div id="quiz-action-bar" class="pt-1 space-y-2">
-                            <button id="btn-confirm" onclick="confirmAnswer()"
-                                class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                            <button id="btn-confirm" onclick="confirmAnswer()" class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                                 <i class="fa-solid fa-check mr-1.5"></i> Confirm Answer
                             </button>
                             <div id="answer-feedback" class="hidden rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2"></div>
-                            <button id="btn-next" onclick="nextQuestion()"
-                                class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                            <button id="btn-next" onclick="nextQuestion()" class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                                 Next Question <i class="fa-solid fa-chevron-right ml-1"></i>
                             </button>
                         </div>
@@ -93,9 +97,7 @@
                         <h2 class="text-base sm:text-lg font-bold text-white">Assessment Finished</h2>
                         <div class="text-3xl sm:text-4xl font-black text-emerald-400 py-1" id="final-score-text">100%</div>
                         <p class="text-[11px] sm:text-xs text-slate-400 px-2" id="final-meta-text"></p>
-                        <button onclick="restartQuiz()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs transition-all font-semibold active:scale-[0.98]">
-                            Retake Test
-                        </button>
+                        <button onclick="restartQuiz()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs transition-all font-semibold active:scale-[0.98]">Retake Test</button>
                     </div>
                 </div>
             </div>
@@ -106,9 +108,6 @@
                         <h1 class="text-lg sm:text-xl font-bold text-white truncate">Leaderboard</h1>
                         <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">Verified department personnel marks.</p>
                     </div>
-                    <button onclick="clearLeaderboard()" class="px-2 py-1.5 bg-rose-950/40 text-rose-400 hover:bg-rose-900/50 rounded text-[10px] sm:text-xs font-semibold border border-rose-800/60 transition-all flex-shrink-0 active:scale-[0.95]">
-                        Reset Table
-                    </button>
                 </div>
                 <div class="overflow-hidden bg-slate-900 border border-slate-700 rounded-xl">
                     <table class="w-full text-left text-xs sm:text-sm text-slate-300 border-collapse table-fixed">
@@ -124,61 +123,47 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </main>
 
     <footer class="bg-slate-800 border-t border-slate-700 mt-auto py-3 text-center text-[9px] sm:text-[10px] text-slate-500">
-        <div>Princess Cruises &bull; FOH Food Safety Module &bull; Local Encryption Rules Apply</div>
+        Princess Cruises &bull; FOH Food Safety Module &bull; Crown Princess
     </footer>
 
     <script>
         const _XK = 0x5A;
-        // Correct answer indices (0-based) XOR'd with 0x5A:
-        // Raw:  [1,0,1,2,1,1,2,1,1,3,2,1,0,2,1,0,2,1,0,1,1,2,1,1,0,2,1,0,1,2,0,2,1,0,2,1,1,2,0,1]
         const _OC = [91,90,91,88,91,91,88,91,91,89,88,91,90,88,91,90,88,91,90,91,91,88,91,91,90,88,91,90,91,88,90,88,91,90,88,91,91,88,90,91];
-        function _dc(idx) { return _OC[idx] ^ _XK; }
+        function _dc(idx){return _OC[idx]^_XK;}
 
-        async function _sha256(str) {
-            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+        const JB_API     = "https://api.jsonbin.io/v3";
+        const JB_KEY     = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
+        const BIN_ROSTER = "6a40decfda38895dfe0ab4be";
+        const BIN_SCORES = "6a40c8aada38895dfe0a700d";
+
+        // ── Dynamic roster ──────────────────────────────────────────────────
+        let crewRoster = {};
+        let rosterReady = false;
+
+        async function loadRoster(){
+            try{
+                const r=await fetch(`${JB_API}/b/${BIN_ROSTER}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
+                const d=await r.json();
+                crewRoster=(d.record||d).crew||{};
+                rosterReady=true;
+            }catch(e){
+                crewRoster=FALLBACK_ROSTER;
+                rosterReady=true;
+            }
+            document.getElementById('roster-loading').style.display='none';
         }
-        const _ADMIN_HASH = "fb9b2de925b832f3e1f146faf05444b173756c4b94376fc2dff24423819505ea";
 
-        const crewRoster = {
-            "123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea",
-            "007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira",
-            "246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek",
-            "315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa",
-            "341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski",
-            "425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa",
-            "434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh",
-            "456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel",
-            "480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa",
-            "623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi",
-            "637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino",
-            "658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco",
-            "664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes",
-            "677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael",
-            "677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari",
-            "680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma",
-            "682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen",
-            "683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores",
-            "684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna",
-            "684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo",
-            "684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour",
-            "684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni",
-            "685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto",
-            "687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini",
-            "693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino",
-            "699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro",
-            "699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"
-        };
+        const FALLBACK_ROSTER={"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
 
-        // 40 questions — correct answer is always at the index returned by _dc(questionIndex)
-        const quizData = [
+        loadRoster();
+
+        const quizData=[
             {q:"What is the minimum internal temperature required to cook poultry under VSP 2025?",a:["63\u00b0C (145\u00b0F) \u2014 same as fish and intact beef.","74\u00b0C (165\u00b0F) \u2014 required for all poultry to destroy Salmonella.","68\u00b0C (155\u00b0F) \u2014 required for ground beef only.","57\u00b0C (135\u00b0F) \u2014 the minimum hot-holding temperature."]},
-            {q:"Which of the following foods is NOT classified as a TCS (Time/Temperature Control for Safety) food?",a:["Dry crackers and hard pretzels stored in a sealed container.","Sliced cantaloupe held at room temperature on a buffet.","Cooked pasta left in a bain marie at 50\u00b0C (122\u00b0F).","Raw shell eggs in an unrefrigerated delivery crate."]},
+            {q:"Which of the following foods is NOT classified as a TCS food?",a:["Dry crackers and hard pretzels stored in a sealed container.","Sliced cantaloupe held at room temperature on a buffet.","Cooked pasta left in a bain marie at 50\u00b0C (122\u00b0F).","Raw shell eggs in an unrefrigerated delivery crate."]},
             {q:"What is the maximum cold-holding temperature for TCS food under VSP 2025?",a:["0\u00b0C (32\u00b0F) \u2014 must be kept at freezing point at all times.","5\u00b0C (41\u00b0F) or below \u2014 required to inhibit pathogen multiplication.","8\u00b0C (46\u00b0F) \u2014 acceptable for short-duration service periods.","10\u00b0C (50\u00b0F) \u2014 permitted if time control documentation is used."]},
             {q:"When cooling cooked TCS food, what is the required time to drop from 57\u00b0C (135\u00b0F) to 21\u00b0C (70\u00b0F)?",a:["Within 30 minutes using an approved blast chiller only.","Within 1 hour using an ice-water bath.","Within 2 hours \u2014 first stage of the two-stage cooling process.","Within 4 hours \u2014 covering both cooling stages combined."]},
             {q:"After reaching 21\u00b0C (70\u00b0F), TCS food must be further cooled to 5\u00b0C (41\u00b0F) within an additional:",a:["2 hours \u2014 making 4 hours total from start of cooling.","4 hours \u2014 completing the second stage for 6 hours total.","6 hours \u2014 restarting the clock from 21\u00b0C.","8 hours \u2014 permitted if food is covered and labelled."]},
@@ -192,7 +177,7 @@
             {q:"What is the correct manual warewashing sequence under VSP 2025?",a:["Wash \u2192 Rinse \u2192 Sanitise \u2014 the only approved order.","Rinse \u2192 Wash \u2192 Sanitise \u2014 pre-rinse first to remove large debris.","Sanitise \u2192 Wash \u2192 Rinse \u2014 sanitiser first destroys surface pathogens.","Wash \u2192 Sanitise \u2192 Rinse \u2014 rinse after sanitising to remove residue."]},
             {q:"What is the approved concentration range for chlorine sanitiser used on food-contact surfaces?",a:["10\u201325 ppm \u2014 low concentration prevents chemical tainting of food.","25\u201349 ppm \u2014 minimum effective level for surface sanitising.","50\u2013200 ppm \u2014 the VSP 2025 approved range for chlorine sanitiser.","300\u2013500 ppm \u2014 higher concentration ensures faster kill time."]},
             {q:"How often must food-contact surfaces be cleaned and sanitised during continuous use?",a:["Once every 8-hour shift at the end of service.","At a minimum every 4 hours, or immediately after each use.","Every 30 minutes regardless of what was processed.","Only when visibly soiled or after an allergen-containing product."]},
-            {q:"Sanitiser test strips or a titration kit must be used to verify sanitiser concentration because:",a:["Visual inspection alone cannot confirm the solution is within the safe effective range.","Test strips are only required to check water temperature, not chemical strength.","They are only required during scheduled USPH vessel inspections.","Concentration is self-regulating in approved commercial sanitiser products."]},
+            {q:"Sanitiser test strips must be used to verify sanitiser concentration because:",a:["Visual inspection alone cannot confirm the solution is within the safe effective range.","Test strips are only required to check water temperature, not chemical strength.","They are only required during scheduled USPH vessel inspections.","Concentration is self-regulating in approved commercial sanitiser products."]},
             {q:"A wiping cloth used on food-contact surfaces must be stored between uses in:",a:["A dry sealed container away from heat and light.","Fresh clean water changed every 30 minutes.","Sanitiser solution at the correct approved concentration.","A clean apron pocket so it is readily accessible during service."]},
             {q:"What is the minimum handwashing duration required under VSP 2025?",a:["10 seconds of vigorous rubbing with soap under any water temperature.","At least 20 seconds with soap, focusing on fingertips, nails, and between fingers.","Exactly 15 seconds using a nail brush on palms only.","30 seconds using alcohol-based hand sanitiser as a first step."]},
             {q:"Hand sanitiser alone is an acceptable replacement for handwashing when hands are visibly soiled. TRUE or FALSE?",a:["FALSE \u2014 handwashing with soap and water is always required when hands are visibly soiled.","TRUE \u2014 alcohol-based sanitiser at 70%+ eliminates all pathogens including visible dirt.","TRUE \u2014 if running water is unavailable, sanitiser is a fully equivalent alternative.","FALSE \u2014 but sanitiser may replace washing if the soil is food-based rather than biological."]},
@@ -225,8 +210,7 @@
             document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-emerald-600','text-white');b.classList.add('text-slate-400','hover:text-slate-200');});
             document.getElementById(tabId).classList.add('active');
-            const t=document.getElementById('btn-'+tabId);
-            t.classList.remove('text-slate-400','hover:text-slate-200');t.classList.add('bg-emerald-600','text-white');
+            const t=document.getElementById('btn-'+tabId);t.classList.remove('text-slate-400','hover:text-slate-200');t.classList.add('bg-emerald-600','text-white');
             if(tabId==='leaderboard-tab')renderLeaderboard();
         }
 
@@ -235,27 +219,22 @@
         function _buildShuffledQuiz(){
             const indices=_shuffleArray(quizData.map((_,i)=>i));
             shuffledQuiz=indices.map(origIdx=>{
-                const origCorrect=_dc(origIdx);
-                const opts=quizData[origIdx].a;
-                const optOrder=_shuffleArray([0,1,2,3]);
-                const newCorrectIdx=optOrder.indexOf(origCorrect);
+                const origCorrect=_dc(origIdx);const opts=quizData[origIdx].a;
+                const optOrder=_shuffleArray([0,1,2,3]);const newCorrectIdx=optOrder.indexOf(origCorrect);
                 return{q:quizData[origIdx].q,a:optOrder.map(i=>opts[i]),correctIdx:newCorrectIdx};
             });
         }
 
         function startQuiz(){
             const idInput=document.getElementById('crew-id').value.trim();
-            const errorBox=document.getElementById('auth-error');
-            const errorMsg=document.getElementById('auth-error-msg');
-            const idField=document.getElementById('crew-id');
+            const errorBox=document.getElementById('auth-error');const errorMsg=document.getElementById('auth-error-msg');const idField=document.getElementById('crew-id');
             errorBox.classList.add('hidden');idField.classList.remove('border-rose-600');
             if(!idInput){errorMsg.textContent="Please enter your Crew ID to begin.";errorBox.classList.remove('hidden');idField.focus();return;}
+            if(!rosterReady){errorMsg.textContent="Roster still loading, please wait a moment.";errorBox.classList.remove('hidden');return;}
             if(!crewRoster.hasOwnProperty(idInput)){errorMsg.textContent=`ID ${idInput} is not registered. Contact your supervisor.`;errorBox.classList.remove('hidden');idField.classList.add('border-rose-600');idField.select();return;}
             currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;
             _buildShuffledQuiz();
-            document.getElementById('quiz-auth-screen').classList.add('hidden');
-            document.getElementById('quiz-end-screen').classList.add('hidden');
-            document.getElementById('quiz-play-screen').classList.remove('hidden');
+            document.getElementById('quiz-auth-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-play-screen').classList.remove('hidden');
             loadQuestion();
         }
 
@@ -265,9 +244,7 @@
             document.getElementById('score-counter').innerText=`Correct: ${correctAnswersCount}`;
             document.getElementById('question-text').innerText=`${currentQuestionIndex+1}. ${data.q}`;
             document.getElementById('quiz-progress').style.width=`${(currentQuestionIndex/shuffledQuiz.length)*100}%`;
-            document.getElementById('btn-confirm').classList.add('hidden');
-            document.getElementById('btn-next').classList.add('hidden');
-            document.getElementById('answer-feedback').classList.add('hidden');
+            document.getElementById('btn-confirm').classList.add('hidden');document.getElementById('btn-next').classList.add('hidden');document.getElementById('answer-feedback').classList.add('hidden');
             const container=document.getElementById('answers-container');container.innerHTML="";
             const labels=["A","B","C","D"];
             data.a.forEach((option,idx)=>{
@@ -288,8 +265,7 @@
 
         function confirmAnswer(){
             if(selectedAnswerIdx===null)return;
-            const correctIdx=shuffledQuiz[currentQuestionIndex].correctIdx;
-            const isCorrect=selectedAnswerIdx===correctIdx;
+            const correctIdx=shuffledQuiz[currentQuestionIndex].correctIdx;const isCorrect=selectedAnswerIdx===correctIdx;
             if(isCorrect)correctAnswersCount++;
             const labels=["A","B","C","D"];
             for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`);if(b)b.onclick=null;}
@@ -310,78 +286,49 @@
 
         function nextQuestion(){currentQuestionIndex++;if(currentQuestionIndex<shuffledQuiz.length){loadQuestion();}else{endQuizAndSave();}}
 
-        // JSONBin — create a NEW bin at jsonbin.io and replace JSONBIN_BIN below
-        const JSONBIN_API="https://api.jsonbin.io/v3";
-        const JSONBIN_KEY="$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
-        const JSONBIN_BIN="6a40c8aada38895dfe0a700d";
-
-        async function _readScores(){const res=await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}/latest`,{headers:{"X-Master-Key":JSONBIN_KEY,"X-Bin-Meta":"false"}});if(!res.ok)throw new Error(`Read failed: ${res.status}`);const data=await res.json();return data.record?(data.record.scores||[]):(data.scores||[]);}
-        async function _writeScores(scores){const res=await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}`,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":JSONBIN_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify({scores})});if(!res.ok)throw new Error(`Write failed: ${res.status}`);}
-        async function _withRetry(fn,retries=3,delay=600){for(let i=0;i<retries;i++){try{return await fn();}catch(e){if(i===retries-1)throw e;await new Promise(r=>setTimeout(r,delay*(i+1)));}}};
+        async function _readScores(){const r=await fetch(`${JB_API}/b/${BIN_SCORES}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});if(!r.ok)throw new Error('read fail');const d=await r.json();return(d.record||d).scores||[];}
+        async function _writeScores(s){const r=await fetch(`${JB_API}/b/${BIN_SCORES}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify({scores:s})});if(!r.ok)throw new Error('write fail');}
+        async function _withRetry(fn,n=3,d=600){for(let i=0;i<n;i++){try{return await fn();}catch(e){if(i===n-1)throw e;await new Promise(r=>setTimeout(r,d*(i+1)));}}};
 
         async function endQuizAndSave(){
-            document.getElementById('quiz-play-screen').classList.add('hidden');
-            document.getElementById('quiz-end-screen').classList.remove('hidden');
-            document.getElementById('quiz-progress').style.width='100%';
-            const finalPercentage=Math.round((correctAnswersCount/shuffledQuiz.length)*100);
-            document.getElementById('final-score-text').innerText=`${finalPercentage}%`;
-            document.getElementById('final-meta-text').innerText=`Saving score for ${currentCrewName}\u2026`;
-            const newEntry={name:currentCrewName,id:currentCrewId,score:finalPercentage,correct:correctAnswersCount,total:shuffledQuiz.length,date:new Date().toLocaleDateString('en-GB')};
+            document.getElementById('quiz-play-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.remove('hidden');document.getElementById('quiz-progress').style.width='100%';
+            const pct=Math.round((correctAnswersCount/shuffledQuiz.length)*100);
+            document.getElementById('final-score-text').innerText=`${pct}%`;document.getElementById('final-meta-text').innerText=`Saving score for ${currentCrewName}\u2026`;
+            const entry={name:currentCrewName,id:currentCrewId,score:pct,correct:correctAnswersCount,total:shuffledQuiz.length,date:new Date().toLocaleDateString('en-GB')};
             try{
-                await _withRetry(async()=>{
-                    const scores=await _readScores();
-                    const byId={};scores.forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});
-                    if(!byId[newEntry.id]||newEntry.score>=byId[newEntry.id].score)byId[newEntry.id]=newEntry;
-                    await _writeScores(Object.values(byId).sort((a,b)=>b.score-a.score));
-                });
+                await _withRetry(async()=>{const scores=await _readScores();const byId={};scores.forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});if(!byId[entry.id]||entry.score>=byId[entry.id].score)byId[entry.id]=entry;await _writeScores(Object.values(byId).sort((a,b)=>b.score-a.score));});
                 document.getElementById('final-meta-text').innerText=`Score saved \u2713 \u2014 ${currentCrewName} \u00b7 ${correctAnswersCount}/${shuffledQuiz.length} correct`;
             }catch(e){
-                let local=JSON.parse(localStorage.getItem('fs_scores_fallback')||'[]');
-                local=local.filter(x=>x.id!==newEntry.id||x.score>newEntry.score);
-                if(!local.find(x=>x.id===newEntry.id))local.push(newEntry);
-                localStorage.setItem('fs_scores_fallback',JSON.stringify(local));
+                let local=JSON.parse(localStorage.getItem('fs_scores_fallback')||'[]');local=local.filter(x=>x.id!==entry.id||x.score>entry.score);if(!local.find(x=>x.id===entry.id))local.push(entry);localStorage.setItem('fs_scores_fallback',JSON.stringify(local));
                 document.getElementById('final-meta-text').innerText=`Saved locally (no network) \u2014 syncs when online`;
             }
         }
 
-        function restartQuiz(){document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value="";}
+        function restartQuiz(){document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
 
         async function renderLeaderboard(){
             const container=document.getElementById('leaderboard-rows');
-            container.innerHTML=`<tr><td colspan="4" class="p-5 text-center text-xs text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading scores\u2026</td></tr>`;
-            let scoresList=[];
+            container.innerHTML=`<tr><td colspan="4" class="p-5 text-center text-xs text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading\u2026</td></tr>`;
+            let scores=[];
             try{
-                scoresList=await _withRetry(_readScores);
+                scores=await _withRetry(_readScores);
                 const pending=JSON.parse(localStorage.getItem('fs_scores_fallback')||'[]');
-                if(pending.length>0){const byId={};[...scoresList,...pending].forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});const merged=Object.values(byId);await _writeScores(merged);localStorage.removeItem('fs_scores_fallback');scoresList=merged;}
-            }catch(e){
-                scoresList=JSON.parse(localStorage.getItem('fs_scores_fallback')||'[]');
-                if(scoresList.length===0){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-rose-400 italic"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server. Check network.</td></tr>`;return;}
-            }
-            const bestByID={};scoresList.forEach(entry=>{if(!bestByID[entry.id]||entry.score>bestByID[entry.id].score)bestByID[entry.id]=entry;});
-            scoresList=Object.values(bestByID).sort((a,b)=>b.score-a.score);
-            if(scoresList.length===0){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic"><i class="fa-solid fa-inbox block text-lg mb-1"></i> No records yet. Complete the exam to populate the board.</td></tr>`;return;}
+                if(pending.length>0){const byId={};[...scores,...pending].forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});const merged=Object.values(byId);await _writeScores(merged);localStorage.removeItem('fs_scores_fallback');scores=merged;}
+            }catch(e){scores=JSON.parse(localStorage.getItem('fs_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server.</td></tr>`;return;}}
+            const best={};scores.forEach(e=>{if(!best[e.id]||e.score>best[e.id].score)best[e.id]=e;});
+            scores=Object.values(best).sort((a,b)=>b.score-a.score);
+            if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">No records yet.</td></tr>`;return;}
             container.innerHTML="";
-            scoresList.forEach((entry,idx)=>{
+            scores.forEach((e,i)=>{
                 const tr=document.createElement('tr');
-                let medalBadge=`<span class="font-bold text-slate-500 text-[11px]">${idx+1}</span>`;
-                if(idx===0)medalBadge=`<i class="fa-solid fa-medal text-amber-400 text-xs sm:text-sm"></i>`;
-                if(idx===1)medalBadge=`<i class="fa-solid fa-medal text-slate-300 text-xs sm:text-sm"></i>`;
-                if(idx===2)medalBadge=`<i class="fa-solid fa-medal text-amber-700 text-xs sm:text-sm"></i>`;
-                let scoreColor="text-emerald-400 font-bold";
-                if(entry.score<90)scoreColor="text-amber-400 font-bold";
-                if(entry.score<75)scoreColor="text-rose-400 font-bold";
-                tr.innerHTML=`<td class="p-3 text-center">${medalBadge}</td><td class="p-3 font-semibold text-white truncate text-xs sm:text-sm">${entry.name}</td><td class="p-3 text-center ${scoreColor} text-xs sm:text-sm">${entry.score}%</td><td class="p-3 text-right text-[10px] sm:text-xs text-slate-400">${entry.date}</td>`;
+                let m=`<span class="font-bold text-slate-500 text-[11px]">${i+1}</span>`;
+                if(i===0)m=`<i class="fa-solid fa-medal text-amber-400 text-xs sm:text-sm"></i>`;
+                if(i===1)m=`<i class="fa-solid fa-medal text-slate-300 text-xs sm:text-sm"></i>`;
+                if(i===2)m=`<i class="fa-solid fa-medal text-amber-700 text-xs sm:text-sm"></i>`;
+                let sc=e.score>=90?"text-emerald-400 font-bold":e.score>=75?"text-amber-400 font-bold":"text-rose-400 font-bold";
+                tr.innerHTML=`<td class="p-3 text-center">${m}</td><td class="p-3 font-semibold text-white truncate text-xs sm:text-sm">${e.name}</td><td class="p-3 text-center ${sc} text-xs sm:text-sm">${e.score}%</td><td class="p-3 text-right text-[10px] sm:text-xs text-slate-400">${e.date}</td>`;
                 container.appendChild(tr);
             });
-        }
-
-        async function clearLeaderboard(){
-            const password=prompt("Admin access required. Enter master verification key to clear scores:");
-            if(password===null)return;
-            const entered=await _sha256(password.trim());
-            if(entered===_ADMIN_HASH){if(confirm("Master key validated. Purge entire highscore directory?")){try{await _writeScores([]);localStorage.removeItem('fs_scores_fallback');renderLeaderboard();}catch(e){alert("Cloud clear failed \u2014 check network connection.");}}}
-            else{alert("ACCESS DENIED: Invalid administrative password.");}
         }
     </script>
 </body>
