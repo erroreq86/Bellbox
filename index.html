@@ -8,407 +8,158 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#060e1c;--navy2:#0b1527;--navy3:#101e35;--navy4:#1a3050;
+  --brass:#d4b04a;--brass2:#e8c96a;--brass3:#f5df96;
+  --foam:#e8f0f8;--steel:#a8c0d8;--red:#c0392b;--green:#2d9e6b;
+}
+html,body{min-height:100vh;background:var(--navy);color:var(--foam);font-family:'Inter',sans-serif;overflow-x:hidden}
 
-:root {
-  --navy:      #060e1c;
-  --navy2:     #0b1527;
-  --navy3:     #101e35;
-  --navy4:     #1a3050;
-  --brass:     #d4b04a;
-  --brass2:    #e8c96a;
-  --brass3:    #f0d890;
-  --foam:      #e8f0f8;
-  --steel:     #a8c0d8;
-  --emerald:   #2d9e6b;
-  --red:       #c0392b;
-}
+/* HEADER */
+header{background:var(--navy2);border-bottom:1px solid rgba(212,176,74,0.25);position:relative;overflow:hidden}
+header::after{content:'';position:absolute;bottom:0;left:-100%;width:300%;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--brass) 20%,var(--brass2) 35%,var(--brass) 50%,transparent 65%,var(--brass) 80%,transparent 100%);
+  animation:waveSlide 8s linear infinite;opacity:.7}
+@keyframes waveSlide{to{left:0%}}
+.header-inner{max-width:960px;margin:0 auto;padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.header-emblem{width:42px;height:42px;border:2px solid var(--brass);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(212,176,74,0.08)}
+.header-emblem i{color:var(--brass);font-size:1rem}
+.header-text{flex:1}
+.header-title{font-family:'Playfair Display',Georgia,serif;font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.03em;line-height:1.2}
+.header-sub{font-size:.68rem;color:var(--steel);letter-spacing:.15em;text-transform:uppercase;margin-top:.15rem}
+.admin-btn{font-size:.72rem;color:var(--steel);text-decoration:none;border:1px solid var(--navy4);padding:.35rem .75rem;border-radius:6px;cursor:pointer;background:transparent;transition:border-color .2s,color .2s;white-space:nowrap}
+.admin-btn:hover{border-color:var(--brass);color:var(--brass)}
 
-html, body {
-  min-height: 100vh;
-  background: var(--navy);
-  color: var(--foam);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
-}
+/* MAIN */
+main{max-width:960px;margin:0 auto;padding:3rem 1.5rem 4rem}
 
-/* ── HEADER ─────────────────────────────────────── */
-header {
-  background: var(--navy2);
-  border-bottom: 1px solid rgba(201,168,76,0.25);
-  position: relative;
-  overflow: hidden;
-}
+/* HERO */
+.hero{text-align:center;margin-bottom:3.5rem}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin-bottom:1.1rem}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:28px;height:1px;background:var(--brass);opacity:.5}
+.hero-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;color:#fff;line-height:1.2;margin-bottom:.9rem}
+.hero-sub{font-size:.88rem;color:var(--steel);line-height:1.65;max-width:480px;margin:0 auto}
 
-/* Subtle animated wave line */
-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: -100%;
-  width: 300%; height: 2px;
-  background: linear-gradient(90deg,
-    transparent 0%, var(--brass) 20%,
-    var(--brass2) 35%, var(--brass) 50%,
-    transparent 65%, var(--brass) 80%,
-    transparent 100%);
-  animation: waveSlide 8s linear infinite;
-  opacity: 0.7;
-}
-@keyframes waveSlide { to { left: 0%; } }
+/* RULE */
+.rule{display:flex;align-items:center;gap:1rem;margin-bottom:2.5rem}
+.rule::before,.rule::after{content:'';flex:1;height:1px}
+.rule::before{background:linear-gradient(90deg,transparent,var(--navy4))}
+.rule::after{background:linear-gradient(90deg,var(--navy4),transparent)}
+.rule-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--steel);white-space:nowrap}
 
-.header-inner {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+/* PORTHOLE CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;justify-items:center}
+.card-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%;max-width:340px}
+.porthole{position:relative;width:220px;height:220px;flex-shrink:0}
+.porthole-ring{position:absolute;inset:0;border-radius:50%;border:6px solid var(--brass);box-shadow:0 0 0 2px rgba(212,176,74,.15),0 0 24px rgba(212,176,74,.12),inset 0 2px 6px rgba(0,0,0,.5);z-index:2;transition:border-color .3s,box-shadow .3s}
+.porthole-bolt{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--brass);border:2px solid var(--navy2);z-index:3;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+.porthole-bolt:nth-child(1){top:6px;left:50%;transform:translateX(-50%)}
+.porthole-bolt:nth-child(2){bottom:6px;left:50%;transform:translateX(-50%)}
+.porthole-bolt:nth-child(3){left:6px;top:50%;transform:translateY(-50%)}
+.porthole-bolt:nth-child(4){right:6px;top:50%;transform:translateY(-50%)}
+.porthole-glass{position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.04) 0%,var(--navy2) 55%,var(--navy) 100%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;transition:background .3s}
+.porthole-glass::before{content:'';position:absolute;top:12%;left:15%;width:30%;height:45%;background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 100%);border-radius:50%;pointer-events:none}
+.porthole-icon{font-size:2.2rem;color:var(--brass);margin-bottom:.6rem;transition:transform .3s,color .3s}
+.porthole-label{font-family:'Playfair Display',Georgia,serif;font-size:.82rem;font-style:italic;color:var(--steel);letter-spacing:.04em;text-align:center;padding:0 .5rem;line-height:1.3}
+.card-info{text-align:center;width:100%}
+.card-title{font-family:'Playfair Display',Georgia,serif;font-size:1.15rem;font-weight:700;color:#fff;margin-bottom:.4rem}
+.card-meta{font-size:.75rem;color:var(--steel);margin-bottom:1rem;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.25rem}
+.tag{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:99px;border:1px solid var(--navy4);color:var(--steel)}
+.card-btn{display:inline-block;padding:.7rem 2rem;background:transparent;border:1.5px solid var(--brass);border-radius:8px;color:var(--brass);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:background .2s,color .2s,transform .15s,box-shadow .2s;cursor:pointer}
+.card-btn:hover{background:var(--brass);color:var(--navy);transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,176,74,.25)}
+.card-wrap:hover .porthole-ring{border-color:var(--brass2);box-shadow:0 0 0 2px rgba(232,201,106,.2),0 0 36px rgba(212,176,74,.22),inset 0 2px 6px rgba(0,0,0,.5)}
+.card-wrap:hover .porthole-icon{transform:scale(1.1);color:var(--brass2)}
 
-.header-emblem {
-  width: 42px; height: 42px;
-  border: 2px solid var(--brass);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  background: rgba(201,168,76,0.08);
-}
-.header-emblem i { color: var(--brass); font-size: 1rem; }
+/* INFO STRIP */
+.info-strip{margin-top:3.5rem;background:var(--navy2);border:1px solid var(--navy4);border-radius:14px;padding:1.25rem 1.75rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center}
+.info-item{display:flex;align-items:center;gap:.65rem;flex:1;min-width:180px}
+.info-item i{color:var(--brass);font-size:.9rem;flex-shrink:0;width:18px;text-align:center}
+.info-item-text{font-size:.78rem;color:var(--steel);line-height:1.5}
+.info-item-text strong{color:var(--foam);font-weight:600;display:block}
+.info-divider{width:1px;align-self:stretch;background:var(--navy4);flex-shrink:0}
 
-.header-text { flex: 1; }
-.header-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.03em;
-  line-height: 1.2;
-}
-.header-sub {
-  font-size: 0.68rem;
-  color: var(--steel);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  margin-top: 0.15rem;
-}
+/* ADMIN MODAL OVERLAY */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--navy2);border:1px solid var(--navy4);border-radius:16px;width:100%;max-width:820px;overflow:hidden;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{background:var(--navy3);padding:1rem 1.5rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--navy4)}
+.modal-header i{color:var(--brass)}
+.modal-header-title{font-weight:700;font-size:.95rem;color:#fff;flex:1}
+.modal-close{background:transparent;border:none;color:var(--steel);cursor:pointer;font-size:1.1rem;padding:.25rem .5rem;border-radius:4px;transition:color .15s}
+.modal-close:hover{color:#fff}
 
-  font-size: 0.72rem;
-  color: var(--steel);
-  text-decoration: none;
-  border: 1px solid var(--navy4);
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  transition: border-color 0.2s, color 0.2s;
-  white-space: nowrap;
-}
+/* ADMIN LOGIN */
+.admin-login{padding:2rem;max-width:360px;margin:0 auto;text-align:center}
+.admin-login h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#fff;margin-bottom:.35rem}
+.admin-login p{font-size:.78rem;color:var(--steel);margin-bottom:1.5rem}
+.a-input{width:100%;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;padding:.65rem 1rem;color:#fff;font-size:.9rem;font-family:monospace;text-align:center;outline:none;transition:border-color .2s;margin-bottom:.75rem}
+.a-input:focus{border-color:var(--brass)}
+.a-btn{width:100%;padding:.75rem;background:var(--brass);color:var(--navy);font-weight:700;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;transition:background .2s}
+.a-btn:hover{background:var(--brass2)}
+.a-btn.danger{background:transparent;border:1px solid var(--red);color:var(--red);margin-top:.5rem}
+.a-btn.danger:hover{background:rgba(192,57,43,.15)}
+.a-btn.outline{background:transparent;border:1px solid var(--navy4);color:var(--steel);margin-top:.5rem}
+.a-btn.outline:hover{border-color:var(--brass);color:var(--brass)}
+.a-err{background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f4a0a0;font-size:.75rem;border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;display:none}
+.a-err.show{display:block}
 
-/* ── MAIN ────────────────────────────────────────── */
-main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 4rem;
-}
+/* ADMIN TABS */
+.admin-tabs{display:flex;border-bottom:1px solid var(--navy4);background:var(--navy3)}
+.admin-tab{padding:.75rem 1.25rem;font-size:.78rem;font-weight:600;color:var(--steel);cursor:pointer;border:none;background:transparent;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;text-transform:uppercase;letter-spacing:.08em}
+.admin-tab.active{color:var(--brass);border-bottom-color:var(--brass)}
+.admin-tab-content{display:none;padding:1.5rem}
+.admin-tab-content.active{display:block}
 
-/* ── HERO SECTION ───────────────────────────────── */
-.hero {
-  text-align: center;
-  margin-bottom: 3.5rem;
-}
+/* CREW MANAGEMENT */
+.crew-add-row{display:flex;gap:.6rem;margin-bottom:1.25rem}
+.crew-add-row input{flex:1;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;padding:.55rem .85rem;color:#fff;font-size:.82rem;outline:none;transition:border-color .2s}
+.crew-add-row input:focus{border-color:var(--brass)}
+.crew-add-row button{padding:.55rem 1rem;background:var(--brass);color:var(--navy);border:none;border-radius:8px;font-weight:700;font-size:.78rem;cursor:pointer;white-space:nowrap;transition:background .2s}
+.crew-add-row button:hover{background:var(--brass2)}
+.crew-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.crew-table th{text-align:left;padding:.5rem .75rem;color:var(--steel);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid var(--navy4);font-weight:600}
+.crew-table td{padding:.55rem .75rem;border-bottom:1px solid rgba(26,48,80,.5);color:var(--foam);vertical-align:middle}
+.crew-table tr:last-child td{border-bottom:none}
+.crew-table td:first-child{font-family:monospace;color:var(--steel);font-size:.78rem}
+.del-btn{background:transparent;border:1px solid rgba(192,57,43,.4);color:var(--red);font-size:.68rem;padding:.2rem .5rem;border-radius:4px;cursor:pointer;transition:background .2s}
+.del-btn:hover{background:rgba(192,57,43,.15)}
+.status-msg{font-size:.75rem;padding:.4rem .75rem;border-radius:6px;margin-bottom:.75rem;display:none}
+.status-msg.ok{display:block;background:rgba(45,158,107,.12);border:1px solid rgba(45,158,107,.4);color:#6ee7b7}
+.status-msg.err{display:block;background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f4a0a0}
 
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--brass);
-  margin-bottom: 1.1rem;
-}
-.hero-eyebrow::before,
-.hero-eyebrow::after {
-  content: '';
-  display: block;
-  width: 28px; height: 1px;
-  background: var(--brass);
-  opacity: 0.5;
-}
+/* SCORES PANEL */
+.scores-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+@media(max-width:600px){.scores-grid{grid-template-columns:1fr}}
+.scores-section h3{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
+.scores-section h3 button{font-size:.65rem;background:transparent;border:1px solid rgba(192,57,43,.4);color:var(--red);padding:.18rem .5rem;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.05em;transition:background .2s}
+.scores-section h3 button:hover{background:rgba(192,57,43,.15)}
+.score-table{width:100%;border-collapse:collapse;font-size:.75rem}
+.score-table th{text-align:left;padding:.4rem .6rem;color:var(--steel);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--navy4);font-weight:600}
+.score-table td{padding:.45rem .6rem;border-bottom:1px solid rgba(26,48,80,.5);color:var(--foam)}
+.score-table tr:last-child td{border-bottom:none}
+.score-pct.hi{color:#6ee7b7;font-weight:700}
+.score-pct.mid{color:#fcd34d;font-weight:700}
+.score-pct.lo{color:#f87171;font-weight:700}
 
-.hero-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.2;
-  margin-bottom: 0.9rem;
-}
+/* FOOTER */
+footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.5rem;text-align:center;font-size:.68rem;color:var(--steel);letter-spacing:.08em}
 
-.hero-sub {
-  font-size: 0.88rem;
-  color: var(--steel);
-  line-height: 1.65;
-  max-width: 480px;
-  margin: 0 auto;
+/* RESPONSIVE */
+@media(max-width:600px){
+  main{padding:2rem 1rem 3rem}
+  .porthole{width:180px;height:180px}
+  .porthole-glass{inset:12px}
+  .info-strip{flex-direction:column;gap:1rem}
+  .info-divider{display:none}
+  .crew-add-row{flex-direction:column}
+  .modal{border-radius:12px}
 }
-
-/* ── DIVIDER ─────────────────────────────────────── */
-.rule {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2.5rem;
-}
-.rule::before, .rule::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--navy4));
-}
-.rule::after { background: linear-gradient(90deg, var(--navy4), transparent); }
-.rule-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--steel);
-  white-space: nowrap;
-}
-
-/* ── PORTHOLE CARDS ─────────────────────────────── */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  justify-items: center;
-}
-
-.card-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 340px;
-}
-
-/* The porthole itself */
-.porthole {
-  position: relative;
-  width: 220px; height: 220px;
-  flex-shrink: 0;
-}
-
-/* Outer brass ring */
-.porthole-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 6px solid var(--brass);
-  box-shadow:
-    0 0 0 2px rgba(201,168,76,0.15),
-    0 0 24px rgba(201,168,76,0.12),
-    inset 0 2px 6px rgba(0,0,0,0.5);
-  z-index: 2;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-/* Bolt decoration at 4 corners */
-.porthole-bolt {
-  position: absolute;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--brass);
-  border: 2px solid var(--navy2);
-  z-index: 3;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-.porthole-bolt:nth-child(1) { top: 6px;    left: 50%; transform: translateX(-50%); }
-.porthole-bolt:nth-child(2) { bottom: 6px; left: 50%; transform: translateX(-50%); }
-.porthole-bolt:nth-child(3) { left: 6px;   top: 50%;  transform: translateY(-50%); }
-.porthole-bolt:nth-child(4) { right: 6px;  top: 50%;  transform: translateY(-50%); }
-
-/* Glass window */
-.porthole-glass {
-  position: absolute;
-  inset: 14px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%,
-    rgba(255,255,255,0.04) 0%,
-    var(--navy2) 55%,
-    var(--navy) 100%);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-  transition: background 0.3s;
-}
-
-/* Shine streak */
-.porthole-glass::before {
-  content: '';
-  position: absolute;
-  top: 12%; left: 15%;
-  width: 30%; height: 45%;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,0.07) 0%,
-    transparent 100%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.porthole-icon {
-  font-size: 2.2rem;
-  color: var(--brass);
-  margin-bottom: 0.6rem;
-  transition: transform 0.3s, color 0.3s;
-}
-
-.porthole-label {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 0.82rem;
-  font-style: italic;
-  color: var(--steel);
-  letter-spacing: 0.04em;
-  text-align: center;
-  padding: 0 0.5rem;
-  line-height: 1.3;
-}
-
-/* Card info below porthole */
-.card-info {
-  text-align: center;
-  width: 100%;
-}
-
-.card-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.4rem;
-}
-
-.card-meta {
-  font-size: 0.75rem;
-  color: var(--steel);
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.tag {
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.55rem;
-  border-radius: 99px;
-  border: 1px solid var(--navy4);
-  color: var(--steel);
-}
-
-.card-btn {
-  display: inline-block;
-  padding: 0.7rem 2rem;
-  background: transparent;
-  border: 1.5px solid var(--brass);
-  border-radius: 8px;
-  color: var(--brass);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
-  cursor: pointer;
-}
-.card-btn:hover {
-  background: var(--brass);
-  color: var(--navy);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(201,168,76,0.25);
-}
-
-/* Hover state — whole card wrapper */
-.card-wrap:hover .porthole-ring {
-  border-color: var(--brass2);
-  box-shadow:
-    0 0 0 2px rgba(226,195,106,0.2),
-    0 0 36px rgba(201,168,76,0.22),
-    inset 0 2px 6px rgba(0,0,0,0.5);
-}
-.card-wrap:hover .porthole-icon {
-  transform: scale(1.1);
-  color: var(--brass2);
-}
-
-/* ── INFO STRIP ─────────────────────────────────── */
-.info-strip {
-  margin-top: 3.5rem;
-  background: var(--navy2);
-  border: 1px solid var(--navy4);
-  border-radius: 14px;
-  padding: 1.25rem 1.75rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex: 1;
-  min-width: 180px;
-}
-.info-item i {
-  color: var(--brass);
-  font-size: 0.9rem;
-  flex-shrink: 0;
-  width: 18px;
-  text-align: center;
-}
-.info-item-text { font-size: 0.78rem; color: var(--steel); line-height: 1.5; }
-.info-item-text strong { color: var(--foam); font-weight: 600; display: block; }
-
-.info-divider {
-  width: 1px;
-  align-self: stretch;
-  background: var(--navy4);
-  flex-shrink: 0;
-}
-
-/* ── FOOTER ─────────────────────────────────────── */
-footer {
-  background: var(--navy2);
-  border-top: 1px solid var(--navy3);
-  padding: 1rem 1.5rem;
-  text-align: center;
-  font-size: 0.68rem;
-  color: var(--steel);
-  letter-spacing: 0.08em;
-}
-
-/* ── RESPONSIVE ─────────────────────────────────── */
-@media (max-width: 600px) {
-  main { padding: 2rem 1rem 3rem; }
-  .porthole { width: 180px; height: 180px; }
-  .porthole-glass { inset: 12px; }
-  .info-strip { flex-direction: column; gap: 1rem; }
-  .info-divider { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  header::after { animation: none; }
-  .card-btn, .porthole-ring, .porthole-icon { transition: none; }
+@media(prefers-reduced-motion:reduce){
+  header::after{animation:none}
+  .card-btn,.porthole-ring,.porthole-icon{transition:none}
 }
 </style>
 </head>
@@ -416,133 +167,348 @@ footer {
 
 <header>
   <div class="header-inner">
-    <div class="header-emblem">
-      <i class="fa-solid fa-ship"></i>
-    </div>
+    <div class="header-emblem"><i class="fa-solid fa-ship"></i></div>
     <div class="header-text">
       <div class="header-title">Crown Princess</div>
       <div class="header-sub">Room Service &nbsp;·&nbsp; Knowledge Assessments</div>
     </div>
+    <button class="admin-btn" onclick="openAdminModal()">
+      <i class="fa-solid fa-lock" style="margin-right:.35rem;font-size:.65rem;"></i>Admin
+    </button>
   </div>
 </header>
 
 <main>
-
-  <!-- Hero -->
   <section class="hero">
-    <div class="hero-eyebrow">
-      <span>FOH Training Programme</span>
-    </div>
+    <div class="hero-eyebrow"><span>FOH Training Programme</span></div>
     <h1 class="hero-title">Department Examinations</h1>
-    <p class="hero-sub">
-      Select your assessment below. Enter your Crew ID to begin.
-      All scores are recorded to the department leaderboard.
-    </p>
+    <p class="hero-sub">Select your assessment below. Enter your Crew ID to begin. All scores are recorded to the department leaderboard.</p>
   </section>
 
   <div class="rule"><span class="rule-label">Active Assessments</span></div>
 
-  <!-- Porthole Cards -->
   <div class="cards-grid">
-
     <!-- Card 1: Public Health -->
     <div class="card-wrap">
       <div class="porthole">
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
         <div class="porthole-ring"></div>
         <div class="porthole-glass">
           <i class="fa-solid fa-shield-halved porthole-icon"></i>
-          <div class="porthole-label">Public Health<br>& Sanitation</div>
+          <div class="porthole-label">Public Health<br>&amp; Sanitation</div>
         </div>
       </div>
       <div class="card-info">
         <div class="card-title">USPH Public Health</div>
-        <div class="card-meta">
-          56 questions &nbsp;·&nbsp; VSP 2025 standards<br>
-          Sanitation, temperature control, compliance
-        </div>
+        <div class="card-meta">56 questions &nbsp;·&nbsp; VSP 2025 standards<br>Sanitation, temperature control, compliance</div>
         <div class="card-tags">
-          <span class="tag">56 Q</span>
-          <span class="tag">VSP 2025</span>
-          <span class="tag">Sanitation</span>
-          <span class="tag">USPH</span>
+          <span class="tag">56 Q</span><span class="tag">VSP 2025</span>
+          <span class="tag">Sanitation</span><span class="tag">USPH</span>
         </div>
-        <a href="test1.html" class="card-btn">
-          <i class="fa-solid fa-chevron-right" style="margin-right:0.4rem;font-size:0.7rem;"></i>
-          Begin Assessment
-        </a>
+        <a href="test1.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
       </div>
     </div>
 
     <!-- Card 2: Food Safety -->
     <div class="card-wrap">
       <div class="porthole">
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
-        <div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
         <div class="porthole-ring"></div>
         <div class="porthole-glass">
           <i class="fa-solid fa-temperature-half porthole-icon"></i>
-          <div class="porthole-label">Food Safety<br>& TCS Standards</div>
+          <div class="porthole-label">Food Safety<br>&amp; TCS Standards</div>
         </div>
       </div>
       <div class="card-info">
         <div class="card-title">Food Safety</div>
-        <div class="card-meta">
-          40 questions &nbsp;·&nbsp; VSP 2025 standards<br>
-          TCS foods, cooling, HACCP, storage
-        </div>
+        <div class="card-meta">40 questions &nbsp;·&nbsp; VSP 2025 standards<br>TCS foods, cooling, HACCP, storage</div>
         <div class="card-tags">
-          <span class="tag">40 Q</span>
-          <span class="tag">VSP 2025</span>
-          <span class="tag">TCS Foods</span>
-          <span class="tag">HACCP</span>
+          <span class="tag">40 Q</span><span class="tag">VSP 2025</span>
+          <span class="tag">TCS Foods</span><span class="tag">HACCP</span>
         </div>
-        <a href="test2.html" class="card-btn">
-          <i class="fa-solid fa-chevron-right" style="margin-right:0.4rem;font-size:0.7rem;"></i>
-          Begin Assessment
-        </a>
+        <a href="test2.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
       </div>
     </div>
-
   </div>
 
-  <!-- Info strip -->
   <div class="info-strip">
     <div class="info-item">
       <i class="fa-solid fa-id-card"></i>
-      <div class="info-item-text">
-        <strong>Crew ID Required</strong>
-        Enter your 6-digit crew ID to unlock each test
-      </div>
+      <div class="info-item-text"><strong>Crew ID Required</strong>Enter your 6-digit crew ID to unlock each test</div>
     </div>
     <div class="info-divider"></div>
     <div class="info-item">
       <i class="fa-solid fa-trophy"></i>
-      <div class="info-item-text">
-        <strong>Best Score Recorded</strong>
-        Only your highest attempt is saved to the leaderboard
-      </div>
+      <div class="info-item-text"><strong>Best Score Recorded</strong>Only your highest attempt is saved to the leaderboard</div>
     </div>
     <div class="info-divider"></div>
     <div class="info-item">
       <i class="fa-solid fa-rotate"></i>
-      <div class="info-item-text">
-        <strong>Questions Shuffled</strong>
-        Order randomised on every attempt
+      <div class="info-item-text"><strong>Questions Shuffled</strong>Order randomised on every attempt</div>
+    </div>
+  </div>
+</main>
+
+<footer>Princess Cruises &bull; Crown Princess &bull; FOH Room Service &bull; Internal Use Only</footer>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN MODAL
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="adminOverlay" onclick="overlayClick(event)">
+  <div class="modal" id="adminModal">
+    <div class="modal-header">
+      <i class="fa-solid fa-user-shield"></i>
+      <span class="modal-header-title">Administration Panel</span>
+      <button class="modal-close" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="adminLoginScreen" class="admin-login">
+      <h2>Restricted Access</h2>
+      <p>Enter the admin password to continue.</p>
+      <div class="a-err" id="loginErr">Incorrect password. Access denied.</div>
+      <input class="a-input" type="password" id="adminPwInput" placeholder="••••••••••"
+        onkeydown="if(event.key==='Enter')attemptLogin()">
+      <button class="a-btn" onclick="attemptLogin()">Authenticate <i class="fa-solid fa-chevron-right" style="margin-left:.35rem"></i></button>
+    </div>
+
+    <!-- PANEL SCREEN (hidden until authenticated) -->
+    <div id="adminPanelScreen" style="display:none">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('crew')"><i class="fa-solid fa-users" style="margin-right:.4rem"></i>Crew Roster</button>
+        <button class="admin-tab" onclick="switchAdminTab('scores')"><i class="fa-solid fa-chart-bar" style="margin-right:.4rem"></i>Scores</button>
+      </div>
+
+      <!-- CREW TAB -->
+      <div id="adminTab-crew" class="admin-tab-content active">
+        <div class="status-msg" id="crewStatus"></div>
+        <div class="crew-add-row">
+          <input type="tel" id="newCrewId" placeholder="6-digit Crew ID" maxlength="6" pattern="[0-9]*" inputmode="numeric">
+          <input type="text" id="newCrewName" placeholder="Full name" style="flex:2">
+          <button onclick="addCrew()"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="crew-table">
+            <thead><tr><th>Crew ID</th><th>Name</th><th style="width:60px;text-align:center">Remove</th></tr></thead>
+            <tbody id="crewTableBody"><tr><td colspan="3" style="text-align:center;color:var(--steel);padding:1rem"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading roster…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SCORES TAB -->
+      <div id="adminTab-scores" class="admin-tab-content">
+        <div class="scores-grid">
+          <div class="scores-section">
+            <h3>USPH Public Health
+              <button onclick="resetLeaderboard('t1')">Reset</button>
+            </h3>
+            <div style="overflow-x:auto">
+              <table class="score-table">
+                <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Date</th></tr></thead>
+                <tbody id="scoresT1"><tr><td colspan="4" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="scores-section">
+            <h3>Food Safety
+              <button onclick="resetLeaderboard('t2')">Reset</button>
+            </h3>
+            <div style="overflow-x:auto">
+              <table class="score-table">
+                <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Date</th></tr></thead>
+                <tbody id="scoresT2"><tr><td colspan="4" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-</main>
+<script>
+// ── JSONBin config ──────────────────────────────────────────────
+// SAME key as test1/test2. Create a NEW bin for the roster and paste its ID below.
+const JB_API  = "https://api.jsonbin.io/v3";
+const JB_KEY  = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
+const BIN_ROSTER = "6a40decfda38895dfe0ab4be";   // ← replace after creating new bin
+const BIN_T1     = "6a3b7210da38895dfef59f58";  // phtest scores
+const BIN_T2     = "6a40c8aada38895dfe0a700d";  // food safety scores
 
-<footer>
-  Princess Cruises &bull; Crown Princess &bull; FOH Room Service &bull; Internal Use Only
-</footer>
+// Admin password: SHA-256 of "admin123"
+const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
 
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Modal control ───────────────────────────────────────────────
+function openAdminModal(){
+  document.getElementById('adminOverlay').classList.add('open');
+  document.getElementById('adminPwInput').value='';
+  document.getElementById('loginErr').classList.remove('show');
+  document.getElementById('adminLoginScreen').style.display='';
+  document.getElementById('adminPanelScreen').style.display='none';
+  setTimeout(()=>document.getElementById('adminPwInput').focus(),120);
+}
+function closeAdminModal(){
+  document.getElementById('adminOverlay').classList.remove('open');
+}
+function overlayClick(e){if(e.target===document.getElementById('adminOverlay'))closeAdminModal();}
+
+// ── Auth ────────────────────────────────────────────────────────
+async function attemptLogin(){
+  const pw=document.getElementById('adminPwInput').value;
+  const h=await sha256(pw);
+  if(h===ADMIN_HASH){
+    document.getElementById('adminLoginScreen').style.display='none';
+    document.getElementById('adminPanelScreen').style.display='';
+    switchAdminTab('crew');
+    loadCrew();
+  } else {
+    document.getElementById('loginErr').classList.add('show');
+    document.getElementById('adminPwInput').value='';
+    document.getElementById('adminPwInput').focus();
+  }
+}
+
+// ── Admin tabs ──────────────────────────────────────────────────
+function switchAdminTab(tab){
+  document.querySelectorAll('.admin-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector(`[onclick="switchAdminTab('${tab}')"]`).classList.add('active');
+  document.getElementById('adminTab-'+tab).classList.add('active');
+  if(tab==='scores') loadScores();
+}
+
+// ── JSONBin helpers ─────────────────────────────────────────────
+async function jbRead(bin){
+  const r=await fetch(`${JB_API}/b/${bin}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
+  if(!r.ok) throw new Error('read fail');
+  const d=await r.json();
+  return d.record||d;
+}
+async function jbWrite(bin,data){
+  const r=await fetch(`${JB_API}/b/${bin}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify(data)});
+  if(!r.ok) throw new Error('write fail');
+}
+
+// ── CREW ────────────────────────────────────────────────────────
+let crewData = {};  // {id: name}
+
+async function loadCrew(){
+  const tbody=document.getElementById('crewTableBody');
+  tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--steel);padding:1rem"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</td></tr>';
+  try{
+    const d=await jbRead(BIN_ROSTER);
+    crewData=d.crew||{};
+    renderCrewTable();
+  } catch(e){
+    tbody.innerHTML='<tr><td colspan="3" style="color:#f4a0a0;padding:1rem;text-align:center">Failed to load roster. Check network.</td></tr>';
+  }
+}
+
+function renderCrewTable(){
+  const tbody=document.getElementById('crewTableBody');
+  const entries=Object.entries(crewData).sort((a,b)=>a[1].localeCompare(b[1]));
+  if(!entries.length){
+    tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--steel);padding:1rem">No crew members yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=entries.map(([id,name])=>`
+    <tr>
+      <td>${id}</td>
+      <td>${name}</td>
+      <td style="text-align:center"><button class="del-btn" onclick="removeCrew('${id}')"><i class="fa-solid fa-trash-can"></i></button></td>
+    </tr>`).join('');
+}
+
+async function addCrew(){
+  const id=document.getElementById('newCrewId').value.trim();
+  const name=document.getElementById('newCrewName').value.trim();
+  const st=document.getElementById('crewStatus');
+
+  if(!id||!name){showStatus(st,'Please enter both a Crew ID and a name.','err');return;}
+  if(!/^\d{1,10}$/.test(id)){showStatus(st,'Crew ID must be numeric.','err');return;}
+  if(crewData[id]){showStatus(st,`ID ${id} already exists (${crewData[id]}).`,'err');return;}
+
+  crewData[id]=name;
+  try{
+    await jbWrite(BIN_ROSTER,{crew:crewData});
+    document.getElementById('newCrewId').value='';
+    document.getElementById('newCrewName').value='';
+    renderCrewTable();
+    showStatus(st,`Added: ${name} (${id})`,'ok');
+  } catch(e){
+    delete crewData[id];
+    showStatus(st,'Save failed — check network.','err');
+  }
+}
+
+async function removeCrew(id){
+  if(!confirm(`Remove ${crewData[id]} (${id})?`)) return;
+  const backup=crewData[id];
+  delete crewData[id];
+  const st=document.getElementById('crewStatus');
+  try{
+    await jbWrite(BIN_ROSTER,{crew:crewData});
+    renderCrewTable();
+    showStatus(st,`Removed: ${backup} (${id})`,'ok');
+  } catch(e){
+    crewData[id]=backup;
+    showStatus(st,'Remove failed — check network.','err');
+  }
+}
+
+function showStatus(el,msg,type){
+  el.textContent=msg;
+  el.className='status-msg '+(type==='ok'?'ok':'err');
+  setTimeout(()=>{el.className='status-msg';},4000);
+}
+
+// ── SCORES ──────────────────────────────────────────────────────
+async function loadScores(){
+  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2)]);
+}
+
+async function loadScoreTable(key,bin){
+  const tbody=document.getElementById('scores'+key.toUpperCase());
+  tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>';
+  try{
+    const d=await jbRead(bin);
+    const scores=(d.scores||[]).sort((a,b)=>b.score-a.score);
+    if(!scores.length){
+      tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--steel);padding:.75rem;font-size:.75rem">No scores yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML=scores.map((e,i)=>{
+      const cls=e.score>=90?'hi':e.score>=75?'mid':'lo';
+      return `<tr>
+        <td style="color:var(--steel);font-size:.7rem">${i+1}</td>
+        <td>${e.name}</td>
+        <td class="score-pct ${cls}">${e.score}%</td>
+        <td style="color:var(--steel);font-size:.7rem">${e.date}</td>
+      </tr>`;
+    }).join('');
+  } catch(e){
+    tbody.innerHTML='<tr><td colspan="4" style="color:#f4a0a0;padding:.75rem;font-size:.75rem;text-align:center">Load failed.</td></tr>';
+  }
+}
+
+async function resetLeaderboard(key){
+  const label=key==='t1'?'USPH Public Health':'Food Safety';
+  if(!confirm(`Reset ALL scores for ${label}? This cannot be undone.`)) return;
+  const bin=key==='t1'?BIN_T1:BIN_T2;
+  try{
+    await jbWrite(bin,{scores:[]});
+    await loadScoreTable(key,bin);
+  } catch(e){
+    alert('Reset failed — check network.');
+  }
+}
+</script>
 </body>
 </html>
