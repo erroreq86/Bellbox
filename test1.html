@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Princess Cruises - FOH USPH Final Examination Terminal</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .tab-content { display: none; }
@@ -16,7 +14,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col select-none">
 
-    <!-- Header Navigation -->
     <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
@@ -26,44 +23,44 @@
                     <span class="text-[10px] sm:text-xs text-slate-400 block -mt-0.5 truncate">USPH Final Exam</span>
                 </div>
             </div>
-            
-            <!-- Tab Switcher -->
-            <div class="flex space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700 flex-shrink-0">
-                <button onclick="switchTab('knowledge-test')" id="btn-knowledge-test" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md bg-emerald-600 text-white transition-all">
-                    <i class="fa-solid fa-graduation-cap mr-1 sm:mr-1.5"></i>Test
-                </button>
-                <button onclick="switchTab('leaderboard-tab')" id="btn-leaderboard-tab" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition-all">
-                    <i class="fa-solid fa-trophy mr-1 sm:mr-1.5"></i>Scores
-                </button>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="index.html" class="text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded hover:border-slate-500 transition-colors">← Back</a>
+                <div class="flex space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700">
+                    <button onclick="switchTab('knowledge-test')" id="btn-knowledge-test" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md bg-emerald-600 text-white transition-all">
+                        <i class="fa-solid fa-graduation-cap mr-1 sm:mr-1.5"></i>Test
+                    </button>
+                    <button onclick="switchTab('leaderboard-tab')" id="btn-leaderboard-tab" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition-all">
+                        <i class="fa-solid fa-trophy mr-1 sm:mr-1.5"></i>Scores
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Frame -->
     <main class="flex-1 max-w-3xl w-full mx-auto px-2 py-4 sm:px-4 sm:py-8">
         <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 sm:p-6 shadow-xl overflow-hidden">
-            
-            <!-- ONLINE KNOWLEDGE TEST TAB -->
+
             <div id="knowledge-test" class="tab-content active space-y-4 sm:space-y-6">
                 <div class="border-b border-slate-700 pb-3 text-center sm:text-left">
                     <h1 class="text-lg sm:text-xl font-bold text-white">Compliance Assessment</h1>
-                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Complete all 56 validation items. Details are securely logged locally.</p>
+                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Complete all 56 validation items. Details are securely logged.</p>
                 </div>
 
-                <!-- Registration Screen -->
                 <div id="quiz-auth-screen" class="space-y-4 max-w-md mx-auto py-4 sm:py-6">
                     <div class="bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4">
                         <div>
                             <label class="block text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 font-bold mb-2">Crew ID Number</label>
-                            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="crew-id" placeholder="Enter 6-digit Crew ID"
+                            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="crew-id" placeholder="Enter Crew ID"
                                 onkeydown="if(event.key==='Enter')startVSPQuiz()"
                                 oninput="document.getElementById('auth-error').classList.add('hidden')"
-                                class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white tracking-widest font-mono text-center focus:outline-none focus:border-emerald-500 transition-colors" id="crew-id">
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white tracking-widest font-mono text-center focus:outline-none focus:border-emerald-500 transition-colors">
                         </div>
-                        <!-- Inline error message -->
                         <div id="auth-error" class="hidden flex items-center gap-2 bg-rose-950/50 border border-rose-700/60 text-rose-300 text-xs rounded-lg px-3 py-2.5">
                             <i class="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0"></i>
                             <span id="auth-error-msg">Crew ID not found. Access denied.</span>
+                        </div>
+                        <div id="roster-loading" class="text-center text-xs text-slate-400 py-1">
+                            <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading crew roster…
                         </div>
                         <button onclick="startVSPQuiz()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                             Start Assessment <i class="fa-solid fa-chevron-right ml-1"></i>
@@ -71,66 +68,47 @@
                     </div>
                 </div>
 
-                <!-- Live Quiz Execution Box -->
                 <div id="quiz-play-screen" class="hidden bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
-                    <!-- Progress Bar -->
                     <div class="w-full bg-slate-800 h-1.5">
                         <div id="quiz-progress" class="bg-emerald-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
                     </div>
-                    
                     <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
                         <div class="flex justify-between items-center text-[10px] sm:text-xs text-slate-400 uppercase font-bold">
                             <span id="question-counter">Question 1 of 56</span>
                             <span id="score-counter" class="text-emerald-400">Correct: 0</span>
                         </div>
-                        
                         <h2 id="question-text" class="text-sm sm:text-base font-semibold text-white leading-snug">Question content?</h2>
-                        
-                        <div id="answers-container" class="grid grid-cols-1 gap-2.5">
-                            <!-- Options injected by JS -->
-                        </div>
-
-                        <!-- Confirm / Next action bar -->
+                        <div id="answers-container" class="grid grid-cols-1 gap-2.5"></div>
                         <div id="quiz-action-bar" class="pt-1 space-y-2">
-                            <button id="btn-confirm" onclick="confirmAnswer()"
-                                class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                            <button id="btn-confirm" onclick="confirmAnswer()" class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                                 <i class="fa-solid fa-check mr-1.5"></i> Confirm Answer
                             </button>
                             <div id="answer-feedback" class="hidden rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2"></div>
-                            <button id="btn-next" onclick="nextQuestion()"
-                                class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                            <button id="btn-next" onclick="nextQuestion()" class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
                                 Next Question <i class="fa-solid fa-chevron-right ml-1"></i>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quiz Results Screen -->
                 <div id="quiz-end-screen" class="hidden text-center max-w-md mx-auto py-4 sm:py-6 space-y-4">
                     <div class="p-4 sm:p-6 bg-slate-900 rounded-xl border border-slate-700 space-y-3">
                         <div class="text-3xl sm:text-4xl text-amber-400"><i class="fa-solid fa-square-poll-vertical"></i></div>
                         <h2 class="text-base sm:text-lg font-bold text-white">Assessment Finished</h2>
                         <div class="text-3xl sm:text-4xl font-black text-emerald-400 py-1" id="final-score-text">100%</div>
                         <p class="text-[11px] sm:text-xs text-slate-400 px-2" id="final-meta-text"></p>
-                        <button onclick="restartQuiz()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs transition-all font-semibold active:scale-[0.98]">
-                            Retake Test
-                        </button>
+                        <button onclick="restartQuiz()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs transition-all font-semibold active:scale-[0.98]">Retake Test</button>
                     </div>
                 </div>
             </div>
 
-            <!-- HIGHSCORES LEADERBOARD TAB -->
             <div id="leaderboard-tab" class="tab-content space-y-4 sm:space-y-6">
                 <div class="border-b border-slate-700 pb-3 flex flex-row justify-between items-center gap-4">
                     <div class="min-w-0">
                         <h1 class="text-lg sm:text-xl font-bold text-white truncate">Leaderboard</h1>
                         <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">Verified department personnel marks.</p>
                     </div>
-                    <button onclick="clearLeaderboard()" class="px-2 py-1.5 bg-rose-950/40 text-rose-400 hover:bg-rose-900/50 rounded text-[10px] sm:text-xs font-semibold border border-rose-800/60 transition-all flex-shrink-0 active:scale-[0.95]">
-                        Reset Table
-                    </button>
                 </div>
-
                 <div class="overflow-hidden bg-slate-900 border border-slate-700 rounded-xl">
                     <table class="w-full text-left text-xs sm:text-sm text-slate-300 border-collapse table-fixed">
                         <thead>
@@ -141,587 +119,241 @@
                                 <th class="p-3 text-right w-20 sm:w-32">Date</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboard-rows" class="divide-y divide-slate-800">
-                            <!-- Dynamic rows -->
-                        </tbody>
+                        <tbody id="leaderboard-rows" class="divide-y divide-slate-800"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-slate-800 border-t border-slate-700 mt-auto py-3 text-center text-[9px] sm:text-[10px] text-slate-500">
-        <div>Princess Cruises &bull; FOH USPH Module Dashboard &bull; Local Encryption Rules Apply</div>
+        Princess Cruises &bull; FOH USPH Module &bull; Crown Princess
     </footer>
 
     <script>
-        // ── Security layer ──────────────────────────────────────────────────────
-        // Correct-answer indices are XOR-obfuscated (key=0x5A). Never stored plain.
-        // Admin password stored only as SHA-256 hash; never compared in plaintext.
-        // ────────────────────────────────────────────────────────────────────────
-
+        // ── Security ────────────────────────────────────────────────────────
         const _XK = 0x5A;
-        const _OC = [91, 91, 91, 88, 88, 91, 91, 91, 91, 91, 91, 91, 91, 88, 88, 91, 91, 91, 90, 91, 88, 91, 91, 91, 91, 91, 91, 91, 88, 91, 91, 88, 91, 91, 91, 91, 91, 91, 91, 91, 88, 91, 88, 91, 88, 88, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91];
-        function _dc(idx) { return _OC[idx] ^ _XK; }  // decode correct answer at runtime only
+        const _OC = [91,91,91,88,88,91,91,91,91,91,91,91,91,88,88,91,91,91,90,91,88,91,91,91,91,91,91,91,88,91,91,88,91,91,91,91,91,91,91,91,88,91,88,91,88,88,91,91,91,91,91,91,91,91,91,91];
+        function _dc(idx){return _OC[idx]^_XK;}
+        async function _sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+        const _ADMIN_HASH="fb9b2de925b832f3e1f146faf05444b173756c4b94376fc2dff24423819505ea";
 
-        async function _sha256(str) {
-            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-        }
-        const _ADMIN_HASH = "fb9b2de925b832f3e1f146faf05444b173756c4b94376fc2dff24423819505ea";
+        // ── JSONBin ─────────────────────────────────────────────────────────
+        const JB_API  = "https://api.jsonbin.io/v3";
+        const JB_KEY  = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
+        const BIN_ROSTER = "6a40decfda38895dfe0ab4be";  // ← same as index.html
+        const BIN_SCORES = "6a3b7210da38895dfef59f58";
 
-        // Roster parsed directly from image_33f904.png
-        const crewRoster = {
-            "123123": "Test User",
-            "003274": "Gheorghe Marian Toma",
-            "004108": "Mihail Motea",
-            "007177": "Neil Francis Nelson Dias",
-            "018512": "Apollo Cuballes",
-            "020912": "Virgilio Lim Dira",
-            "246501": "Ma. Lani Apat Milloria",
-            "246963": "Jahnique Jeromie De Roche",
-            "307039": "Bilmar Estrella Beldek",
-            "315577": "Janice Sandoval",
-            "320019": "Menchie Garcia Martinez",
-            "326193": "Mark Sadiasa",
-            "341292": "Rolando Jr. Maculas",
-            "415785": "Vanessa Vitasa",
-            "423904": "Jacek Grabski",
-            "425654": "Herman Vialago Duran",
-            "431402": "Bagus Anang Mahardika",
-            "431977": "Oswin D Costa",
-            "434027": "Rico Mission Andal",
-            "443568": "Jay Lord Sina-on",
-            "445080": "Mahesh Kankania Gosh",
-            "456302": "Shekar Natta",
-            "457430": "Marvid Dimasalan Mercado",
-            "460635": "Okeeffe Patel",
-            "480493": "Hashmi Gula Gulam Abbas",
-            "541772": "Diana Szabo",
-            "606270": "Kagiso Ronald Moiloa",
-            "623375": "Ashik Suresh Shetty",
-            "633114": "Reynaldi Alfarizi",
-            "634340": "Kadek Jayadi",
-            "637362": "Shiv FNU",
-            "638480": "Ega Dwi Oktavia",
-            "656241": "Mary Grace Peligrino",
-            "658131": "Aleksander Grabski",
-            "663675": "Mark Alvin Flores",
-            "663755": "Jhovin Orozco",
-            "664933": "Michelle Fernandes Cardozo",
-            "666196": "Samuel Wanyoro",
-            "666894": "Kevin Moraes",
-            "677204": "Scarleth Zamora Timzon",
-            "677674": "Noriel Dimandal Novicio",
-            "677678": "Polondaya Michael",
-            "677689": "Sito Anggay Tomo",
-            "680325": "Made Permatabuana",
-            "680713": "Kadek Dian Sari",
-            "680943": "Josselin Yoletty Castro Vasquez",
-            "681109": "Gond Abhishek",
-            "681375": "Shubham Sharma",
-            "682690": "Saidi Ngoba Shida",
-            "683277": "Satavisha Pandi Num",
-            "683704": "Brendan Hilton Jared Fixen",
-            "683852": "Yakzari Nahomy Oporta Bodan",
-            "683953": "Vince Eric Aque",
-            "684004": "John Joven Cutarra Flores",
-            "684022": "Kevin Lao Singuan",
-            "684044": "Jerald Olea",
-            "684115": "I Gede Krisna",
-            "684204": "Jurene Bermoy",
-            "684227": "Jomar Fernandico Flandez",
-            "684244": "Keezha Mangalo",
-            "684265": "Jeff Sarsonas,Mike",
-            "684294": "Ni Putu Tia Julianti",
-            "684518": "Rashmi Rathour",
-            "684538": "Ayse Akilli",
-            "684889": "Siham Rhazaouane",
-            "685086": "Ida Ayu Made Yoni",
-            "685581": "Sneha Kumari",
-            "687244": "Milan Bera",
-            "687565": "Lloyd Anthony Guinto",
-            "687643": "John Patrick Tolentino",
-            "688253": "Dairy Eldon Omeir Goff",
-            "693031": "Ni Kadek Deni Sriantini",
-            "693720": "Anif Adzhar",
-            "697075": "Aira Orocio Soria, Mekhaela",
-            "698477": "Rholly Salazar Carino",
-            "699077": "Jay-Ar Alvarado De Guzman",
-            "699106": "Mary Rose Mercado Castro",
-            "699119": "Glendy Marilu Arita Dominguez",
-            "699435": "Francisco Garduno Nava",
-            "699778": "Clair Dixon Jinelle Briana",
-        };
+        // ── Dynamic roster ──────────────────────────────────────────────────
+        let crewRoster = {};
+        let rosterReady = false;
 
-        // Tab Engine
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('bg-emerald-600', 'text-white');
-                b.classList.add('text-slate-400', 'hover:text-slate-200');
-            });
-
-            document.getElementById(tabId).classList.add('active');
-            const targetBtn = document.getElementById(`btn-${tabId}`);
-            targetBtn.classList.remove('text-slate-400', 'hover:text-slate-200');
-            targetBtn.classList.add('bg-emerald-600', 'text-white');
-
-            if (tabId === 'leaderboard-tab') {
-                renderLeaderboard(); // async — shows spinner while loading
+        async function loadRoster(){
+            try{
+                const r=await fetch(`${JB_API}/b/${BIN_ROSTER}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
+                const d=await r.json();
+                crewRoster=(d.record||d).crew||{};
+                rosterReady=true;
+            } catch(e){
+                // fallback to hardcoded roster if network fails
+                crewRoster=FALLBACK_ROSTER;
+                rosterReady=true;
             }
+            document.getElementById('roster-loading').style.display='none';
         }
 
+        // Hardcoded fallback if JSONBin is unreachable
+        const FALLBACK_ROSTER = {"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
+
+        // Load roster on page load
+        loadRoster();
+
+        // ── Quiz data (56 questions — unchanged from original phtest) ───────
         const quizData = [
-            { q: "1. Which of the following is the correct vertical storage order (top to bottom) in a service refrigerator?", a: ["Raw poultry, Ground beef, Whole muscle cuts, Raw seafood, Ready-to-eat foods.", "Ready-to-eat foods, Raw seafood, Raw whole muscle cuts, Raw ground meats, Raw poultry.", "Raw seafood, Ready-to-eat foods, Raw poultry, Ground beef.", "Vertical order does not matter if all items are covered with plastic wrap."] },
-            { q: "2. How must clean plates, cups, and utensils be dried after passing through a wash cycle?", a: ["Hand-dried immediately using a clean, dry cloth towel.", "Air-dried completely on a clean surface without towels.", "Stacked while wet to let them dry together in the storage cabinet.", "Blown dry with an electric fan at the waiter station."] },
-            { q: "3. What is the required temperature for water supplied to a FOH handwashing station?", a: ["Cold water only, below 41°F (5°C).", "Warm water, reaching at least 85°F (29°C).", "Boiling water, above 180°F (82°C).", "Temperature does not matter if soap is used."] },
-            { q: "4. Where should the blue table-wiping cloths be stored between active uses at your server station?", a: ["Folded flat on top of the waiter station counter.", "Tucked safely into your uniform apron pocket.", "Completely immersed inside the sanitizer solution in the red sanitizer bucket.", "Draped over the side handle of the grey bucket."] },
-            { q: "5. What chemical sanitizer is generally utilized for back-of-house (BOH) scullery and floor spaces?", a: ["Oxivir.", "Pure alcohol spray.", "Chlorine (Kay 5).", "High-foaming ammonia."] },
-            { q: "6. When using Time Control (TTC) for PHF on an open prep counter or buffet line, what is the maximum time allowed before food must be discarded?", a: ["2 hours.", "4 hours.", "6 hours.", "8 hours."] },
-            { q: "7. Can a server use a passenger cloth napkin to wipe down a spilled drop of sauce from a passenger's plate rim right at the table?", a: ["Yes, it shows quick and attentive service.", "No; any contaminated plate edge must be addressed by replacing or replating the food safely in the galley.", "Only if the napkin is dampened with white wine.", "Yes, if the passenger gives permission."] },
-            { q: "8. What must be done with an open box of dairy milk stored inside a pantry refrigerator?", a: ["It can be left open if used within 24 hours.", "It must be sealed and labeled with an accurate 7-day production/discard label.", "It must be stored on the bottom shelf below raw fish.", "It requires no labeling if it is commercially pasteurized."] },
-            { q: "9. Why is using a drinking glass to scoop ice from a machine or bin strictly prohibited?", a: ["It takes too long to get a full portion of ice.", "The glass could chip or break in the ice, creating an invisible and highly dangerous physical hazard.", "The warmth of the glass melts the ice cubes too quickly.", "It violates local glassware branding rules."] },
-            { q: "10. How often must the serving utensils (tongs, large spoons) at self-service buffet stations be changed?", a: ["Once at the end of the breakfast, lunch, or dinner service.", "At least every 4 hours, or immediately if dropped or contaminated.", "Every 30 minutes on a rotating schedule.", "Only if they look visibly sticky to the touch."] },
-            { q: "11. What are the correct bucket colors and solutions used in the Princess \"3-Bucket System\"?", a: ["Grey (Sanitize), White (Wash), Red (Rinse).", "Grey (Wash/Soap), White (Rinse/Clean Water), Red (Sanitize/Chlorine).", "Blue (Soap), Red (Rinse), Yellow (Sanitize).", "White (Wash), Red (Rinse), Grey (Sanitize)."] },
-            { q: "12. What parameter is required for washing and sanitizing whole fruits and vegetables before service?", a: ["Wiped down with a dry paper towel.", "Properly washed, then sanitized in a chlorine solution of 10–50 ppm for at least 10 seconds.", "Submerged in boiling water for 5 seconds.", "Sprayed with Oxivir table sanitizer."] },
-            { q: "13. What is the rule regarding unopened condiment packets returned from a room service cabin?", a: ["They must always be thrown in the garbage.", "They can be re-served if they are unopened, completely clean, and undamaged.", "They must be soaked in a chlorine bucket before reuse.", "They can only be utilized for crew meals in the messroom."] },
-            { q: "14. If you discover a physical liquid spill on the floor of a high-traffic dining room walkway, what is your immediate action?", a: ["Walk around it and continue taking your passenger orders.", "Wait for the utility cleaning crew to pass by on their nightly rotation.", "Stand by the spill to warn passengers, place a \"Wet Floor\" caution sign, and ensure it is cleaned up immediately.", "Report it to the kitchen chef and take no further action."] },
-            { q: "15. What type of food items do NOT require a 7-day production label in a service pantry?", a: ["Cooked rice and pasta batches.", "Opened boxes of milk or cream.", "Non-Potentially Hazardous Foods (Non-PHF) items.", "Sliced melons and open deli meat platters."] },
-            { q: "16. Who is legally responsible for reporting symptoms of gastrointestinal illness to the Medical Centre on a cruise ship?", a: ["Only the Captain and Chief Doctor.", "Every individual crew member is personally responsible for reporting their own symptoms immediately.", "The public health inspector during an active audit.", "Your cabin mate or close coworker."] },
-            { q: "17. According to Princess Cruise Line rules, how long must you rub your hands with soap and warm water?", a: ["5 to 10 seconds.", "At least 20 seconds, focusing on fingertips, under nails, and between fingers.", "Exactly 15 seconds, rubbing only the palms.", "45 seconds under boiling hot water."] },
-            { q: "18. What labeling protocol must be followed when a food item is placed under a Time Control Plan?", a: ["Keep the original 7-day production label on the container.", "Remove the 7-day use-by-date label and apply a dedicated discard label showing the exact 4-hour expiration time.", "Leave the container completely unlabeled if service is less than 2 hours.", "Write the setup time on a piece of masking tape without a discard time."] },
-            { q: "19. Which of the following is a classic example of a \"Potentially Hazardous Food\" (PHF) under Princess definitions?", a: ["Raw shell eggs, poultry, seafood, milk, and cooked rice.", "Hard aged Parmesan and Romano cheeses.", "Commercially prepared oil and vinegar salad dressings.", "High-acidity cooked fruits like citrus and apples."] },
-            { q: "20. In shipboard FOH dining rooms, lounges, and bars, where are you permitted to wash your hands?", a: ["The nearest empty glass-washing sink.", "Only in a designated hand wash station.", "A double scullery sink containing clean rinse water.", "Any available prep sink that does not have food in it."] },
-            { q: "21. On a standard 7-day food production label for Ready-To-Eat (RTE) PHF, how is the \"Use By Date\" calculated?", a: ["Preparation day + 3 days.", "Preparation day + 5 days.", "Preparation day + 6 days (total 7 days shelf-life).", "Preparation day + 14 days."] },
-            { q: "22. What is the required chemical parameter for the RED sanitizing bucket used in FOH service areas?", a: ["Oxivir solution at 500 ppm.", "Warm water with chlorine solution between 50–200 ppm.", "Hot water and heavy degreasing detergent.", "Iodine solution at exactly 12.5 ppm."] },
-            { q: "23. What is the optimal temperature range for the rapid multiplication of hazardous foodborne bacteria?", a: ["Below 32°F (0°C).", "41°F to 135°F (5°C to 57°C) – The Temperature Danger Zone.", "Exactly 180°F (82°C).", "Above 212°F (100°F)."] },
-            { q: "24. If you are using chemical chlorine to sanitize utensils in a manual 3-compartment sink, what is the parameter?", a: ["10–25 ppm for at least 30 seconds.", "50–200 ppm for at least 7 seconds.", "200–400 ppm for 1 second.", "500 ppm for 5 minutes."] },
-            { q: "25. How must an espresso machine milk steaming wand be cleaned during a service shift?", a: ["Wiped with a dry cloth at the end of the day.", "Purged with steam and wiped down with a clean cloth using hot potable water after every single use.", "Left submerged inside a glass of cold milk between uses.", "Cleaned with chemical Oxivir spray every 2 hours."] },
-            { q: "26. How should clean coffee cups and beverage glasses be stored on a service pantry shelf?", a: ["Upright so dust can easily settle inside the opening.", "Inverted (such as upside down) on a clean, sanitized rack or surface to protect the food-contact area.", "Nested inside each other, up to 6 glasses high.", "On their sides to prevent them from sliding during high seas."] },
-            { q: "27. If you experience dizziness and vomit while working on a room service rotation, what is the correct action?", a: ["Finish your assigned deliveries and then go to medical.", "Immediately inform your supervisor, return to your cabin, and call the Medical Centre.", "Take an over-the-counter pill and switch to the buffet station.", "Wait 1 hour in the crew mess to see if the symptoms pass."] },
-            { q: "28. Where should soiled plates and trays be kept in relation to the clean handling area of a scullery?", a: ["Stacked side-by-side to optimize counter space.", "Kept completely separate, ensuring soiled items never cross into clean storage zones.", "Soiled items can be stored on the floor if the counter is full.", "Mixed together temporarily during peak rush hours."] },
-            { q: "29. What type of hazard is a piece of hard plastic or a metal staple found inside a salad bowl?", a: ["Biological Hazard.", "Chemical Hazard.", "Physical Hazard.", "Viral Hazard."] },
-            { q: "30. What is the minimum required temperature for holding hot foods on a buffet line?", a: ["120°F (49°C).", "135°F (57°C) or higher.", "155°F (68°C).", "165°F (74°C)."] },
-            { q: "31. What is the exact scientific definition of Cross-Contamination in a restaurant environment?", a: ["The spoiling of food due to exposure to direct sunlight.", "The process by which bacteria or microorganisms are unintentionally transferred from one substance or object to another with harmful effects.", "Serving the incorrect meal order to a passenger table.", "Mixing two different brands of chemical detergents in the same sink compartment."] },
-            { q: "32. What is the mandatory protocol if a piece of glassware breaks near an open ice bin at a bar?", a: ["Pick out the visible broken shards with tongs and keep using the remaining ice.", "Pour boiling water over the ice to look for glass fragments.", "Empty or melt the entire ice bin completely, wash and sanitize it, inspect for fragments, and refill with fresh ice.", "Cover the ice bin with a clean cloth towel and inform the next shift."] },
-            { q: "33. How high off the deck (floor) must all food containers, clean utensils, and crockery be stored?", a: ["At least 2 inches (5 centimeters).", "At least 6 inches (15 centimeters).", "Height does not matter if the deck is swept clean.", "Directly on clean wooden pallets on the deck."] },
-            { q: "34. What is the correct procedure for storing empty, clean sanitizer buckets at the end of a meal service?", a: ["Stacked upright on top of a service cart.", "Inverted (face down) inside a cleaning locker, or upright on the deck.", "Left unwashed at the station for the next morning shift.", "Nested together upright under a beverage counter."] },
-            { q: "35. What should a server do if they find a wine glass with a microscopic hairline crack on the base?", a: ["Serve it for cold white wine only.", "Discard it immediately into the designated broken glass bin; never use it for passenger service.", "Hide the crack by wrapping a paper napkin around the stem.", "Polish it heavily with a cloth to smooth out the edge."] },
-            { q: "36. How should unwashed whole fruit displays be handled in passenger buffet areas?", a: ["They can be mixed directly into bowls with sliced, ready-to-eat fruits.", "They must be kept completely separate from washed, prepared, and ready-to-eat foods to prevent cross-contamination.", "They can be placed directly onto passenger table setups without washing.", "They do not require any separation if they have a thick outer peel (e.g., bananas)."] },
-            { q: "37. When unsealing a package of dry cereal or biscuits at a buffet back-station, how must the remaining contents be stored?", a: ["Left inside the open torn bag on the shelf.", "Repackaged in a clean, sealed, and clearly labeled container stored 6 inches off the deck.", "Placed uncovered in the refrigerator.", "Kept in the chemical locker to prevent insect infestation."] },
-            { q: "38. What is the danger of mixing Oxivir and Kay 5 (Chlorine) solutions together at a bar or server pantry?", a: ["The mixture becomes too sticky to apply to passenger tables.", "It makes Oxivir ineffective and can release hazardous chemical fumes.", "It creates a high-gloss finish on wood surfaces that causes plates to slip.", "There is no danger; they are compatible sanitizing substances."] },
-            { q: "39. What should you do if you notice fruit flies or a cockroach near a bar carbonated beverage station?", a: ["Spray chemical pesticide directly onto the station while passengers are seated nearby.", "Deep-clean the area to remove sticky sugar residues and log the sighting in the Integrated Pest Management (IPM) log or notify a manager.", "Squish the pest with a service cloth and tell nobody.", "Assume pest presence is normal for tropical cruise itineraries."] },
-            { q: "40. Why is towel-drying dishes after sanitizing strictly prohibited by USPH and VSP standards?", a: ["It takes up too much physical storage space in the galley.", "It can easily transfer pathogens from a contaminated towel back onto a clean surface.", "It scratches the high-grade porcelain finish of the plates.", "Towels neutralize the water pressure gauges."] },
-            { q: "41. What is the key public health measure for preventing a Norovirus outbreak in passenger dining venues?", a: ["Keeping the restaurant sliding doors completely closed.", "Adjusting the local air conditioning fan speed.", "Frequent, thorough handwashing by all culinary and service staff.", "Using time control parameters only on pastry items."] },
-            { q: "42. What is the fundamental inventory rotation method that must be followed at all FOH stations?", a: ["LIFO (Last In, First Out) – use the newest stock first.", "FIFO (First In, First Out) – move older stock to the front and new stock to the back.", "Sorting items purely by size and alphabetical order.", "Rotating stock based on the color of the production label."] },
-            { q: "43. When operating a beverage dispensing tower or juice machine, what part must never contact the passenger's cup?", a: ["The lower drip pan tray.", "The outer plastic housing.", "The dispensing nozzle or lever mechanism.", "The underlying structural counter."] },
-            { q: "44. Which of the following hand items is permitted while serving food or working behind a buffet line?", a: ["A water-resistant smart-band or fitness tracker.", "A plain wedding band.", "A low-profile analog wristwatch.", "Clear nail polish over artificial acrylic extensions."] },
-            { q: "45. What tool must a server or bartender use to scoop ice out of an active ice bin?", a: ["A clean drinking glass or water goblet.", "Clean, bare hands.", "An approved ice scoop or ice tongs stored inside a dedicated holder outside the bin.", "A clean plastic service plate."] },
-            { q: "46. What should a server do if they spot water dripping from an overhead deckhead or light shield in a service pantry?", a: ["Place a clean glass underneath to catch the water and continue working.", "Wipe the area with a blue cloth and log it at the end of the cruise.", "Report the defect immediately to a supervisor or management to prevent environmental cross-contamination.", "Ignore it if the water is not dropping onto an active food plate."] },
-            { q: "47. What are the fingernail standards for Princess food service crew members?", a: ["Short and trimmed; clear non-chipping nail polish is permitted.", "Short, trimmed, and clean; no nail polish or artificial nails are allowed.", "Any length is acceptable if gloves are worn at all times.", "Long nails are permitted for wine stewards only."] },
-            { q: "48. What should you do if an item falls onto the dining room deck during a busy dinner rush?", a: ["Wipe it on your uniform trouser leg and hand it back to the passenger.", "Place it directly into the scullery dirty rack and wash your hands immediately before retrieving a clean replacement.", "Blow on the item for 5 seconds and reset it on the table.", "Put it back on the tray with clean plates."] },
-            { q: "49. What must a food server do before putting on a clean pair of disposable gloves?", a: ["Sanitize the gloves with a chemical spray.", "Wash hands thoroughly at a designated hand wash station.", "Blow into the gloves to make them easier to slip onto the hands.", "Wipe their hands down with a dirty service cloth."] },
-            { q: "50. How often must the solutions in your 3-bucket system be replaced?", a: ["Once every 8-hour shift.", "When the soap bubbles disappear, or when the rinse/sanitize water becomes cloudy or dirty.", "Only when an inspection is announced.", "After cleaning exactly 10 passenger tables."] },
-            { q: "51. What type of sanitizer is specifically designated for cleaning passenger tables in the buffet area?", a: ["Concentrated dish soap.", "Oxivir solution.", "Kay 5 / Chlorine (50-200 ppm).", "Heavy-duty glass cleaner."] },
-            { q: "52. What is the maximum cold-holding temperature for Potentially Hazardous Foods (PHF) on a buffet line?", a: ["32°F (0°C).", "41°F (5°C) or lower.", "50°F (10°C).", "45°F (7°C)."] },
-            { q: "53. Which of the following is considered a CRITICAL item during a USPH inspection that could cause immediate failure?", a: ["A missing light bulb cover in a non-food office locker.", "Failure to maintain proper chlorine sanitizer levels in a 3-bucket system or warewashing machine.", "A slightly dusty fan guard in an empty linen store.", "A scratch on the stainless steel outer shell of a waiter station."] },
-            { q: "54. Which of the following combinations of symptoms requires immediate isolation and notification to medical?", a: ["Headache, minor fatigue, and mild muscle soreness.", "Fever, vomiting, diarrhea, bloody stools, new skin rash, or jaundice.", "Dry cough, sneezing, and localized muscle strain.", "Minor paper cut and a temporary headache."] },
-            { q: "55. When should a restaurant steward change their disposable gloves?", a: ["Every 30 minutes on a strict timer.", "When changing tasks, when torn/dirty, or every 4 hours if working continuously on the same item.", "Only when instructed by a public health inspector.", "At the exact halfway point of an 8-hour shift."] },
-            { q: "56. How must food be protected when transported to cabins for room service delivery?", a: ["Carried open on trays so the server can easily monitor it.", "Covered with clean plastic wrap, plate cloches (lids), or placed inside a clean, enclosed transport cart.", "Kept uncovered as long as the delivery takes less than 5 minutes.", "Pressed tightly against the server's uniform to maintain warmth."] }
+            {q:"1. Which of the following is the correct vertical storage order (top to bottom) in a service refrigerator?",a:["Raw poultry, Ground beef, Whole muscle cuts, Raw seafood, Ready-to-eat foods.","Ready-to-eat foods, Raw seafood, Raw whole muscle cuts, Raw ground meats, Raw poultry.","Raw seafood, Ready-to-eat foods, Raw poultry, Ground beef.","Vertical order does not matter if all items are covered with plastic wrap."]},
+            {q:"2. How must clean plates, cups, and utensils be dried after passing through a wash cycle?",a:["Hand-dried immediately using a clean, dry cloth towel.","Air-dried completely on a clean surface without towels.","Stacked while wet to let them dry together in the storage cabinet.","Blown dry with an electric fan at the waiter station."]},
+            {q:"3. What is the required temperature for water supplied to a FOH handwashing station?",a:["Cold water only, below 41°F (5°C).","Warm water, reaching at least 85°F (29°C).","Boiling water, above 180°F (82°C).","Temperature does not matter if soap is used."]},
+            {q:"4. Where should the blue table-wiping cloths be stored between active uses at your server station?",a:["Folded flat on top of the waiter station counter.","Tucked safely into your uniform apron pocket.","Completely immersed inside the sanitizer solution in the red sanitizer bucket.","Draped over the side handle of the grey bucket."]},
+            {q:"5. What chemical sanitizer is generally utilized for back-of-house (BOH) scullery and floor spaces?",a:["Oxivir.","Pure alcohol spray.","Chlorine (Kay 5).","High-foaming ammonia."]},
+            {q:"6. When using Time Control (TTC) for PHF on an open prep counter or buffet line, what is the maximum time allowed before food must be discarded?",a:["2 hours.","4 hours.","6 hours.","8 hours."]},
+            {q:"7. Can a server use a passenger cloth napkin to wipe down a spilled drop of sauce from a passenger's plate rim right at the table?",a:["Yes, it shows quick and attentive service.","No; any contaminated plate edge must be addressed by replacing or replating the food safely in the galley.","Only if the napkin is dampened with white wine.","Yes, if the passenger gives permission."]},
+            {q:"8. What must be done with an open box of dairy milk stored inside a pantry refrigerator?",a:["It can be left open if used within 24 hours.","It must be sealed and labeled with an accurate 7-day production/discard label.","It must be stored on the bottom shelf below raw fish.","It requires no labeling if it is commercially pasteurized."]},
+            {q:"9. Why is using a drinking glass to scoop ice from a machine or bin strictly prohibited?",a:["It takes too long to get a full portion of ice.","The glass could chip or break in the ice, creating an invisible and highly dangerous physical hazard.","The warmth of the glass melts the ice cubes too quickly.","It violates local glassware branding rules."]},
+            {q:"10. How often must the serving utensils (tongs, large spoons) at self-service buffet stations be changed?",a:["Once at the end of the breakfast, lunch, or dinner service.","At least every 4 hours, or immediately if dropped or contaminated.","Every 30 minutes on a rotating schedule.","Only if they look visibly sticky to the touch."]},
+            {q:"11. What are the correct bucket colors and solutions used in the Princess \"3-Bucket System\"?",a:["Grey (Sanitize), White (Wash), Red (Rinse).","Grey (Wash/Soap), White (Rinse/Clean Water), Red (Sanitize/Chlorine).","Blue (Soap), Red (Rinse), Yellow (Sanitize).","White (Wash), Red (Rinse), Grey (Sanitize)."]},
+            {q:"12. What parameter is required for washing and sanitizing whole fruits and vegetables before service?",a:["Wiped down with a dry paper towel.","Properly washed, then sanitized in a chlorine solution of 10–50 ppm for at least 10 seconds.","Submerged in boiling water for 5 seconds.","Sprayed with Oxivir table sanitizer."]},
+            {q:"13. What is the rule regarding unopened condiment packets returned from a room service cabin?",a:["They must always be thrown in the garbage.","They can be re-served if they are unopened, completely clean, and undamaged.","They must be soaked in a chlorine bucket before reuse.","They can only be utilized for crew meals in the messroom."]},
+            {q:"14. If you discover a physical liquid spill on the floor of a high-traffic dining room walkway, what is your immediate action?",a:["Walk around it and continue taking your passenger orders.","Wait for the utility cleaning crew to pass by on their nightly rotation.","Stand by the spill to warn passengers, place a \"Wet Floor\" caution sign, and ensure it is cleaned up immediately.","Report it to the kitchen chef and take no further action."]},
+            {q:"15. What type of food items do NOT require a 7-day production label in a service pantry?",a:["Cooked rice and pasta batches.","Opened boxes of milk or cream.","Non-Potentially Hazardous Foods (Non-PHF) items.","Sliced melons and open deli meat platters."]},
+            {q:"16. Who is legally responsible for reporting symptoms of gastrointestinal illness to the Medical Centre on a cruise ship?",a:["Only the Captain and Chief Doctor.","Every individual crew member is personally responsible for reporting their own symptoms immediately.","The public health inspector during an active audit.","Your cabin mate or close coworker."]},
+            {q:"17. According to Princess Cruise Line rules, how long must you rub your hands with soap and warm water?",a:["5 to 10 seconds.","At least 20 seconds, focusing on fingertips, under nails, and between fingers.","Exactly 15 seconds, rubbing only the palms.","45 seconds under boiling hot water."]},
+            {q:"18. What labeling protocol must be followed when a food item is placed under a Time Control Plan?",a:["Keep the original 7-day production label on the container.","Remove the 7-day use-by-date label and apply a dedicated discard label showing the exact 4-hour expiration time.","Leave the container completely unlabeled if service is less than 2 hours.","Write the setup time on a piece of masking tape without a discard time."]},
+            {q:"19. Which of the following is a classic example of a \"Potentially Hazardous Food\" (PHF) under Princess definitions?",a:["Raw shell eggs, poultry, seafood, milk, and cooked rice.","Hard aged Parmesan and Romano cheeses.","Commercially prepared oil and vinegar salad dressings.","High-acidity cooked fruits like citrus and apples."]},
+            {q:"20. In shipboard FOH dining rooms, lounges, and bars, where are you permitted to wash your hands?",a:["The nearest empty glass-washing sink.","Only in a designated hand wash station.","A double scullery sink containing clean rinse water.","Any available prep sink that does not have food in it."]},
+            {q:"21. On a standard 7-day food production label for Ready-To-Eat (RTE) PHF, how is the \"Use By Date\" calculated?",a:["Preparation day + 3 days.","Preparation day + 5 days.","Preparation day + 6 days (total 7 days shelf-life).","Preparation day + 14 days."]},
+            {q:"22. What is the required chemical parameter for the RED sanitizing bucket used in FOH service areas?",a:["Oxivir solution at 500 ppm.","Warm water with chlorine solution between 50–200 ppm.","Hot water and heavy degreasing detergent.","Iodine solution at exactly 12.5 ppm."]},
+            {q:"23. What is the optimal temperature range for the rapid multiplication of hazardous foodborne bacteria?",a:["Below 32°F (0°C).","41°F to 135°F (5°C to 57°C) – The Temperature Danger Zone.","Exactly 180°F (82°C).","Above 212°F (100°F)."]},
+            {q:"24. If you are using chemical chlorine to sanitize utensils in a manual 3-compartment sink, what is the parameter?",a:["10–25 ppm for at least 30 seconds.","50–200 ppm for at least 7 seconds.","200–400 ppm for 1 second.","500 ppm for 5 minutes."]},
+            {q:"25. How must an espresso machine milk steaming wand be cleaned during a service shift?",a:["Wiped with a dry cloth at the end of the day.","Purged with steam and wiped down with a clean cloth using hot potable water after every single use.","Left submerged inside a glass of cold milk between uses.","Cleaned with chemical Oxivir spray every 2 hours."]},
+            {q:"26. How should clean coffee cups and beverage glasses be stored on a service pantry shelf?",a:["Upright so dust can easily settle inside the opening.","Inverted (such as upside down) on a clean, sanitized rack or surface to protect the food-contact area.","Nested inside each other, up to 6 glasses high.","On their sides to prevent them from sliding during high seas."]},
+            {q:"27. If you experience dizziness and vomit while working on a room service rotation, what is the correct action?",a:["Finish your assigned deliveries and then go to medical.","Immediately inform your supervisor, return to your cabin, and call the Medical Centre.","Take an over-the-counter pill and switch to the buffet station.","Wait 1 hour in the crew mess to see if the symptoms pass."]},
+            {q:"28. Where should soiled plates and trays be kept in relation to the clean handling area of a scullery?",a:["Stacked side-by-side to optimize counter space.","Kept completely separate, ensuring soiled items never cross into clean storage zones.","Soiled items can be stored on the floor if the counter is full.","Mixed together temporarily during peak rush hours."]},
+            {q:"29. What type of hazard is a piece of hard plastic or a metal staple found inside a salad bowl?",a:["Biological Hazard.","Chemical Hazard.","Physical Hazard.","Viral Hazard."]},
+            {q:"30. What is the minimum required temperature for holding hot foods on a buffet line?",a:["120°F (49°C).","135°F (57°C) or higher.","155°F (68°C).","165°F (74°C)."]},
+            {q:"31. What is the exact scientific definition of Cross-Contamination in a restaurant environment?",a:["The spoiling of food due to exposure to direct sunlight.","The process by which bacteria or microorganisms are unintentionally transferred from one substance or object to another with harmful effects.","Serving the incorrect meal order to a passenger table.","Mixing two different brands of chemical detergents in the same sink compartment."]},
+            {q:"32. What is the mandatory protocol if a piece of glassware breaks near an open ice bin at a bar?",a:["Pick out the visible broken shards with tongs and keep using the remaining ice.","Pour boiling water over the ice to look for glass fragments.","Empty or melt the entire ice bin completely, wash and sanitize it, inspect for fragments, and refill with fresh ice.","Cover the ice bin with a clean cloth towel and inform the next shift."]},
+            {q:"33. How high off the deck (floor) must all food containers, clean utensils, and crockery be stored?",a:["At least 2 inches (5 centimeters).","At least 6 inches (15 centimeters).","Height does not matter if the deck is swept clean.","Directly on clean wooden pallets on the deck."]},
+            {q:"34. What is the correct procedure for storing empty, clean sanitizer buckets at the end of a meal service?",a:["Stacked upright on top of a service cart.","Inverted (face down) inside a cleaning locker, or upright on the deck.","Left unwashed at the station for the next morning shift.","Nested together upright under a beverage counter."]},
+            {q:"35. What should a server do if they find a wine glass with a microscopic hairline crack on the base?",a:["Serve it for cold white wine only.","Discard it immediately into the designated broken glass bin; never use it for passenger service.","Hide the crack by wrapping a paper napkin around the stem.","Polish it heavily with a cloth to smooth out the edge."]},
+            {q:"36. How should unwashed whole fruit displays be handled in passenger buffet areas?",a:["They can be mixed directly into bowls with sliced, ready-to-eat fruits.","They must be kept completely separate from washed, prepared, and ready-to-eat foods to prevent cross-contamination.","They can be placed directly onto passenger table setups without washing.","They do not require any separation if they have a thick outer peel (e.g., bananas)."]},
+            {q:"37. When unsealing a package of dry cereal or biscuits at a buffet back-station, how must the remaining contents be stored?",a:["Left inside the open torn bag on the shelf.","Repackaged in a clean, sealed, and clearly labeled container stored 6 inches off the deck.","Placed uncovered in the refrigerator.","Kept in the chemical locker to prevent insect infestation."]},
+            {q:"38. What is the danger of mixing Oxivir and Kay 5 (Chlorine) solutions together at a bar or server pantry?",a:["The mixture becomes too sticky to apply to passenger tables.","It makes Oxivir ineffective and can release hazardous chemical fumes.","It creates a high-gloss finish on wood surfaces that causes plates to slip.","There is no danger; they are compatible sanitizing substances."]},
+            {q:"39. What should you do if you notice fruit flies or a cockroach near a bar carbonated beverage station?",a:["Spray chemical pesticide directly onto the station while passengers are seated nearby.","Deep-clean the area to remove sticky sugar residues and log the sighting in the Integrated Pest Management (IPM) log or notify a manager.","Squish the pest with a service cloth and tell nobody.","Assume pest presence is normal for tropical cruise itineraries."]},
+            {q:"40. Why is towel-drying dishes after sanitizing strictly prohibited by USPH and VSP standards?",a:["It takes up too much physical storage space in the galley.","It can easily transfer pathogens from a contaminated towel back onto a clean surface.","It scratches the high-grade porcelain finish of the plates.","Towels neutralize the water pressure gauges."]},
+            {q:"41. What is the key public health measure for preventing a Norovirus outbreak in passenger dining venues?",a:["Keeping the restaurant sliding doors completely closed.","Adjusting the local air conditioning fan speed.","Frequent, thorough handwashing by all culinary and service staff.","Using time control parameters only on pastry items."]},
+            {q:"42. What is the fundamental inventory rotation method that must be followed at all FOH stations?",a:["LIFO (Last In, First Out) – use the newest stock first.","FIFO (First In, First Out) – move older stock to the front and new stock to the back.","Sorting items purely by size and alphabetical order.","Rotating stock based on the color of the production label."]},
+            {q:"43. When operating a beverage dispensing tower or juice machine, what part must never contact the passenger's cup?",a:["The lower drip pan tray.","The outer plastic housing.","The dispensing nozzle or lever mechanism.","The underlying structural counter."]},
+            {q:"44. Which of the following hand items is permitted while serving food or working behind a buffet line?",a:["A water-resistant smart-band or fitness tracker.","A plain wedding band.","A low-profile analog wristwatch.","Clear nail polish over artificial acrylic extensions."]},
+            {q:"45. What tool must a server or bartender use to scoop ice out of an active ice bin?",a:["A clean drinking glass or water goblet.","Clean, bare hands.","An approved ice scoop or ice tongs stored inside a dedicated holder outside the bin.","A clean plastic service plate."]},
+            {q:"46. What should a server do if they spot water dripping from an overhead deckhead or light shield in a service pantry?",a:["Place a clean glass underneath to catch the water and continue working.","Wipe the area with a blue cloth and log it at the end of the cruise.","Report the defect immediately to a supervisor or management to prevent environmental cross-contamination.","Ignore it if the water is not dropping onto an active food plate."]},
+            {q:"47. What are the fingernail standards for Princess food service crew members?",a:["Short and trimmed; clear non-chipping nail polish is permitted.","Short, trimmed, and clean; no nail polish or artificial nails are allowed.","Any length is acceptable if gloves are worn at all times.","Long nails are permitted for wine stewards only."]},
+            {q:"48. What should you do if an item falls onto the dining room deck during a busy dinner rush?",a:["Wipe it on your uniform trouser leg and hand it back to the passenger.","Place it directly into the scullery dirty rack and wash your hands immediately before retrieving a clean replacement.","Blow on the item for 5 seconds and reset it on the table.","Put it back on the tray with clean plates."]},
+            {q:"49. What must a food server do before putting on a clean pair of disposable gloves?",a:["Sanitize the gloves with a chemical spray.","Wash hands thoroughly at a designated hand wash station.","Blow into the gloves to make them easier to slip onto the hands.","Wipe their hands down with a dirty service cloth."]},
+            {q:"50. How often must the solutions in your 3-bucket system be replaced?",a:["Once every 8-hour shift.","When the soap bubbles disappear, or when the rinse/sanitize water becomes cloudy or dirty.","Only when an inspection is announced.","After cleaning exactly 10 passenger tables."]},
+            {q:"51. What type of sanitizer is specifically designated for cleaning passenger tables in the buffet area?",a:["Concentrated dish soap.","Oxivir solution.","Kay 5 / Chlorine (50-200 ppm).","Heavy-duty glass cleaner."]},
+            {q:"52. What is the maximum cold-holding temperature for Potentially Hazardous Foods (PHF) on a buffet line?",a:["32°F (0°C).","41°F (5°C) or lower.","50°F (10°C).","45°F (7°C)."]},
+            {q:"53. Which of the following is considered a CRITICAL item during a USPH inspection that could cause immediate failure?",a:["A missing light bulb cover in a non-food office locker.","Failure to maintain proper chlorine sanitizer levels in a 3-bucket system or warewashing machine.","A slightly dusty fan guard in an empty linen store.","A scratch on the stainless steel outer shell of a waiter station."]},
+            {q:"54. Which of the following combinations of symptoms requires immediate isolation and notification to medical?",a:["Headache, minor fatigue, and mild muscle soreness.","Fever, vomiting, diarrhea, bloody stools, new skin rash, or jaundice.","Dry cough, sneezing, and localized muscle strain.","Minor paper cut and a temporary headache."]},
+            {q:"55. When should a restaurant steward change their disposable gloves?",a:["Every 30 minutes on a strict timer.","When changing tasks, when torn/dirty, or every 4 hours if working continuously on the same item.","Only when instructed by a public health inspector.","At the exact halfway point of an 8-hour shift."]},
+            {q:"56. How must food be protected when transported to cabins for room service delivery?",a:["Carried open on trays so the server can easily monitor it.","Covered with clean plastic wrap, plate cloches (lids), or placed inside a clean, enclosed transport cart.","Kept uncovered as long as the delivery takes less than 5 minutes.","Pressed tightly against the server's uniform to maintain warmth."]}
         ];
 
-        let currentCrewId = "";
-        let currentCrewName = "";
-        let currentQuestionIndex = 0;
-        let correctAnswersCount = 0;
-        let shuffledQuiz = []; // [{q, a, correctIdx}] in random order for this session
+        let currentCrewId="",currentCrewName="",currentQuestionIndex=0,correctAnswersCount=0,shuffledQuiz=[],selectedAnswerIdx=null;
 
-        function _shuffleArray(arr) {
-            // Fisher-Yates in-place shuffle, returns new array
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
+        function switchTab(tabId){
+            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-emerald-600','text-white');b.classList.add('text-slate-400','hover:text-slate-200');});
+            document.getElementById(tabId).classList.add('active');
+            const t=document.getElementById('btn-'+tabId);
+            t.classList.remove('text-slate-400','hover:text-slate-200');t.classList.add('bg-emerald-600','text-white');
+            if(tabId==='leaderboard-tab')renderLeaderboard();
         }
 
-        function _buildShuffledQuiz() {
-            // Shuffle question order
-            const indices = quizData.map((_, i) => i);
-            const shuffledIndices = _shuffleArray(indices);
+        function _shuffleArray(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-            shuffledQuiz = shuffledIndices.map(origIdx => {
-                const origCorrect = _dc(origIdx);         // correct answer index in original order
-                const opts = quizData[origIdx].a;
-
-                // Build option indices [0,1,2,3] and shuffle them
-                const optOrder = _shuffleArray([0, 1, 2, 3]);
-
-                // Find where the correct answer ended up after shuffle
-                const newCorrectIdx = optOrder.indexOf(origCorrect);
-
-                return {
-                    q: quizData[origIdx].q.replace(/^\d+\.\s*/, ''),
-                    a: optOrder.map(i => opts[i]),         // reordered options
-                    correctIdx: newCorrectIdx              // correct answer in new position
-                };
+        function _buildShuffledQuiz(){
+            const indices=_shuffleArray(quizData.map((_,i)=>i));
+            shuffledQuiz=indices.map(origIdx=>{
+                const origCorrect=_dc(origIdx);const opts=quizData[origIdx].a;
+                const optOrder=_shuffleArray([0,1,2,3]);const newCorrectIdx=optOrder.indexOf(origCorrect);
+                return{q:quizData[origIdx].q.replace(/^\d+\.\s*/,''),a:optOrder.map(i=>opts[i]),correctIdx:newCorrectIdx};
             });
         }
 
-        function startVSPQuiz() {
-            const idInput = document.getElementById('crew-id').value.trim();
-            const errorBox = document.getElementById('auth-error');
-            const errorMsg = document.getElementById('auth-error-msg');
-            const idField  = document.getElementById('crew-id');
-
-            // Reset error state
-            errorBox.classList.add('hidden');
-            idField.classList.remove('border-rose-600');
-
-            if (!idInput) {
-                errorMsg.textContent = "Please enter your Crew ID to begin.";
-                errorBox.classList.remove('hidden');
-                idField.focus();
-                return;
-            }
-
-            // Strict roster check — unknown IDs are rejected
-            if (!crewRoster.hasOwnProperty(idInput)) {
-                errorMsg.textContent = `ID ${idInput} is not registered. Contact your supervisor.`;
-                errorBox.classList.remove('hidden');
-                idField.classList.add('border-rose-600');
-                idField.select();
-                return;
-            }
-
-            currentCrewId   = idInput;
-            currentCrewName = crewRoster[idInput];
-
-            currentQuestionIndex  = 0;
-            correctAnswersCount   = 0;
+        function startVSPQuiz(){
+            const idInput=document.getElementById('crew-id').value.trim();
+            const errorBox=document.getElementById('auth-error');const errorMsg=document.getElementById('auth-error-msg');const idField=document.getElementById('crew-id');
+            errorBox.classList.add('hidden');idField.classList.remove('border-rose-600');
+            if(!idInput){errorMsg.textContent="Please enter your Crew ID to begin.";errorBox.classList.remove('hidden');idField.focus();return;}
+            if(!rosterReady){errorMsg.textContent="Roster still loading, please wait a moment.";errorBox.classList.remove('hidden');return;}
+            if(!crewRoster.hasOwnProperty(idInput)){errorMsg.textContent=`ID ${idInput} is not registered. Contact your supervisor.`;errorBox.classList.remove('hidden');idField.classList.add('border-rose-600');idField.select();return;}
+            currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;
             _buildShuffledQuiz();
-
-            document.getElementById('quiz-auth-screen').classList.add('hidden');
-            document.getElementById('quiz-end-screen').classList.add('hidden');
-            document.getElementById('quiz-play-screen').classList.remove('hidden');
-
+            document.getElementById('quiz-auth-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-play-screen').classList.remove('hidden');
             loadQuestion();
         }
 
-        let selectedAnswerIdx = null; // tracks which option the user tapped
-
-        function loadQuestion() {
-            const data = shuffledQuiz[currentQuestionIndex];
-            selectedAnswerIdx = null;
-
-            document.getElementById('question-counter').innerText = `Question ${currentQuestionIndex + 1} of ${shuffledQuiz.length}`;
-            document.getElementById('score-counter').innerText = `Correct: ${correctAnswersCount}`;
-            document.getElementById('question-text').innerText = `${currentQuestionIndex + 1}. ${data.q}`;
-
-            const pct = (currentQuestionIndex / shuffledQuiz.length) * 100;
-            document.getElementById('quiz-progress').style.width = `${pct}%`;
-
-            // Reset action bar
-            document.getElementById('btn-confirm').classList.add('hidden');
-            document.getElementById('btn-next').classList.add('hidden');
-            document.getElementById('answer-feedback').classList.add('hidden');
-
-            const container = document.getElementById('answers-container');
-            container.innerHTML = "";
-
-            const labels = ["A", "B", "C", "D"];
-            data.a.forEach((option, idx) => {
-                const btn = document.createElement('button');
-                btn.id = `opt-btn-${idx}`;
-                btn.className = "w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
-                btn.innerHTML = `
-                    <span id="opt-badge-${idx}" class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors">${labels[idx]}</span>
-                    <span class="flex-1 leading-snug">${option}</span>
-                    <i id="opt-icon-${idx}" class="fa-regular fa-circle text-slate-500 flex-shrink-0"></i>`;
-                btn.onclick = () => selectOption(idx);
-                container.appendChild(btn);
+        function loadQuestion(){
+            const data=shuffledQuiz[currentQuestionIndex];selectedAnswerIdx=null;
+            document.getElementById('question-counter').innerText=`Question ${currentQuestionIndex+1} of ${shuffledQuiz.length}`;
+            document.getElementById('score-counter').innerText=`Correct: ${correctAnswersCount}`;
+            document.getElementById('question-text').innerText=`${currentQuestionIndex+1}. ${data.q}`;
+            document.getElementById('quiz-progress').style.width=`${(currentQuestionIndex/shuffledQuiz.length)*100}%`;
+            document.getElementById('btn-confirm').classList.add('hidden');document.getElementById('btn-next').classList.add('hidden');document.getElementById('answer-feedback').classList.add('hidden');
+            const container=document.getElementById('answers-container');container.innerHTML="";
+            const labels=["A","B","C","D"];
+            data.a.forEach((option,idx)=>{
+                const btn=document.createElement('button');btn.id=`opt-btn-${idx}`;
+                btn.className="w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
+                btn.innerHTML=`<span id="opt-badge-${idx}" class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors">${labels[idx]}</span><span class="flex-1 leading-snug">${option}</span><i id="opt-icon-${idx}" class="fa-regular fa-circle text-slate-500 flex-shrink-0"></i>`;
+                btn.onclick=()=>selectOption(idx);container.appendChild(btn);
             });
         }
 
-        function selectOption(idx) {
-            // Deselect all first
-            for (let i = 0; i < 4; i++) {
-                const b = document.getElementById(`opt-btn-${i}`);
-                const badge = document.getElementById(`opt-badge-${i}`);
-                const icon  = document.getElementById(`opt-icon-${i}`);
-                if (!b) continue;
-                b.className = "w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
-                badge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors";
-                icon.className  = "fa-regular fa-circle text-slate-500 flex-shrink-0";
-            }
-
-            // Highlight selected
-            const selBtn   = document.getElementById(`opt-btn-${idx}`);
-            const selBadge = document.getElementById(`opt-badge-${idx}`);
-            const selIcon  = document.getElementById(`opt-icon-${idx}`);
-            selBtn.className   = "w-full text-left p-3.5 bg-blue-900/40 border border-blue-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
-            selBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 border border-blue-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
-            selIcon.className  = "fa-solid fa-circle-dot text-blue-400 flex-shrink-0";
-
-            selectedAnswerIdx = idx;
-            document.getElementById('btn-confirm').classList.remove('hidden');
+        function selectOption(idx){
+            for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`),badge=document.getElementById(`opt-badge-${i}`),icon=document.getElementById(`opt-icon-${i}`);if(!b)continue;b.className="w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";badge.className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors";icon.className="fa-regular fa-circle text-slate-500 flex-shrink-0";}
+            document.getElementById(`opt-btn-${idx}`).className="w-full text-left p-3.5 bg-blue-900/40 border border-blue-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
+            document.getElementById(`opt-badge-${idx}`).className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 border border-blue-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
+            document.getElementById(`opt-icon-${idx}`).className="fa-solid fa-circle-dot text-blue-400 flex-shrink-0";
+            selectedAnswerIdx=idx;document.getElementById('btn-confirm').classList.remove('hidden');
         }
 
-        function confirmAnswer() {
-            if (selectedAnswerIdx === null) return;
-
-            const correctIdx = shuffledQuiz[currentQuestionIndex].correctIdx;
-            const isCorrect  = selectedAnswerIdx === correctIdx;
-            if (isCorrect) correctAnswersCount++;
-
-            const labels = ["A", "B", "C", "D"];
-
-            // Lock all buttons — no more clicking
-            for (let i = 0; i < 4; i++) {
-                const b = document.getElementById(`opt-btn-${i}`);
-                if (b) b.onclick = null;
-            }
-
-            // Colour correct answer green
-            const correctBtn   = document.getElementById(`opt-btn-${correctIdx}`);
-            const correctBadge = document.getElementById(`opt-badge-${correctIdx}`);
-            const correctIcon  = document.getElementById(`opt-icon-${correctIdx}`);
-            if (correctBtn) {
-                correctBtn.className   = "w-full text-left p-3.5 bg-emerald-900/40 border border-emerald-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
-                correctBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
-                correctIcon.className  = "fa-solid fa-circle-check text-emerald-400 flex-shrink-0";
-            }
-
-            // If wrong, colour the chosen answer red
-            if (!isCorrect) {
-                const wrongBtn   = document.getElementById(`opt-btn-${selectedAnswerIdx}`);
-                const wrongBadge = document.getElementById(`opt-badge-${selectedAnswerIdx}`);
-                const wrongIcon  = document.getElementById(`opt-icon-${selectedAnswerIdx}`);
-                if (wrongBtn) {
-                    wrongBtn.className   = "w-full text-left p-3.5 bg-rose-900/40 border border-rose-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
-                    wrongBadge.className = "flex-shrink-0 w-6 h-6 rounded-full bg-rose-600 border border-rose-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
-                    wrongIcon.className  = "fa-solid fa-circle-xmark text-rose-400 flex-shrink-0";
-                }
-            }
-
-            // Show feedback banner
-            const feedback = document.getElementById('answer-feedback');
-            feedback.className = isCorrect
-                ? "rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-emerald-900/50 border border-emerald-600 text-emerald-300"
-                : "rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-rose-900/50 border border-rose-600 text-rose-300";
-            feedback.innerHTML = isCorrect
-                ? `<i class="fa-solid fa-circle-check text-emerald-400"></i> Correct!`
-                : `<i class="fa-solid fa-circle-xmark text-rose-400"></i> Incorrect — correct answer: <strong class="ml-1">${labels[correctIdx]}</strong>`;
+        function confirmAnswer(){
+            if(selectedAnswerIdx===null)return;
+            const correctIdx=shuffledQuiz[currentQuestionIndex].correctIdx;const isCorrect=selectedAnswerIdx===correctIdx;
+            if(isCorrect)correctAnswersCount++;
+            const labels=["A","B","C","D"];
+            for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`);if(b)b.onclick=null;}
+            const cBtn=document.getElementById(`opt-btn-${correctIdx}`),cBadge=document.getElementById(`opt-badge-${correctIdx}`),cIcon=document.getElementById(`opt-icon-${correctIdx}`);
+            if(cBtn){cBtn.className="w-full text-left p-3.5 bg-emerald-900/40 border border-emerald-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";cBadge.className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";cIcon.className="fa-solid fa-circle-check text-emerald-400 flex-shrink-0";}
+            if(!isCorrect){const wBtn=document.getElementById(`opt-btn-${selectedAnswerIdx}`),wBadge=document.getElementById(`opt-badge-${selectedAnswerIdx}`),wIcon=document.getElementById(`opt-icon-${selectedAnswerIdx}`);if(wBtn){wBtn.className="w-full text-left p-3.5 bg-rose-900/40 border border-rose-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";wBadge.className="flex-shrink-0 w-6 h-6 rounded-full bg-rose-600 border border-rose-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";wIcon.className="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0";}}
+            const feedback=document.getElementById('answer-feedback');
+            feedback.className=isCorrect?"rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-emerald-900/50 border border-emerald-600 text-emerald-300":"rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-rose-900/50 border border-rose-600 text-rose-300";
+            feedback.innerHTML=isCorrect?`<i class="fa-solid fa-circle-check text-emerald-400"></i> Correct!`:`<i class="fa-solid fa-circle-xmark text-rose-400"></i> Incorrect — correct answer: <strong class="ml-1">${labels[correctIdx]}</strong>`;
             feedback.classList.remove('hidden');
-
-            // Swap confirm → next
             document.getElementById('btn-confirm').classList.add('hidden');
-
-            const isLast = currentQuestionIndex === shuffledQuiz.length - 1;
-            const nextBtn = document.getElementById('btn-next');
-            nextBtn.innerHTML = isLast
-                ? `See Results <i class="fa-solid fa-flag-checkered ml-1"></i>`
-                : `Next Question <i class="fa-solid fa-chevron-right ml-1"></i>`;
+            const isLast=currentQuestionIndex===shuffledQuiz.length-1;
+            const nextBtn=document.getElementById('btn-next');
+            nextBtn.innerHTML=isLast?`See Results <i class="fa-solid fa-flag-checkered ml-1"></i>`:`Next Question <i class="fa-solid fa-chevron-right ml-1"></i>`;
             nextBtn.classList.remove('hidden');
-
-            document.getElementById('score-counter').innerText = `Correct: ${correctAnswersCount}`;
+            document.getElementById('score-counter').innerText=`Correct: ${correctAnswersCount}`;
         }
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < shuffledQuiz.length) {
-                loadQuestion();
-            } else {
-                endQuizAndSave();
+        function nextQuestion(){currentQuestionIndex++;if(currentQuestionIndex<shuffledQuiz.length){loadQuestion();}else{endQuizAndSave();}}
+
+        async function _readScores(){const r=await fetch(`${JB_API}/b/${BIN_SCORES}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});if(!r.ok)throw new Error('read fail');const d=await r.json();return(d.record||d).scores||[];}
+        async function _writeScores(s){const r=await fetch(`${JB_API}/b/${BIN_SCORES}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify({scores:s})});if(!r.ok)throw new Error('write fail');}
+        async function _withRetry(fn,n=3,d=600){for(let i=0;i<n;i++){try{return await fn();}catch(e){if(i===n-1)throw e;await new Promise(r=>setTimeout(r,d*(i+1)));}}};
+
+        async function endQuizAndSave(){
+            document.getElementById('quiz-play-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.remove('hidden');document.getElementById('quiz-progress').style.width='100%';
+            const pct=Math.round((correctAnswersCount/shuffledQuiz.length)*100);
+            document.getElementById('final-score-text').innerText=`${pct}%`;document.getElementById('final-meta-text').innerText=`Saving score for ${currentCrewName}…`;
+            const entry={name:currentCrewName,id:currentCrewId,score:pct,correct:correctAnswersCount,total:shuffledQuiz.length,date:new Date().toLocaleDateString('en-GB')};
+            try{
+                await _withRetry(async()=>{const scores=await _readScores();const byId={};scores.forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});if(!byId[entry.id]||entry.score>=byId[entry.id].score)byId[entry.id]=entry;await _writeScores(Object.values(byId).sort((a,b)=>b.score-a.score));});
+                document.getElementById('final-meta-text').innerText=`Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct`;
+            }catch(e){
+                let local=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');local=local.filter(x=>x.id!==entry.id||x.score>entry.score);if(!local.find(x=>x.id===entry.id))local.push(entry);localStorage.setItem('vsp_scores_fallback',JSON.stringify(local));
+                document.getElementById('final-meta-text').innerText=`Saved locally (no network) — syncs when online`;
             }
         }
 
-        // ── Cloud Score Storage (JSONBin.io) ────────────────────────────────────
-        // Single hardcoded shared bin — every device reads/writes the same data.
-        // ────────────────────────────────────────────────────────────────────────
-        const JSONBIN_API = "https://api.jsonbin.io/v3";
-        const JSONBIN_KEY = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
-        const JSONBIN_BIN = "6a3b7210da38895dfef59f58";
+        function restartQuiz(){document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
 
-        async function _readScores() {
-            const res = await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}/latest`, {
-                headers: { "X-Master-Key": JSONBIN_KEY, "X-Bin-Meta": "false" }
-            });
-            if (!res.ok) throw new Error(`Read failed: ${res.status}`);
-            const data = await res.json();
-            return data.record ? (data.record.scores || []) : (data.scores || []);
-        }
-
-        async function _writeScores(scores) {
-            const res = await fetch(`${JSONBIN_API}/b/${JSONBIN_BIN}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Master-Key": JSONBIN_KEY,
-                    "X-Bin-Versioning": "false"
-                },
-                body: JSON.stringify({ scores })
-            });
-            if (!res.ok) throw new Error(`Write failed: ${res.status}`);
-        }
-
-        // Retry helper — retries up to 3 times with backoff
-        async function _withRetry(fn, retries = 3, delay = 600) {
-            for (let i = 0; i < retries; i++) {
-                try { return await fn(); }
-                catch (e) {
-                    if (i === retries - 1) throw e;
-                    await new Promise(r => setTimeout(r, delay * (i + 1)));
-                }
-            }
-        }
-
-        async function endQuizAndSave() {
-            document.getElementById('quiz-play-screen').classList.add('hidden');
-            document.getElementById('quiz-end-screen').classList.remove('hidden');
-            document.getElementById('quiz-progress').style.width = `100%`;
-
-            const finalPercentage = Math.round((correctAnswersCount / shuffledQuiz.length) * 100);
-            document.getElementById('final-score-text').innerText = `${finalPercentage}%`;
-            document.getElementById('final-meta-text').innerText = `Saving score for ${currentCrewName}…`;
-
-            const newEntry = {
-                name: currentCrewName,
-                id: currentCrewId,
-                score: finalPercentage,
-                correct: correctAnswersCount,
-                total: shuffledQuiz.length,
-                date: new Date().toLocaleDateString('en-GB')
-            };
-
-            try {
-                await _withRetry(async () => {
-                    const scores = await _readScores();
-
-                    // Merge: keep best score per ID, then add/update this entry
-                    const byId = {};
-                    scores.forEach(e => {
-                        if (!byId[e.id] || e.score > byId[e.id].score) byId[e.id] = e;
-                    });
-                    // Always update with latest attempt if it's better (or first time)
-                    if (!byId[newEntry.id] || newEntry.score >= byId[newEntry.id].score) {
-                        byId[newEntry.id] = newEntry;
-                    }
-                    const merged = Object.values(byId).sort((a, b) => b.score - a.score);
-                    await _writeScores(merged);
-                });
-
-                document.getElementById('final-meta-text').innerText =
-                    `Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct`;
-            } catch (e) {
-                // Fallback: cache locally and sync next time
-                let local = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
-                // Remove older entry for same ID if this is better
-                local = local.filter(x => x.id !== newEntry.id || x.score > newEntry.score);
-                if (!local.find(x => x.id === newEntry.id)) local.push(newEntry);
-                localStorage.setItem('vsp_scores_fallback', JSON.stringify(local));
-                document.getElementById('final-meta-text').innerText =
-                    `Saved locally (no network) — syncs when online`;
-            }
-        }
-
-        function restartQuiz() {
-            document.getElementById('quiz-end-screen').classList.add('hidden');
-            document.getElementById('quiz-auth-screen').classList.remove('hidden');
-            document.getElementById('crew-id').value = "";
-        }
-
-        async function renderLeaderboard() {
-            const container = document.getElementById('leaderboard-rows');
-            container.innerHTML = `<tr><td colspan="4" class="p-5 text-center text-xs text-slate-400">
-                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading scores…</td></tr>`;
-
-            let scoresList = [];
-            try {
-                scoresList = await _withRetry(_readScores);
-
-                // Flush any offline-cached scores into the cloud now that we have connectivity
-                const pending = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
-                if (pending.length > 0) {
-                    const byId = {};
-                    [...scoresList, ...pending].forEach(e => {
-                        if (!byId[e.id] || e.score > byId[e.id].score) byId[e.id] = e;
-                    });
-                    const merged = Object.values(byId);
-                    await _writeScores(merged);
-                    localStorage.removeItem('vsp_scores_fallback');
-                    scoresList = merged;
-                }
-            } catch (e) {
-                // Fall back to any locally cached scores
-                scoresList = JSON.parse(localStorage.getItem('vsp_scores_fallback') || '[]');
-                if (scoresList.length === 0) {
-                    container.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-rose-400 italic">
-                        <i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server. Check network.</td></tr>`;
-                    return;
-                }
-            }
-
-            // Keep only the highest score per crew ID
-            const bestByID = {};
-            scoresList.forEach(entry => {
-                if (!bestByID[entry.id] || entry.score > bestByID[entry.id].score) {
-                    bestByID[entry.id] = entry;
-                }
-            });
-            scoresList = Object.values(bestByID).sort((a, b) => b.score - a.score);
-
-            if (scoresList.length === 0) {
-                container.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">
-                    <i class="fa-solid fa-inbox block text-lg mb-1"></i> No records yet. Complete the exam to populate the board.</td></tr>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            scoresList.forEach((entry, idx) => {
-                const tr = document.createElement('tr');
-
-                let medalBadge = `<span class="font-bold text-slate-500 text-[11px]">${idx + 1}</span>`;
-                if (idx === 0) medalBadge = `<i class="fa-solid fa-medal text-amber-400 text-xs sm:text-sm"></i>`;
-                if (idx === 1) medalBadge = `<i class="fa-solid fa-medal text-slate-300 text-xs sm:text-sm"></i>`;
-                if (idx === 2) medalBadge = `<i class="fa-solid fa-medal text-amber-700 text-xs sm:text-sm"></i>`;
-
-                let scoreColor = "text-emerald-400 font-bold";
-                if (entry.score < 90) scoreColor = "text-amber-400 font-bold";
-                if (entry.score < 75) scoreColor = "text-rose-400 font-bold";
-
-                tr.innerHTML = `
-                    <td class="p-3 text-center">${medalBadge}</td>
-                    <td class="p-3 font-semibold text-white truncate text-xs sm:text-sm">${entry.name}</td>
-                    <td class="p-3 text-center ${scoreColor} text-xs sm:text-sm">${entry.score}%</td>
-                    <td class="p-3 text-right text-[10px] sm:text-xs text-slate-400">${entry.date}</td>
-                `;
+        async function renderLeaderboard(){
+            const container=document.getElementById('leaderboard-rows');
+            container.innerHTML=`<tr><td colspan="4" class="p-5 text-center text-xs text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading…</td></tr>`;
+            let scores=[];
+            try{
+                scores=await _withRetry(_readScores);
+                const pending=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');
+                if(pending.length>0){const byId={};[...scores,...pending].forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});const merged=Object.values(byId);await _writeScores(merged);localStorage.removeItem('vsp_scores_fallback');scores=merged;}
+            }catch(e){scores=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server.</td></tr>`;return;}}
+            const best={};scores.forEach(e=>{if(!best[e.id]||e.score>best[e.id].score)best[e.id]=e;});
+            scores=Object.values(best).sort((a,b)=>b.score-a.score);
+            if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">No records yet.</td></tr>`;return;}
+            container.innerHTML="";
+            scores.forEach((e,i)=>{
+                const tr=document.createElement('tr');
+                let m=`<span class="font-bold text-slate-500 text-[11px]">${i+1}</span>`;
+                if(i===0)m=`<i class="fa-solid fa-medal text-amber-400 text-xs sm:text-sm"></i>`;
+                if(i===1)m=`<i class="fa-solid fa-medal text-slate-300 text-xs sm:text-sm"></i>`;
+                if(i===2)m=`<i class="fa-solid fa-medal text-amber-700 text-xs sm:text-sm"></i>`;
+                let sc=e.score>=90?"text-emerald-400 font-bold":e.score>=75?"text-amber-400 font-bold":"text-rose-400 font-bold";
+                tr.innerHTML=`<td class="p-3 text-center">${m}</td><td class="p-3 font-semibold text-white truncate text-xs sm:text-sm">${e.name}</td><td class="p-3 text-center ${sc} text-xs sm:text-sm">${e.score}%</td><td class="p-3 text-right text-[10px] sm:text-xs text-slate-400">${e.date}</td>`;
                 container.appendChild(tr);
             });
-        }
-
-        async function clearLeaderboard() {
-            const password = prompt("Admin access required. Enter master verification key to clear scores:");
-            if (password === null) return;
-
-            const entered = await _sha256(password.trim());
-            if (entered === _ADMIN_HASH) {
-                if (confirm("Master key validated. Purge entire highscore directory?")) {
-                    try {
-                        await _writeScores([]);
-                        localStorage.removeItem('vsp_scores_fallback');
-                        renderLeaderboard();
-                    } catch (e) {
-                        alert("Cloud clear failed — check network connection.");
-                    }
-                }
-            } else {
-                alert("ACCESS DENIED: Invalid administrative password.");
-            }
         }
     </script>
 </body>
