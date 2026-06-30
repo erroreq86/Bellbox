@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Princess Cruises - Room Service Product Knowledge Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        html, body { overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col select-none">
+
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <i class="fa-solid fa-bell-concierge text-emerald-400 text-lg sm:text-xl flex-shrink-0"></i>
+                <div class="min-w-0">
+                    <span class="text-xs sm:text-sm font-bold tracking-wider text-white block uppercase truncate">Princess Cruises FOH</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 block -mt-0.5 truncate">Product Knowledge Exam</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="index.html" class="text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded hover:border-slate-500 transition-colors">← Back</a>
+                <div class="flex space-x-1 bg-slate-900 p-1 rounded-lg border border-slate-700">
+                    <button onclick="switchTab('knowledge-test')" id="btn-knowledge-test" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md bg-emerald-600 text-white transition-all">
+                        <i class="fa-solid fa-graduation-cap mr-1 sm:mr-1.5"></i>Test
+                    </button>
+                    <button onclick="switchTab('leaderboard-tab')" id="btn-leaderboard-tab" class="tab-btn px-2.5 py-1.5 sm:px-3 text-[11px] sm:text-xs font-semibold rounded-md text-slate-400 hover:text-slate-200 transition-all">
+                        <i class="fa-solid fa-trophy mr-1 sm:mr-1.5"></i>Scores
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-3xl w-full mx-auto px-2 py-4 sm:px-4 sm:py-8">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 sm:p-6 shadow-xl overflow-hidden">
+
+            <div id="knowledge-test" class="tab-content active space-y-4 sm:space-y-6">
+                <div class="border-b border-slate-700 pb-3 text-center sm:text-left">
+                    <h1 class="text-lg sm:text-xl font-bold text-white">Room Service &amp; Product Knowledge</h1>
+                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">Complete all 26 validation items. Menu, pricing, and amenity knowledge.</p>
+                </div>
+
+                <div id="quiz-auth-screen" class="space-y-4 max-w-md mx-auto py-4 sm:py-6">
+                    <div class="bg-slate-900 p-4 sm:p-6 rounded-xl border border-slate-700 space-y-4">
+                        <div>
+                            <label class="block text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 font-bold mb-2">Crew ID Number</label>
+                            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="crew-id" placeholder="Enter Crew ID"
+                                onkeydown="if(event.key==='Enter')startQuiz()"
+                                oninput="document.getElementById('auth-error').classList.add('hidden')"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-sm text-white tracking-widest font-mono text-center focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
+                        <div id="auth-error" class="hidden flex items-center gap-2 bg-rose-950/50 border border-rose-700/60 text-rose-300 text-xs rounded-lg px-3 py-2.5">
+                            <i class="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0"></i>
+                            <span id="auth-error-msg">Crew ID not found. Access denied.</span>
+                        </div>
+                        <div id="roster-loading" class="text-center text-xs text-slate-400 py-1">
+                            <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading crew roster…
+                        </div>
+                        <button onclick="startQuiz()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                            Start Assessment <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-play-screen" class="hidden bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="w-full bg-slate-800 h-1.5">
+                        <div id="quiz-progress" class="bg-emerald-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                        <div class="flex justify-between items-center text-[10px] sm:text-xs text-slate-400 uppercase font-bold">
+                            <span id="question-counter">Question 1 of 26</span>
+                            <span id="score-counter" class="text-emerald-400">Correct: 0</span>
+                        </div>
+                        <h2 id="question-text" class="text-sm sm:text-base font-semibold text-white leading-snug">Loading…</h2>
+                        <div id="answers-container" class="grid grid-cols-1 gap-2.5"></div>
+                        <div id="quiz-action-bar" class="pt-1 space-y-2">
+                            <button id="btn-confirm" onclick="confirmAnswer()" class="hidden w-full py-3 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                                <i class="fa-solid fa-check mr-1.5"></i> Confirm Answer
+                            </button>
+                            <div id="answer-feedback" class="hidden rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2"></div>
+                            <button id="btn-next" onclick="nextQuestion()" class="hidden w-full py-3 bg-slate-700 hover:bg-slate-600 font-bold rounded-lg transition-all text-xs uppercase tracking-wide shadow-lg active:scale-[0.98]">
+                                Next Question <i class="fa-solid fa-chevron-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quiz-end-screen" class="hidden text-center max-w-md mx-auto py-4 sm:py-6 space-y-4">
+                    <div class="p-4 sm:p-6 bg-slate-900 rounded-xl border border-slate-700 space-y-3">
+                        <div class="text-3xl sm:text-4xl text-amber-400"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                        <h2 class="text-base sm:text-lg font-bold text-white">Assessment Finished</h2>
+                        <div class="text-3xl sm:text-4xl font-black text-emerald-400 py-1" id="final-score-text">100%</div>
+                        <p class="text-[11px] sm:text-xs text-slate-400 px-2" id="final-meta-text"></p>
+                        <button onclick="restartQuiz()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded text-xs transition-all font-semibold active:scale-[0.98]">Retake Test</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="leaderboard-tab" class="tab-content space-y-4 sm:space-y-6">
+                <div class="border-b border-slate-700 pb-3 flex flex-row justify-between items-center gap-4">
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl font-bold text-white truncate">Leaderboard</h1>
+                        <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">Verified department personnel marks.</p>
+                    </div>
+                </div>
+                <div class="overflow-hidden bg-slate-900 border border-slate-700 rounded-xl">
+                    <table class="w-full text-left text-xs sm:text-sm text-slate-300 border-collapse table-fixed">
+                        <thead>
+                            <tr class="bg-slate-950 text-slate-400 border-b border-slate-700 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                                <th class="p-3 w-12 sm:w-16 text-center">Rank</th>
+                                <th class="p-3 w-1/2">Name</th>
+                                <th class="p-3 text-center w-16 sm:w-24">Score</th>
+                                <th class="p-3 text-right w-20 sm:w-32">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-rows" class="divide-y divide-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-800 border-t border-slate-700 mt-auto py-3 text-center text-[9px] sm:text-[10px] text-slate-500">
+        Princess Cruises &bull; FOH Product Knowledge Module &bull; Crown Princess
+    </footer>
+
+    <script>
+        const _XK = 0x5A;
+        // Correct answer indices (0-based) XOR'd with 0x5A
+        // Raw: [2,1,3,2,1,2,0,0,2,0,1,2,0,0,1,2,0,2,3,0,0,1,0,0,0,0]
+        const _OC = [2^0x5A,1^0x5A,3^0x5A,2^0x5A,1^0x5A,2^0x5A,0^0x5A,0^0x5A,2^0x5A,0^0x5A,1^0x5A,2^0x5A,0^0x5A,0^0x5A,1^0x5A,2^0x5A,0^0x5A,2^0x5A,3^0x5A,0^0x5A,0^0x5A,1^0x5A,0^0x5A,0^0x5A,0^0x5A,0^0x5A];
+        function _dc(idx){return _OC[idx]^_XK;}
+
+        const JB_API     = "https://api.jsonbin.io/v3";
+        const JB_KEY     = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
+        const BIN_ROSTER = "6a40decfda38895dfe0ab4be";  // ← replace with new roster bin ID
+        const BIN_SCORES = "6a437233da38895dfe1476c2";  // ← replace with new scores bin ID
+
+        let crewRoster = {};
+        let rosterReady = false;
+
+        async function loadRoster(){
+            try{
+                const r=await fetch(`${JB_API}/b/${BIN_ROSTER}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
+                const d=await r.json();
+                crewRoster=(d.record||d).crew||{};
+                if(!Object.keys(crewRoster).length){
+                    crewRoster=FALLBACK_ROSTER;
+                }
+                rosterReady=true;
+            }catch(e){
+                crewRoster=FALLBACK_ROSTER;
+                rosterReady=true;
+            }
+            document.getElementById('roster-loading').style.display='none';
+        }
+
+        const FALLBACK_ROSTER={"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
+
+        loadRoster();
+
+        // 26 questions — open-ended items converted to A/B/C/D using the answer key.
+        const quizData=[
+            {q:"What is the price of the 100% Beef Burger on the standard Room Service Food Menu?",a:["$12.00","$8.00","$0.00 (Complimentary)","$5.00"]},
+            {q:"Which of the following salads costs an extra upcharge of $8.00 on the Room Service Food Menu?",a:["Caesar Salad","Caesar Salad with Grilled Jumbo Shrimp","Greek Salad","Caesar Salad with Grilled Wild Salmon"]},
+            {q:"How much does an order of Crispy Chicken Wings cost on the Room Service Food Menu?",a:["$0.00 (Complimentary)","$6.00","$14.00","$11.00"]},
+            {q:"All individual thin-crust pizzas (such as Pizza Margherita and Pizza Pepperoni) have a fixed price of:",a:["$0.00 (Complimentary)","$11.00","$14.00","$18.00"]},
+            {q:"On the Room Service Beverage Menu, a Classic Espresso Martini is priced at:",a:["$16.00","$22.00","$14.00","$18.00"]},
+            {q:"What is the total package price for the Deluxe Balcony Breakfast For Two?",a:["$45.00","$65.00","$83.00","$95.00"]},
+            {q:"To make a reservation for the Deluxe Balcony Breakfast, which extension must guests dial between 8:00 AM and 5:00 PM?",a:["Extension 6219","Extension 3463","Extension 3339","Extension 7000"]},
+            {q:"Which of the following is NOT one of the beers served in Room Service?",a:["Crown Lager","Heineken","Victoria Bitter (VB)","Budweiser"]},
+            {q:"What premium cream accompanies the Medley of Fresh Fruits and Forest Berries?",a:["Vanilla Bean Whipped Cream","Devonshire Clotted Cream","Clover Honey Chantilly Creme","Sweetened Cinnamon Glaze"]},
+            {q:"Which cheese is baked into the hot Quiche Lorraine Gratin?",a:["Fontina Cheese","Cheddar Cheese","Swiss Cheese","Parmesan Cheese"]},
+            {q:"Which premium beverage is automatically included as part of the Balcony Dinner experience?",a:["A full bottle of Australian Sparkling Wine","A Half-Bottle of French Champagne","A bottle of Italian Prosecco","Two signature shipboard cocktails"]},
+            {q:"The premium Crab Cake appetizer is served inside which unique pastry structure?",a:["A sourdough bread bowl","A crispy phyllo pastry shell","A Puff Pastry Crown","A toasted brioche basket"]},
+            {q:"Which cheese is featured in the salad course alongside Mesclun Field Greens?",a:["Marinated Chevre","Gorgonzola Blue Cheese","Aged Shredded Parmesan","Feta Cheese"]},
+            {q:"Which of the following is NOT one of the standard sandwiches offered in Room Service?",a:["Club Sandwich","Roast Turkey Sandwich","Tuna Salad Sandwich","Philly Cheesesteak Sandwich"]},
+            {q:"What is the exact name of the four-layered dessert featured on the Balcony Dinner menu?",a:["Princess' Triple Chocolate Mousse","Princess' Extraordinary Chocolate Quartet","Gourmet Belgian Chocolate Truffle Fudge","Classic Flourless Chocolate Cake"]},
+            {q:"Cook-to-order hot egg items (such as Scrambled Eggs, Plain Omelettes, and Cheese Omelettes) are found on:",a:["The Stateroom card only","The Suite card only","Both the Stateroom and Suite cards","Neither card (must be ordered via telephone)"]},
+            {q:"Hot breakfast sides (including Hash Brown Potatoes, Link Sausage, Bacon, and Ham) are options exclusive to:",a:["The Suite card only","The Stateroom card only","Both the Stateroom and Suite cards","Elite member cards only"]},
+            {q:"Specific toast type selections (White Toast, Rye Toast, and Whole Wheat Toast) are explicitly printed on:",a:["The Stateroom card only","Both the Stateroom and Suite cards","The Suite card only","None of the doorhanger cards"]},
+            {q:"The 'Egg, Bacon & Cheese Breakfast English Muffin (served with Ketchup)' is available on:",a:["The Stateroom card only","The Suite card only","Neither card","Both the Stateroom and Suite cards"]},
+            {q:"Which of the following is NOT included in the Ultimate Balcony Dinner?",a:["Half-Bottle of French Champagne","Crab Cake in a Puff Pastry Crown","Princess' Extraordinary Chocolate Quartet","A full seafood tower with lobster and oysters"]},
+            {q:"Which of the following is NOT included in the Ultimate Balcony Breakfast?",a:["Chilled Half-Bottle of French Champagne","Hot Quiche Lorraine Gratin","Basket of Freshly Baked Artisanal Pastries","A three-course hot lunch selection"]},
+            {q:"What is the cost of the room service delivery fee?",a:["6.99 AUD","7.50 AUD","5 USD","300 PHP"]},
+            {q:"What is the cost of the OceanNow one-time activation fee?",a:["22.99 AUD","19.99 AUD","15 AUD","7.50 AUD"]},
+            {q:"Where is the Sanctuary located on Crown Princess?",a:["All the way forward on the top sun deck (Deck 17 / Sky Deck forward)","Amidships on Deck 7, next to the spa","Aft on Deck 16, overlooking the wake","Below the main pool deck on Deck 14"]},
+            {q:"How much is the Crown Grill / Sabatini's cover charge?",a:["80 AUD","45 AUD","60 AUD","25 AUD"]},
+            {q:"How much is the Sanctuary full-day cover charge?",a:["80 AUD","45 AUD","60 AUD","25 AUD"]}
+        ];
+
+        let currentCrewId="",currentCrewName="",currentQuestionIndex=0,correctAnswersCount=0,shuffledQuiz=[],selectedAnswerIdx=null;
+
+        function switchTab(tabId){
+            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-emerald-600','text-white');b.classList.add('text-slate-400','hover:text-slate-200');});
+            document.getElementById(tabId).classList.add('active');
+            const t=document.getElementById('btn-'+tabId);t.classList.remove('text-slate-400','hover:text-slate-200');t.classList.add('bg-emerald-600','text-white');
+            if(tabId==='leaderboard-tab')renderLeaderboard();
+        }
+
+        function _shuffleArray(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+        function _buildShuffledQuiz(){
+            const indices=_shuffleArray(quizData.map((_,i)=>i));
+            shuffledQuiz=indices.map(origIdx=>{
+                const origCorrect=_dc(origIdx);const opts=quizData[origIdx].a;
+                const optOrder=_shuffleArray([0,1,2,3]);const newCorrectIdx=optOrder.indexOf(origCorrect);
+                return{q:quizData[origIdx].q,a:optOrder.map(i=>opts[i]),correctIdx:newCorrectIdx};
+            });
+        }
+
+        function startQuiz(){
+            const idInput=document.getElementById('crew-id').value.trim();
+            const errorBox=document.getElementById('auth-error');const errorMsg=document.getElementById('auth-error-msg');const idField=document.getElementById('crew-id');
+            errorBox.classList.add('hidden');idField.classList.remove('border-rose-600');
+            if(!idInput){errorMsg.textContent="Please enter your Crew ID to begin.";errorBox.classList.remove('hidden');idField.focus();return;}
+            if(!rosterReady){errorMsg.textContent="Roster still loading, please wait a moment.";errorBox.classList.remove('hidden');return;}
+            if(!crewRoster.hasOwnProperty(idInput)){errorMsg.textContent=`ID ${idInput} is not registered. Contact your supervisor.`;errorBox.classList.remove('hidden');idField.classList.add('border-rose-600');idField.select();return;}
+            currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;
+            _buildShuffledQuiz();
+            document.getElementById('quiz-auth-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-play-screen').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion(){
+            const data=shuffledQuiz[currentQuestionIndex];selectedAnswerIdx=null;
+            document.getElementById('question-counter').innerText=`Question ${currentQuestionIndex+1} of ${shuffledQuiz.length}`;
+            document.getElementById('score-counter').innerText=`Correct: ${correctAnswersCount}`;
+            document.getElementById('question-text').innerText=`${currentQuestionIndex+1}. ${data.q}`;
+            document.getElementById('quiz-progress').style.width=`${(currentQuestionIndex/shuffledQuiz.length)*100}%`;
+            document.getElementById('btn-confirm').classList.add('hidden');document.getElementById('btn-next').classList.add('hidden');document.getElementById('answer-feedback').classList.add('hidden');
+            const container=document.getElementById('answers-container');container.innerHTML="";
+            const labels=["A","B","C","D"];
+            data.a.forEach((option,idx)=>{
+                const btn=document.createElement('button');btn.id=`opt-btn-${idx}`;
+                btn.className="w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";
+                btn.innerHTML=`<span id="opt-badge-${idx}" class="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors">${labels[idx]}</span><span class="flex-1 leading-snug">${option}</span><i id="opt-icon-${idx}" class="fa-regular fa-circle text-slate-500 flex-shrink-0"></i>`;
+                btn.onclick=()=>selectOption(idx);container.appendChild(btn);
+            });
+        }
+
+        function selectOption(idx){
+            for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`),badge=document.getElementById(`opt-badge-${i}`),icon=document.getElementById(`opt-icon-${i}`);if(!b)continue;b.className="w-full text-left p-3.5 bg-slate-800 border border-slate-700 rounded-lg transition-all text-xs font-medium flex items-center gap-3 group min-h-[48px]";badge.className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-[11px] font-bold text-slate-300 transition-colors";icon.className="fa-regular fa-circle text-slate-500 flex-shrink-0";}
+            document.getElementById(`opt-btn-${idx}`).className="w-full text-left p-3.5 bg-blue-900/40 border border-blue-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";
+            document.getElementById(`opt-badge-${idx}`).className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 border border-blue-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";
+            document.getElementById(`opt-icon-${idx}`).className="fa-solid fa-circle-dot text-blue-400 flex-shrink-0";
+            selectedAnswerIdx=idx;document.getElementById('btn-confirm').classList.remove('hidden');
+        }
+
+        function confirmAnswer(){
+            if(selectedAnswerIdx===null)return;
+            const correctIdx=shuffledQuiz[currentQuestionIndex].correctIdx;const isCorrect=selectedAnswerIdx===correctIdx;
+            if(isCorrect)correctAnswersCount++;
+            const labels=["A","B","C","D"];
+            for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`);if(b)b.onclick=null;}
+            const cBtn=document.getElementById(`opt-btn-${correctIdx}`),cBadge=document.getElementById(`opt-badge-${correctIdx}`),cIcon=document.getElementById(`opt-icon-${correctIdx}`);
+            if(cBtn){cBtn.className="w-full text-left p-3.5 bg-emerald-900/40 border border-emerald-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";cBadge.className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";cIcon.className="fa-solid fa-circle-check text-emerald-400 flex-shrink-0";}
+            if(!isCorrect){const wBtn=document.getElementById(`opt-btn-${selectedAnswerIdx}`),wBadge=document.getElementById(`opt-badge-${selectedAnswerIdx}`),wIcon=document.getElementById(`opt-icon-${selectedAnswerIdx}`);if(wBtn){wBtn.className="w-full text-left p-3.5 bg-rose-900/40 border border-rose-500 rounded-lg transition-all text-xs font-medium flex items-center gap-3 min-h-[48px]";wBadge.className="flex-shrink-0 w-6 h-6 rounded-full bg-rose-600 border border-rose-400 flex items-center justify-center text-[11px] font-bold text-white transition-colors";wIcon.className="fa-solid fa-circle-xmark text-rose-400 flex-shrink-0";}}
+            const feedback=document.getElementById('answer-feedback');
+            feedback.className=isCorrect?"rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-emerald-900/50 border border-emerald-600 text-emerald-300":"rounded-lg px-4 py-3 text-xs font-semibold flex items-center gap-2 bg-rose-900/50 border border-rose-600 text-rose-300";
+            feedback.innerHTML=isCorrect?`<i class="fa-solid fa-circle-check text-emerald-400"></i> Correct!`:`<i class="fa-solid fa-circle-xmark text-rose-400"></i> Incorrect — correct answer: <strong class="ml-1">${labels[correctIdx]}</strong>`;
+            feedback.classList.remove('hidden');
+            document.getElementById('btn-confirm').classList.add('hidden');
+            const isLast=currentQuestionIndex===shuffledQuiz.length-1;
+            const nextBtn=document.getElementById('btn-next');
+            nextBtn.innerHTML=isLast?`See Results <i class="fa-solid fa-flag-checkered ml-1"></i>`:`Next Question <i class="fa-solid fa-chevron-right ml-1"></i>`;
+            nextBtn.classList.remove('hidden');
+            document.getElementById('score-counter').innerText=`Correct: ${correctAnswersCount}`;
+        }
+
+        function nextQuestion(){currentQuestionIndex++;if(currentQuestionIndex<shuffledQuiz.length){loadQuestion();}else{endQuizAndSave();}}
+
+        async function _readScores(){const r=await fetch(`${JB_API}/b/${BIN_SCORES}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});if(!r.ok)throw new Error('read fail');const d=await r.json();return(d.record||d).scores||[];}
+        async function _writeScores(s){const r=await fetch(`${JB_API}/b/${BIN_SCORES}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify({scores:s})});if(!r.ok)throw new Error('write fail');}
+        async function _withRetry(fn,n=3,d=600){for(let i=0;i<n;i++){try{return await fn();}catch(e){if(i===n-1)throw e;await new Promise(r=>setTimeout(r,d*(i+1)));}}};
+
+        async function endQuizAndSave(){
+            document.getElementById('quiz-play-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.remove('hidden');document.getElementById('quiz-progress').style.width='100%';
+            const pct=Math.round((correctAnswersCount/shuffledQuiz.length)*100);
+            document.getElementById('final-score-text').innerText=`${pct}%`;document.getElementById('final-meta-text').innerText=`Saving score for ${currentCrewName}…`;
+            const entry={name:currentCrewName,id:currentCrewId,score:pct,correct:correctAnswersCount,total:shuffledQuiz.length,date:new Date().toLocaleDateString('en-GB')};
+            try{
+                await _withRetry(async()=>{const scores=await _readScores();const byId={};scores.forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});if(!byId[entry.id]||entry.score>=byId[entry.id].score)byId[entry.id]=entry;await _writeScores(Object.values(byId).sort((a,b)=>b.score-a.score));});
+                document.getElementById('final-meta-text').innerText=`Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct`;
+            }catch(e){
+                let local=JSON.parse(localStorage.getItem('pk_scores_fallback')||'[]');local=local.filter(x=>x.id!==entry.id||x.score>entry.score);if(!local.find(x=>x.id===entry.id))local.push(entry);localStorage.setItem('pk_scores_fallback',JSON.stringify(local));
+                document.getElementById('final-meta-text').innerText=`Saved locally (no network) — syncs when online`;
+            }
+        }
+
+        function restartQuiz(){document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
+
+        async function renderLeaderboard(){
+            const container=document.getElementById('leaderboard-rows');
+            container.innerHTML=`<tr><td colspan="4" class="p-5 text-center text-xs text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading…</td></tr>`;
+            let scores=[];
+            try{
+                scores=await _withRetry(_readScores);
+                const pending=JSON.parse(localStorage.getItem('pk_scores_fallback')||'[]');
+                if(pending.length>0){const byId={};[...scores,...pending].forEach(e=>{if(!byId[e.id]||e.score>byId[e.id].score)byId[e.id]=e;});const merged=Object.values(byId);await _writeScores(merged);localStorage.removeItem('pk_scores_fallback');scores=merged;}
+            }catch(e){scores=JSON.parse(localStorage.getItem('pk_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server.</td></tr>`;return;}}
+            const best={};scores.forEach(e=>{if(!best[e.id]||e.score>best[e.id].score)best[e.id]=e;});
+            scores=Object.values(best).sort((a,b)=>b.score-a.score);
+            if(!scores.length){container.innerHTML=`<tr><td colspan="4" class="p-6 text-center text-xs text-slate-500 italic">No records yet.</td></tr>`;return;}
+            container.innerHTML="";
+            scores.forEach((e,i)=>{
+                const tr=document.createElement('tr');
+                let m=`<span class="font-bold text-slate-500 text-[11px]">${i+1}</span>`;
+                if(i===0)m=`<i class="fa-solid fa-medal text-amber-400 text-xs sm:text-sm"></i>`;
+                if(i===1)m=`<i class="fa-solid fa-medal text-slate-300 text-xs sm:text-sm"></i>`;
+                if(i===2)m=`<i class="fa-solid fa-medal text-amber-700 text-xs sm:text-sm"></i>`;
+                let sc=e.score>=90?"text-emerald-400 font-bold":e.score>=75?"text-amber-400 font-bold":"text-rose-400 font-bold";
+                tr.innerHTML=`<td class="p-3 text-center">${m}</td><td class="p-3 font-semibold text-white truncate text-xs sm:text-sm">${e.name}</td><td class="p-3 text-center ${sc} text-xs sm:text-sm">${e.score}%</td><td class="p-3 text-right text-[10px] sm:text-xs text-slate-400">${e.date}</td>`;
+                container.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
