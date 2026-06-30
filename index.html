@@ -131,7 +131,8 @@ main{max-width:960px;margin:0 auto;padding:3rem 1.5rem 4rem}
 .status-msg.err{display:block;background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f4a0a0}
 
 /* SCORES PANEL */
-.scores-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.scores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+@media(max-width:900px){.scores-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.scores-grid{grid-template-columns:1fr}}
 .scores-section h3{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
 .scores-section h3 button{font-size:.65rem;background:transparent;border:1px solid rgba(192,57,43,.4);color:var(--red);padding:.18rem .5rem;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.05em;transition:background .2s}
@@ -231,6 +232,28 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
         <a href="test2.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
       </div>
     </div>
+
+    <!-- Card 3: Product Knowledge -->
+    <div class="card-wrap">
+      <div class="porthole">
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-ring"></div>
+        <div class="porthole-glass">
+          <i class="fa-solid fa-bell-concierge porthole-icon"></i>
+          <div class="porthole-label">Room Service<br>&amp; Product</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">Product Knowledge</div>
+        <div class="card-meta">26 questions &nbsp;·&nbsp; Menu &amp; pricing<br>Beverages, packages, amenities</div>
+        <div class="card-tags">
+          <span class="tag">26 Q</span><span class="tag">Menu</span>
+          <span class="tag">Pricing</span><span class="tag">Amenities</span>
+        </div>
+        <a href="test3.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
+      </div>
+    </div>
   </div>
 
   <div class="info-strip">
@@ -328,6 +351,17 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
               </table>
             </div>
           </div>
+          <div class="scores-section">
+            <h3>Product Knowledge
+              <button onclick="resetLeaderboard('t3')">Reset All</button>
+            </h3>
+            <div style="overflow-x:auto">
+              <table class="score-table">
+                <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Date</th><th style="width:36px"></th></tr></thead>
+                <tbody id="scoresT3"><tr><td colspan="5" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -340,6 +374,7 @@ const JB_KEY  = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
 const BIN_ROSTER = "6a40decfda38895dfe0ab4be";
 const BIN_T1     = "6a3b7210da38895dfef59f58";
 const BIN_T2     = "6a40c8aada38895dfe0a700d";
+const BIN_T3     = "6a437233da38895dfe1476c2";
 const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
 
 const ORIGINAL_ROSTER = {"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
@@ -479,11 +514,10 @@ function showStatus(el,msg,type){
 
 // ── SCORES ──────────────────────────────────────────────────────
 async function loadScores(){
-  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2)]);
+  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2),loadScoreTable('t3',BIN_T3)]);
 }
 
-// Cache scores in memory for delete operations
-let scoresCache = {t1:[], t2:[]};
+let scoresCache = {t1:[], t2:[], t3:[]};
 
 async function loadScoreTable(key,bin){
   const tbody=document.getElementById('scores'+key.toUpperCase());
@@ -519,9 +553,10 @@ function renderScoreTable(key,scores){
 async function deleteScore(key,id){
   const entry=scoresCache[key].find(e=>e.id===id);
   if(!entry) return;
-  if(!confirm(`Remove ${entry.name}'s score (${entry.score}%) from the ${key==='t1'?'USPH':'Food Safety'} leaderboard?`)) return;
+  const labelMap={t1:'USPH',t2:'Food Safety',t3:'Product Knowledge'};
+  if(!confirm(`Remove ${entry.name}'s score (${entry.score}%) from the ${labelMap[key]} leaderboard?`)) return;
   const updated=scoresCache[key].filter(e=>e.id!==id);
-  const bin=key==='t1'?BIN_T1:BIN_T2;
+  const bin=key==='t1'?BIN_T1:key==='t2'?BIN_T2:BIN_T3;
   try{
     await jbWrite(bin,{scores:updated});
     scoresCache[key]=updated;
@@ -530,9 +565,9 @@ async function deleteScore(key,id){
 }
 
 async function resetLeaderboard(key){
-  const label=key==='t1'?'USPH Public Health':'Food Safety';
-  if(!confirm(`Reset ALL scores for ${label}? This cannot be undone.`)) return;
-  const bin=key==='t1'?BIN_T1:BIN_T2;
+  const labelMap={t1:'USPH Public Health',t2:'Food Safety',t3:'Product Knowledge'};
+  if(!confirm(`Reset ALL scores for ${labelMap[key]}? This cannot be undone.`)) return;
+  const bin=key==='t1'?BIN_T1:key==='t2'?BIN_T2:BIN_T3;
   try{
     await jbWrite(bin,{scores:[]});
     scoresCache[key]=[];
