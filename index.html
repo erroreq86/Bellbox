@@ -131,8 +131,8 @@ main{max-width:960px;margin:0 auto;padding:3rem 1.5rem 4rem}
 .status-msg.err{display:block;background:rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.4);color:#f4a0a0}
 
 /* SCORES PANEL */
-.scores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
-@media(max-width:900px){.scores-grid{grid-template-columns:1fr 1fr}}
+.scores-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+@media(max-width:1100px){.scores-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.scores-grid{grid-template-columns:1fr}}
 .scores-section h3{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
 .scores-section h3 button{font-size:.65rem;background:transparent;border:1px solid rgba(192,57,43,.4);color:var(--red);padding:.18rem .5rem;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.05em;transition:background .2s}
@@ -254,6 +254,28 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
         <a href="test3.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
       </div>
     </div>
+
+    <!-- Card 4: Product Knowledge B -->
+    <div class="card-wrap">
+      <div class="porthole">
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-bolt"></div><div class="porthole-bolt"></div>
+        <div class="porthole-ring"></div>
+        <div class="porthole-glass">
+          <i class="fa-solid fa-martini-glass-citrus porthole-icon"></i>
+          <div class="porthole-label">Menu &amp; Beverage<br>Version B</div>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">Product Knowledge B</div>
+        <div class="card-meta">34 questions &nbsp;·&nbsp; Menu &amp; beverage pricing<br>Spirits, cocktails, wine, breakfast menu</div>
+        <div class="card-tags">
+          <span class="tag">34 Q</span><span class="tag">Beverage</span>
+          <span class="tag">Spirits</span><span class="tag">Wine</span>
+        </div>
+        <a href="test4.html" class="card-btn"><i class="fa-solid fa-chevron-right" style="margin-right:.4rem;font-size:.7rem;"></i>Begin Assessment</a>
+      </div>
+    </div>
   </div>
 
   <div class="info-strip">
@@ -362,6 +384,17 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
               </table>
             </div>
           </div>
+          <div class="scores-section">
+            <h3>Product Knowledge B
+              <button onclick="resetLeaderboard('t4')">Reset All</button>
+            </h3>
+            <div style="overflow-x:auto">
+              <table class="score-table">
+                <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Date</th><th style="width:36px"></th></tr></thead>
+                <tbody id="scoresT4"><tr><td colspan="5" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -375,6 +408,7 @@ const BIN_ROSTER = "6a40decfda38895dfe0ab4be";
 const BIN_T1     = "6a3b7210da38895dfef59f58";
 const BIN_T2     = "6a40c8aada38895dfe0a700d";
 const BIN_T3     = "6a437233da38895dfe1476c2";
+const BIN_T4     = "6a44072cf5f4af5e294907b8";
 const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
 
 const ORIGINAL_ROSTER = {"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
@@ -514,10 +548,10 @@ function showStatus(el,msg,type){
 
 // ── SCORES ──────────────────────────────────────────────────────
 async function loadScores(){
-  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2),loadScoreTable('t3',BIN_T3)]);
+  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2),loadScoreTable('t3',BIN_T3),loadScoreTable('t4',BIN_T4)]);
 }
 
-let scoresCache = {t1:[], t2:[], t3:[]};
+let scoresCache = {t1:[], t2:[], t3:[], t4:[]};
 
 async function loadScoreTable(key,bin){
   const tbody=document.getElementById('scores'+key.toUpperCase());
