@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portholes — Room Service Knowledge Platform</title>
 <meta name="description" content="Portholes is the Room Service department's knowledge platform — four assessments covering public health, food safety, and product knowledge.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14.5' fill='%230A1220' stroke='%23C9A227' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2354D6C6' stroke-width='.8' opacity='.6'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='%23E8C874'/%3E%3C/svg%3E">
+<meta property="og:title" content="Portholes — Room Service Knowledge Platform">
+<meta property="og:description" content="Four assessments covering public health, food safety, and product knowledge — built for a ship's Wi-Fi.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Portholes — Room Service Knowledge Platform">
+<meta name="twitter:description" content="Four assessments covering public health, food safety, and product knowledge — built for a ship's Wi-Fi.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -311,6 +318,37 @@
   .test-foot{display:flex;align-items:center;justify-content:space-between;}
   .test-q{font-family:var(--font-mono);font-size:.75rem;color:var(--teal);}
 
+  /* ---------- live preview (mock quiz UI) ---------- */
+  .preview-wrap{display:grid;grid-template-columns:1.3fr .7fr;gap:44px;align-items:center;}
+  .browser-frame{
+    border-radius:var(--radius-l);overflow:hidden;border:1px solid var(--line);
+    box-shadow:0 30px 70px -20px rgba(0,0,0,0.65);background:#0f172a;
+    transform:perspective(1400px) rotateY(-4deg) rotateX(1deg);
+    transition:transform .6s var(--ease);
+  }
+  .browser-frame:hover{transform:perspective(1400px) rotateY(0deg) rotateX(0deg);}
+  .browser-bar{background:#1e293b;padding:10px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,0.06);}
+  .browser-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0;}
+  .browser-url{margin-left:10px;font-family:var(--font-mono);font-size:.66rem;color:#94a3b8;background:#0f172a;padding:3px 10px;border-radius:999px;}
+  .mock-quiz{padding:22px 22px 26px;background:#0f172a;}
+  .mock-progress{height:5px;background:#1e293b;border-radius:99px;overflow:hidden;margin-bottom:16px;}
+  .mock-progress-fill{width:21%;height:100%;background:#34d399;border-radius:99px;}
+  .mock-top{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:.65rem;color:#94a3b8;text-transform:uppercase;margin-bottom:16px;letter-spacing:.05em;gap:8px;}
+  .mock-timer{color:#cbd5e1;white-space:nowrap;}
+  .mock-score{color:#34d399;white-space:nowrap;}
+  .mock-question{color:#f1f5f9;font-size:.9rem;font-weight:600;line-height:1.55;margin-bottom:18px;}
+  .mock-options{display:flex;flex-direction:column;gap:8px;}
+  .mock-option{display:flex;align-items:center;gap:10px;background:#1e293b;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:11px 14px;font-size:.78rem;color:#cbd5e1;}
+  .mock-option.selected{background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.5);color:#fff;}
+  .mock-badge{width:20px;height:20px;border-radius:50%;background:#334155;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;flex-shrink:0;}
+  .mock-option.selected .mock-badge{background:#3b82f6;}
+  .preview-callouts{display:flex;flex-direction:column;gap:22px;}
+  .callout{display:flex;gap:14px;align-items:flex-start;}
+  .callout-icon{width:38px;height:38px;border-radius:10px;background:rgba(201,162,39,0.1);border:1px solid rgba(201,162,39,0.25);color:var(--brass-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem;}
+  .callout strong{display:block;font-family:var(--font-display);font-size:.95rem;color:var(--ink);margin-bottom:2px;font-weight:600;}
+  .callout span{font-size:.82rem;color:var(--slate);line-height:1.5;}
+  @media (max-width:900px){.preview-wrap{grid-template-columns:1fr;}.browser-frame{transform:none;}}
+
   /* ---------- benefits ---------- */
   .benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
   .benefit-panel{
@@ -434,6 +472,7 @@
     .foot-grid{grid-template-columns:1fr 1fr;}
   }
   @media (max-width:700px){
+    .radar-tag-sec{display:none;}
     .nav-links{
       position:fixed;inset:64px 16px auto 16px;flex-direction:column;align-items:stretch;
       background:rgba(10,18,32,0.97);backdrop-filter:blur(16px);
@@ -541,8 +580,10 @@
             <div class="radar-blip" style="top:66%;left:74%;animation-delay:1s;"></div>
             <div class="radar-blip" style="top:72%;left:30%;animation-delay:1.8s;"></div>
             <div class="radar-blip" style="top:28%;left:22%;animation-delay:.6s;"></div>
-            <div class="radar-tag" style="top:6%;left:58%;">USPH · 56Q</div>
-            <div class="radar-tag" style="bottom:4%;left:2%;">PRODUCT · 26Q</div>
+            <div class="radar-tag" style="top:5%;left:6%;">USPH · 56Q</div>
+            <div class="radar-tag radar-tag-sec" style="top:5%;right:6%;">FOOD SAFETY · 40Q</div>
+            <div class="radar-tag" style="bottom:5%;left:6%;">PRODUCT · 26Q</div>
+            <div class="radar-tag radar-tag-sec" style="bottom:5%;right:6%;">PRODUCT B · 34Q</div>
           </div>
           <div class="glass-shine"></div>
         </div>
@@ -659,6 +700,56 @@
     </div>
   </section>
 
+  <!-- LIVE PREVIEW -->
+  <section class="section section-tight">
+    <div class="wrap">
+      <div class="section-head reveal" style="margin:0 auto 44px;text-align:center;">
+        <span class="eyebrow">See It In Action</span>
+        <h2>The actual screen, not a render of one.</h2>
+        <p>This is what loads the moment you sign in — question, timer, and progress, all live on one screen.</p>
+      </div>
+      <div class="preview-wrap reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="browser-dot" style="background:#f87171"></span>
+            <span class="browser-dot" style="background:#fbbf24"></span>
+            <span class="browser-dot" style="background:#4ade80"></span>
+            <span class="browser-url">portholes / test1.html</span>
+          </div>
+          <div class="mock-quiz">
+            <div class="mock-progress"><div class="mock-progress-fill"></div></div>
+            <div class="mock-top">
+              <span>Question 12 of 56</span>
+              <span class="mock-timer"><i class="fa-regular fa-clock"></i> 04:12</span>
+              <span class="mock-score">Correct: 10</span>
+            </div>
+            <div class="mock-question">What is the maximum cold-holding temperature for Potentially Hazardous Foods (PHF) on a buffet line?</div>
+            <div class="mock-options">
+              <div class="mock-option"><span class="mock-badge">A</span>32°F (0°C)</div>
+              <div class="mock-option selected"><span class="mock-badge">B</span>41°F (5°C) or lower</div>
+              <div class="mock-option"><span class="mock-badge">C</span>50°F (10°C)</div>
+              <div class="mock-option"><span class="mock-badge">D</span>45°F (7°C)</div>
+            </div>
+          </div>
+        </div>
+        <div class="preview-callouts">
+          <div class="callout">
+            <div class="callout-icon"><i class="fa-regular fa-clock"></i></div>
+            <div><strong>Completion timer</strong><span>Runs live in the header, feeds straight into the scoreboard tiebreak</span></div>
+          </div>
+          <div class="callout">
+            <div class="callout-icon"><i class="fa-solid fa-shuffle"></i></div>
+            <div><strong>Shuffled every run</strong><span>Questions and answer order reorder on each attempt</span></div>
+          </div>
+          <div class="callout">
+            <div class="callout-icon"><i class="fa-solid fa-trophy"></i></div>
+            <div><strong>Instant sync</strong><span>Your best score posts to the leaderboard the second you submit</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- BENEFITS -->
   <section class="section">
     <div class="wrap">
@@ -674,7 +765,7 @@
           <ul class="benefit-list">
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Practice on your own schedule, between rotations or off-shift</li>
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Retake any assessment as many times as you need to</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Watch your own score climb on the leaderboard</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Climb the overall scoreboard — completion, score, and speed all count</li>
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Walk into an inspection already knowing the answers</li>
           </ul>
         </div>
@@ -683,7 +774,7 @@
           <h3>Visibility, without the spreadsheet</h3>
           <ul class="benefit-list">
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Roster and scores managed from one admin panel</li>
-            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>See exactly who's inspection-ready and who isn't</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Manager panel auto-flags anyone who hasn't opened a single test</li>
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Question bank updates the moment standards change</li>
             <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Paperless sign-off — nothing printed, nothing wasted</li>
           </ul>
@@ -755,8 +846,8 @@
           <div class="access-price">Included<span> · department leads</span></div>
           <p class="access-desc">Everything in Standard, plus visibility across your whole team.</p>
           <ul class="access-list">
-            <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Full team leaderboard, all four tests</li>
-            <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Spot who needs a refresher before inspection</li>
+            <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Overall scoreboard — ranked by completion, then score, then speed</li>
+            <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Manager panel flags anyone who hasn't started a single test</li>
             <li><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Everything in Standard access</li>
           </ul>
           <a href="index2.html?open=manager" class="btn btn-primary" data-ripple>Open Manager Panel</a>
@@ -856,7 +947,8 @@
         <h4>Support</h4>
         <a href="#faq">FAQ</a>
         <a href="index2.html">Leaderboard</a>
-        <a href="index2.html">Admin panel</a>
+        <a href="index2.html?open=manager">Manager panel</a>
+        <a href="index2.html?open=admin">Admin panel</a>
       </div>
     </div>
     <div class="foot-bottom">
@@ -958,6 +1050,22 @@
   const scrollAmt = 380;
   document.getElementById('testiPrev').addEventListener('click', () => row.scrollBy({left:-scrollAmt, behavior:'smooth'}));
   document.getElementById('testiNext').addEventListener('click', () => row.scrollBy({left:scrollAmt, behavior:'smooth'}));
+
+  // Auto-advance, pausing on hover/focus/touch
+  if (!reduceMotion) {
+    let autoTimer = setInterval(advanceTesti, 4500);
+    function advanceTesti(){
+      const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 4;
+      row.scrollBy({left: atEnd ? -row.scrollLeft : scrollAmt, behavior:'smooth'});
+    }
+    const pause = () => clearInterval(autoTimer);
+    const resume = () => { clearInterval(autoTimer); autoTimer = setInterval(advanceTesti, 4500); };
+    row.addEventListener('mouseenter', pause);
+    row.addEventListener('mouseleave', resume);
+    row.addEventListener('focusin', pause);
+    row.addEventListener('focusout', resume);
+    row.addEventListener('touchstart', pause, {passive:true});
+  }
 
   // Button ripple
   document.querySelectorAll('[data-ripple]').forEach(btn => {
