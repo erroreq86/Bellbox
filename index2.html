@@ -707,6 +707,13 @@ async function loadOverallScoreboard(){
 }
 loadOverallScoreboard();
 
+// ── Deep-link support: index2.html?open=admin | ?open=manager ───
+(function(){
+  const target=new URLSearchParams(location.search).get('open');
+  if(target==='admin') openAdminModal();
+  if(target==='manager') openManagerModal();
+})();
+
 function renderScoreTable(key,scores){
   const tbody=document.getElementById('scores'+key.toUpperCase());
   if(!scores.length){
