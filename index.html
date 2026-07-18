@@ -111,6 +111,7 @@
     transition:color .2s, background .2s;
   }
   .nav-links a:hover{color:var(--ink);background:rgba(255,255,255,0.04);}
+  .nav-links-cta{display:none;}
   .nav-actions{display:flex;align-items:center;gap:14px;}
   .nav-toggle{display:none;width:38px;height:38px;align-items:center;justify-content:center;border-radius:8px;}
   .nav-toggle span,.nav-toggle span::before,.nav-toggle span::after{
@@ -481,8 +482,9 @@
     }
     .nav-links.open{transform:translateY(0);opacity:1;pointer-events:auto;}
     .nav-links a{padding:14px 16px;border-radius:8px;}
+    .nav-links-cta{display:inline-flex;margin-top:6px;justify-content:center;}
     .nav-toggle{display:flex;}
-    .nav-actions .btn-ghost{display:none;}
+    .nav-actions .btn-ghost,.nav-actions .btn-primary{display:none;}
     .feature-grid{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr;gap:28px;}
     .cta-banner{padding:50px 24px;}
@@ -509,6 +511,7 @@
       <a href="#showcase">Assessments</a>
       <a href="#access">Access</a>
       <a href="#faq">FAQ</a>
+      <a href="index2.html" class="nav-links-cta btn btn-primary btn-sm">Begin Assessment</a>
     </nav>
     <div class="nav-actions">
       <a href="index2.html" class="btn btn-ghost btn-sm">Leaderboard</a>
