@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root{
     --navy-950:#060B14;
@@ -298,7 +299,10 @@
     background:radial-gradient(circle at 32% 28%, rgba(255,255,255,0.06), transparent 60%), var(--navy-900);
     border:3px dotted var(--brass-dim);
     box-shadow:inset 0 0 0 1px rgba(198,168,124,0.2), inset 0 4px 10px rgba(0,0,0,0.5);
+    display:flex;align-items:center;justify-content:center;
   }
+  .test-porthole i{position:relative;z-index:1;color:var(--brass-light);font-size:1.15rem;transition:color .3s,transform .3s;}
+  .test-card:hover .test-porthole i{color:var(--teal);transform:scale(1.1);}
   .test-porthole::before{content:"";position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(198,168,124,0.3);}
   .test-tags{display:flex;gap:6px;flex-wrap:wrap;}
   .test-tag{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.03em;color:var(--slate);border:1px solid var(--line);padding:3px 9px;border-radius:999px;}
@@ -617,7 +621,7 @@
       <div class="showcase-grid stagger">
         <div class="test-card">
           <div class="test-top">
-            <div class="test-porthole" aria-hidden="true"></div>
+            <div class="test-porthole" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></div>
             <div class="test-tags"><span class="test-tag">VSP 2025</span><span class="test-tag">Sanitation</span></div>
           </div>
           <h3>USPH Public Health</h3>
@@ -626,7 +630,7 @@
         </div>
         <div class="test-card">
           <div class="test-top">
-            <div class="test-porthole" aria-hidden="true"></div>
+            <div class="test-porthole" aria-hidden="true"><i class="fa-solid fa-temperature-half"></i></div>
             <div class="test-tags"><span class="test-tag">TCS Foods</span><span class="test-tag">HACCP</span></div>
           </div>
           <h3>Food Safety &amp; TCS Standards</h3>
@@ -635,7 +639,7 @@
         </div>
         <div class="test-card">
           <div class="test-top">
-            <div class="test-porthole" aria-hidden="true"></div>
+            <div class="test-porthole" aria-hidden="true"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="test-tags"><span class="test-tag">Menu</span><span class="test-tag">Pricing</span></div>
           </div>
           <h3>Product Knowledge</h3>
@@ -644,7 +648,7 @@
         </div>
         <div class="test-card">
           <div class="test-top">
-            <div class="test-porthole" aria-hidden="true"></div>
+            <div class="test-porthole" aria-hidden="true"><i class="fa-solid fa-martini-glass-citrus"></i></div>
             <div class="test-tags"><span class="test-tag">Spirits</span><span class="test-tag">Wine</span></div>
           </div>
           <h3>Product Knowledge B</h3>
