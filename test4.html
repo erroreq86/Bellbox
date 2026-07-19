@@ -133,40 +133,59 @@
         FOH Product Knowledge Module B &bull; Internal Use Only
     </footer>
 
-    <script>
+    <script type="module">
+        // ── Firebase ────────────────────────────────────────────────────────
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js';
+        import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDNtUZf28HhEEeaOirQvWUauIuSY3awgQY",
+          authDomain: "portholes-6654a.firebaseapp.com",
+          projectId: "portholes-6654a",
+          storageBucket: "portholes-6654a.firebasestorage.app",
+          messagingSenderId: "437900256359",
+          appId: "1:437900256359:web:fc0412985f6f805e68e0c2",
+          measurementId: "G-3X9P16H7Z6"
+        };
+        const fbApp = initializeApp(firebaseConfig);
+        const fbAuth = getAuth(fbApp);
+        const db = getFirestore(fbApp);
+        const authReady = new Promise((resolve, reject) => {
+            onAuthStateChanged(fbAuth, (user) => { if (user) resolve(user); });
+            signInAnonymously(fbAuth).catch(reject);
+        });
+
         const _XK = 0x5A;
         // Raw correct indices (0-based), one per question in array order — verified, trivia-text questions removed:
         // [1,2,0,3,0,0,2,3,2,1,2,0,1,1,2,1,3,0,2,2,0,0,2,1,0,0,1,3,2,1,3,1,0,2]
         const _OC = [1^0x5A,2^0x5A,0^0x5A,3^0x5A,0^0x5A,0^0x5A,2^0x5A,3^0x5A,2^0x5A,1^0x5A,2^0x5A,0^0x5A,1^0x5A,1^0x5A,2^0x5A,1^0x5A,3^0x5A,0^0x5A,2^0x5A,2^0x5A,0^0x5A,0^0x5A,2^0x5A,1^0x5A,0^0x5A,0^0x5A,1^0x5A,3^0x5A,2^0x5A,1^0x5A,3^0x5A,1^0x5A,0^0x5A,2^0x5A];
         function _dc(idx){return _OC[idx]^_XK;}
 
-        const JB_API     = "https://api.jsonbin.io/v3";
-        const JB_KEY     = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
-        const BIN_ROSTER = "6a40decfda38895dfe0ab4be";
-        const BIN_SCORES = "6a44072cf5f4af5e294907b8";
-
+        // ── Crew roster (Firestore) ────────────────────────────────────────
         let crewRoster = {};
         let rosterReady = false;
 
         async function loadRoster(){
             try{
-                const r=await fetch(`${JB_API}/b/${BIN_ROSTER}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
-                const d=await r.json();
-                crewRoster=(d.record||d).crew||{};
-                if(!Object.keys(crewRoster).length){ crewRoster=FALLBACK_ROSTER; }
+                await authReady;
+                const snap = await getDocs(collection(db,'crew'));
+                const roster = {};
+                snap.forEach(d => { roster[d.id] = d.data().name; });
+                crewRoster = Object.keys(roster).length ? roster : FALLBACK_ROSTER;
                 rosterReady=true;
-            }catch(e){
+            } catch(e){
                 crewRoster=FALLBACK_ROSTER;
                 rosterReady=true;
             }
             document.getElementById('roster-loading').style.display='none';
         }
 
+        // Hardcoded fallback if Firestore is unreachable
         const FALLBACK_ROSTER={"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
 
         loadRoster();
 
-        // 40 questions — Version B, verified correct index per answer key
         const quizData=[
             {q:"What is the official menu price of a Veggie Burger on the standard Room Service Food Menu?",a:["$5.00","$0.00 (Complimentary)","$7.50","$10.00"]},
             {q:"What is the menu price of the Flourless Chocolate Cake on the standard Room Service Food Menu?",a:["$0.00 (Complimentary)","$4.00","$6.00","$8.00"]},
@@ -308,8 +327,17 @@
 
         function nextQuestion(){currentQuestionIndex++;if(currentQuestionIndex<shuffledQuiz.length){loadQuestion();}else{endQuizAndSave();}}
 
-        async function _readScores(){const r=await fetch(`${JB_API}/b/${BIN_SCORES}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});if(!r.ok)throw new Error('read fail');const d=await r.json();return(d.record||d).scores||[];}
-        async function _writeScores(s){const r=await fetch(`${JB_API}/b/${BIN_SCORES}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify({scores:s})});if(!r.ok)throw new Error('write fail');}
+        async function _readScoreDoc(id){
+            const snap = await getDoc(doc(db,'scores_t4',id));
+            return snap.exists() ? snap.data() : null;
+        }
+        async function _writeScoreDoc(id,data){
+            await setDoc(doc(db,'scores_t4',id), data);
+        }
+        async function _readAllScores(){
+            const snap = await getDocs(collection(db,'scores_t4'));
+            return snap.docs.map(d=>({id:d.id, ...d.data()}));
+        }
         async function _withRetry(fn,n=3,d=600){for(let i=0;i<n;i++){try{return await fn();}catch(e){if(i===n-1)throw e;await new Promise(r=>setTimeout(r,d*(i+1)));}}};
 
         async function endQuizAndSave(){
@@ -320,14 +348,13 @@
             document.getElementById('final-score-text').innerText=`${pct}%`;document.getElementById('final-meta-text').innerText=`Saving score for ${currentCrewName}…`;
             const entry={name:currentCrewName,id:currentCrewId,score:pct,correct:correctAnswersCount,total:shuffledQuiz.length,time:elapsedSeconds,date:new Date().toLocaleDateString('en-GB')};
             try{
+                await authReady;
                 await _withRetry(async()=>{
-                    const scores=await _readScores();
-                    const byId={};scores.forEach(e=>{byId[e.id]=e;});
-                    const prior=byId[entry.id];
+                    const prior=await _readScoreDoc(entry.id);
                     const attempts=(prior?(prior.attempts||1):0)+1;
                     const isBetter=!prior||entry.score>prior.score||(entry.score===prior.score&&elapsedSeconds<(prior.time||Infinity));
-                    byId[entry.id]=isBetter?{...entry,attempts}:{...prior,attempts};
-                    await _writeScores(Object.values(byId).sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity)));
+                    const finalEntry=isBetter?{...entry,attempts}:{...prior,attempts};
+                    await _writeScoreDoc(entry.id, finalEntry);
                 });
                 document.getElementById('final-meta-text').innerText=`Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct · ${_fmtTime(elapsedSeconds)}`;
             }catch(e){
@@ -349,21 +376,21 @@
             container.innerHTML=`<tr><td colspan="6" class="p-5 text-center text-xs text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Loading…</td></tr>`;
             let scores=[];
             try{
-                scores=await _withRetry(_readScores);
+                await authReady;
+                scores=await _withRetry(_readAllScores);
                 const pending=JSON.parse(localStorage.getItem('pk2_scores_fallback')||'[]');
                 if(pending.length>0){
-                    const byId={};scores.forEach(e=>{byId[e.id]=e;});
-                    pending.forEach(p=>{
-                        const prior=byId[p.id];
+                    for(const p of pending){
+                        const prior=await _readScoreDoc(p.id);
                         const attempts=(prior?(prior.attempts||1):0)+(p.attempts||1);
                         const isBetter=!prior||p.score>prior.score||(p.score===prior.score&&(p.time||Infinity)<(prior.time||Infinity));
-                        byId[p.id]=isBetter?{...p,attempts}:{...prior,attempts};
-                    });
-                    const merged=Object.values(byId);await _writeScores(merged);localStorage.removeItem('pk2_scores_fallback');scores=merged;
+                        await _writeScoreDoc(p.id, isBetter?{...p,attempts}:{...prior,attempts});
+                    }
+                    localStorage.removeItem('pk2_scores_fallback');
+                    scores=await _readAllScores();
                 }
             }catch(e){scores=JSON.parse(localStorage.getItem('pk2_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server.</td></tr>`;return;}}
-            const best={};scores.forEach(e=>{if(!best[e.id]||e.score>best[e.id].score||(e.score===best[e.id].score&&(e.time||Infinity)<(best[e.id].time||Infinity)))best[e.id]=e;});
-            scores=Object.values(best).sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity));
+            scores=scores.sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity));
             if(!scores.length){container.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-xs text-slate-500 italic">No records yet.</td></tr>`;return;}
             container.innerHTML="";
             scores.forEach((e,i)=>{
@@ -377,6 +404,13 @@
                 container.appendChild(tr);
             });
         }
+
+        // ── Expose functions referenced by inline HTML onclick handlers ─────
+        window.switchTab=switchTab;
+        window.startQuiz=startQuiz;
+        window.confirmAnswer=confirmAnswer;
+        window.nextQuestion=nextQuestion;
+        window.restartQuiz=restartQuiz;
     </script>
 </body>
 </html>
