@@ -487,14 +487,33 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
   </div>
 </div>
 
-<script>
-const JB_API  = "https://api.jsonbin.io/v3";
-const JB_KEY  = "$2a$10$8lAKv7F4JkE.wqwc.gAjQOLhm8MLiX7Von1XPYo4UhdHGgYUCdkDm";
-const BIN_ROSTER = "6a40decfda38895dfe0ab4be";
-const BIN_T1     = "6a3b7210da38895dfef59f58";
-const BIN_T2     = "6a40c8aada38895dfe0a700d";
-const BIN_T3     = "6a437233da38895dfe1476c2";
-const BIN_T4     = "6a44072cf5f4af5e294907b8";
+<script type="module">
+// ── Firebase ────────────────────────────────────────────────────
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js';
+import {
+  getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch
+} from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDNtUZf28HhEEeaOirQvWUauIuSY3awgQY",
+  authDomain: "portholes-6654a.firebaseapp.com",
+  projectId: "portholes-6654a",
+  storageBucket: "portholes-6654a.firebasestorage.app",
+  messagingSenderId: "437900256359",
+  appId: "1:437900256359:web:fc0412985f6f805e68e0c2",
+  measurementId: "G-3X9P16H7Z6"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbAuth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const authReady = new Promise((resolve, reject) => {
+  onAuthStateChanged(fbAuth, (user) => { if (user) resolve(user); });
+  signInAnonymously(fbAuth).catch(reject);
+});
+
+const TEST_COLLECTIONS = {t1:'scores_t1',t2:'scores_t2',t3:'scores_t3',t4:'scores_t4'};
+
 const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9";
 const MANAGER_HASH = "866485796cfa8d7c0cf7111640205b83076433547577511d81f8030ae99ecea5";
 
@@ -537,15 +556,19 @@ function switchAdminTab(tab){
   if(tab==='scores') loadScores();
 }
 
-// ── JSONBin helpers ─────────────────────────────────────────────
-async function jbRead(bin){
-  const r=await fetch(`${JB_API}/b/${bin}/latest`,{headers:{"X-Master-Key":JB_KEY,"X-Bin-Meta":"false"}});
-  if(!r.ok) throw new Error('read fail '+r.status);
-  const d=await r.json(); return d.record||d;
+// ── Firestore helpers ─────────────────────────────────────────────
+async function _withRetry(fn,n=3,d=600){for(let i=0;i<n;i++){try{return await fn();}catch(e){if(i===n-1)throw e;await new Promise(r=>setTimeout(r,d*(i+1)));}}};
+
+async function fsGetRoster(){
+  const snap=await getDocs(collection(db,'crew'));
+  const roster={};
+  snap.forEach(d=>{ roster[d.id]=d.data().name; });
+  return roster;
 }
-async function jbWrite(bin,data){
-  const r=await fetch(`${JB_API}/b/${bin}`,{method:'PUT',headers:{"Content-Type":"application/json","X-Master-Key":JB_KEY,"X-Bin-Versioning":"false"},body:JSON.stringify(data)});
-  if(!r.ok) throw new Error('write fail '+r.status);
+async function fsSeedRoster(rosterObj){
+  const batch=writeBatch(db);
+  Object.entries(rosterObj).forEach(([id,name])=>{ batch.set(doc(db,'crew',id),{name}); });
+  await batch.commit();
 }
 
 // ── CREW ────────────────────────────────────────────────────────
@@ -555,12 +578,12 @@ async function loadCrew(){
   const tbody=document.getElementById('crewTableBody');
   tbody.innerHTML='<tr><td colspan="3" style="text-align:center;color:var(--steel);padding:1rem"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</td></tr>';
   try{
-    const d=await jbRead(BIN_ROSTER);
-    crewData=d.crew||{};
-    // If bin is empty, auto-seed silently
+    await authReady;
+    crewData=await _withRetry(fsGetRoster);
+    // If collection is empty, auto-seed silently
     if(!Object.keys(crewData).length){
       crewData={...ORIGINAL_ROSTER};
-      await jbWrite(BIN_ROSTER,{crew:crewData});
+      await fsSeedRoster(crewData);
     }
     renderCrewTable();
   } catch(e){
@@ -595,34 +618,37 @@ async function addCrew(){
   if(!id||!name){showStatus(st,'Please enter both a Crew ID and a name.','err');return;}
   if(!/^\d+$/.test(id)){showStatus(st,'Crew ID must be numeric.','err');return;}
   if(crewData[id]){showStatus(st,`ID ${id} already exists (${crewData[id]}).`,'err');return;}
-  crewData[id]=name;
   try{
-    await jbWrite(BIN_ROSTER,{crew:crewData});
+    await authReady;
+    await setDoc(doc(db,'crew',id),{name});
+    crewData[id]=name;
     document.getElementById('newCrewId').value='';
     document.getElementById('newCrewName').value='';
     renderCrewTable();
     showStatus(st,`Added: ${name} (${id})`,'ok');
-  } catch(e){ delete crewData[id]; showStatus(st,'Save failed — check network.','err'); }
+  } catch(e){ showStatus(st,'Save failed — check network.','err'); }
 }
 
 async function removeCrew(id){
   if(!confirm(`Remove ${crewData[id]} (${id}) from the roster?`)) return;
-  const backup=crewData[id]; delete crewData[id];
+  const backup=crewData[id];
   const st=document.getElementById('crewStatus');
   try{
-    await jbWrite(BIN_ROSTER,{crew:crewData});
+    await authReady;
+    await deleteDoc(doc(db,'crew',id));
+    delete crewData[id];
     renderCrewTable();
     showStatus(st,`Removed: ${backup} (${id})`,'ok');
-  } catch(e){ crewData[id]=backup; showStatus(st,'Remove failed — check network.','err'); }
+  } catch(e){ showStatus(st,'Remove failed — check network.','err'); }
 }
 
 async function seedRoster(){
   if(!confirm(`Restore the full original roster (${Object.keys(ORIGINAL_ROSTER).length} crew)? Any manually added entries will be merged in.`)) return;
   const st=document.getElementById('crewStatus');
-  // Merge: original + any new ones added since
   crewData={...ORIGINAL_ROSTER,...crewData};
   try{
-    await jbWrite(BIN_ROSTER,{crew:crewData});
+    await authReady;
+    await fsSeedRoster(crewData);
     renderCrewTable();
     showStatus(st,`Roster restored — ${Object.keys(crewData).length} crew members.`,'ok');
   } catch(e){ showStatus(st,'Restore failed — check network.','err'); }
@@ -635,17 +661,18 @@ function showStatus(el,msg,type){
 
 // ── SCORES ──────────────────────────────────────────────────────
 async function loadScores(){
-  await Promise.all([loadScoreTable('t1',BIN_T1),loadScoreTable('t2',BIN_T2),loadScoreTable('t3',BIN_T3),loadScoreTable('t4',BIN_T4)]);
+  await Promise.all([loadScoreTable('t1'),loadScoreTable('t2'),loadScoreTable('t3'),loadScoreTable('t4')]);
 }
 
 let scoresCache = {t1:[], t2:[], t3:[], t4:[]};
 
-async function loadScoreTable(key,bin){
+async function loadScoreTable(key){
   const tbody=document.getElementById('scores'+key.toUpperCase());
   tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr>`;
   try{
-    const d=await jbRead(bin);
-    const scores=(d.scores||[]).sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity));
+    await authReady;
+    const snap=await getDocs(collection(db,TEST_COLLECTIONS[key]));
+    const scores=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity));
     scoresCache[key]=scores;
     renderScoreTable(key,scores);
   } catch(e){
@@ -660,19 +687,70 @@ function _fmtTime(totalSeconds){
   return `${m}:${r.toString().padStart(2,'0')}`;
 }
 
+function renderScoreTable(key,scores){
+  const tbody=document.getElementById('scores'+key.toUpperCase());
+  if(!scores.length){
+    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:.75rem;font-size:.75rem">No scores yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=scores.map((e,i)=>{
+    const cls=e.score>=90?'hi':e.score>=75?'mid':'lo';
+    return `<tr>
+      <td style="color:var(--steel);font-size:.7rem">${i+1}</td>
+      <td style="font-size:.75rem">${e.name}</td>
+      <td class="score-pct ${cls}">${e.score}%</td>
+      <td style="color:var(--steel);font-size:.7rem">${e.time?_fmtTime(e.time):'—'}</td>
+      <td style="color:var(--steel);font-size:.7rem;text-align:center">${e.attempts||1}</td>
+      <td style="color:var(--steel);font-size:.7rem">${e.date||''}</td>
+      <td style="text-align:center"><button class="del-btn" onclick="deleteScore('${key}','${e.id}')" title="Remove this entry"><i class="fa-solid fa-xmark"></i></button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function deleteScore(key,id){
+  const entry=scoresCache[key].find(e=>e.id===id);
+  if(!entry) return;
+  const labelMap={t1:'USPH',t2:'Food Safety',t3:'Product Knowledge',t4:'Product Knowledge B'};
+  if(!confirm(`Remove ${entry.name}'s score (${entry.score}%) from the ${labelMap[key]} leaderboard?`)) return;
+  try{
+    await authReady;
+    await deleteDoc(doc(db,TEST_COLLECTIONS[key],id));
+    scoresCache[key]=scoresCache[key].filter(e=>e.id!==id);
+    renderScoreTable(key,scoresCache[key]);
+  } catch(e){ alert('Delete failed — check network.'); }
+}
+
+async function resetLeaderboard(key){
+  const labelMap={t1:'USPH Public Health',t2:'Food Safety',t3:'Product Knowledge',t4:'Product Knowledge B'};
+  if(!confirm(`Reset ALL scores for ${labelMap[key]}? This cannot be undone.`)) return;
+  try{
+    await authReady;
+    const snap=await getDocs(collection(db,TEST_COLLECTIONS[key]));
+    const batch=writeBatch(db);
+    snap.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+    scoresCache[key]=[];
+    renderScoreTable(key,[]);
+  } catch(e){ alert('Reset failed — check network.'); }
+}
+
 // ── OVERALL SCOREBOARD (public) ─────────────────────────────────
 async function loadOverallScoreboard(){
   const tbody=document.getElementById('overallScoreboardBody');
   try{
-    const [rosterData,t1,t2,t3,t4]=await Promise.all([
-      jbRead(BIN_ROSTER),jbRead(BIN_T1),jbRead(BIN_T2),jbRead(BIN_T3),jbRead(BIN_T4)
+    await authReady;
+    const [roster,t1,t2,t3,t4]=await Promise.all([
+      fsGetRoster(),
+      getDocs(collection(db,'scores_t1')),
+      getDocs(collection(db,'scores_t2')),
+      getDocs(collection(db,'scores_t3')),
+      getDocs(collection(db,'scores_t4')),
     ]);
-    const roster=rosterData.crew||{};
     const maps={
-      t1:new Map((t1.scores||[]).map(e=>[e.id,e])),
-      t2:new Map((t2.scores||[]).map(e=>[e.id,e])),
-      t3:new Map((t3.scores||[]).map(e=>[e.id,e])),
-      t4:new Map((t4.scores||[]).map(e=>[e.id,e])),
+      t1:new Map(t1.docs.map(d=>[d.id,d.data()])),
+      t2:new Map(t2.docs.map(d=>[d.id,d.data()])),
+      t3:new Map(t3.docs.map(d=>[d.id,d.data()])),
+      t4:new Map(t4.docs.map(d=>[d.id,d.data()])),
     };
     const rows=Object.entries(roster).map(([id,name])=>{
       const entries=['t1','t2','t3','t4'].map(k=>maps[k].get(id)).filter(Boolean);
@@ -707,60 +785,6 @@ async function loadOverallScoreboard(){
 }
 loadOverallScoreboard();
 
-// ── Deep-link support: index2.html?open=admin | ?open=manager ───
-(function(){
-  const target=new URLSearchParams(location.search).get('open');
-  if(target==='admin') openAdminModal();
-  if(target==='manager') openManagerModal();
-})();
-
-function renderScoreTable(key,scores){
-  const tbody=document.getElementById('scores'+key.toUpperCase());
-  if(!scores.length){
-    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:.75rem;font-size:.75rem">No scores yet.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML=scores.map((e,i)=>{
-    const cls=e.score>=90?'hi':e.score>=75?'mid':'lo';
-    return `<tr>
-      <td style="color:var(--steel);font-size:.7rem">${i+1}</td>
-      <td style="font-size:.75rem">${e.name}</td>
-      <td class="score-pct ${cls}">${e.score}%</td>
-      <td style="color:var(--steel);font-size:.7rem">${e.time?_fmtTime(e.time):'—'}</td>
-      <td style="color:var(--steel);font-size:.7rem;text-align:center">${e.attempts||1}</td>
-      <td style="color:var(--steel);font-size:.7rem">${e.date||''}</td>
-      <td style="text-align:center"><button class="del-btn" onclick="deleteScore('${key}','${e.id}')" title="Remove this entry"><i class="fa-solid fa-xmark"></i></button></td>
-    </tr>`;
-  }).join('');
-}
-
-async function deleteScore(key,id){
-  const entry=scoresCache[key].find(e=>e.id===id);
-  if(!entry) return;
-  const labelMap={t1:'USPH',t2:'Food Safety',t3:'Product Knowledge',t4:'Product Knowledge B'};
-  if(!confirm(`Remove ${entry.name}'s score (${entry.score}%) from the ${labelMap[key]} leaderboard?`)) return;
-  const updated=scoresCache[key].filter(e=>e.id!==id);
-  const binMap={t1:BIN_T1,t2:BIN_T2,t3:BIN_T3,t4:BIN_T4};
-  const bin=binMap[key];
-  try{
-    await jbWrite(bin,{scores:updated});
-    scoresCache[key]=updated;
-    renderScoreTable(key,updated);
-  } catch(e){ alert('Delete failed — check network.'); }
-}
-
-async function resetLeaderboard(key){
-  const labelMap={t1:'USPH Public Health',t2:'Food Safety',t3:'Product Knowledge',t4:'Product Knowledge B'};
-  if(!confirm(`Reset ALL scores for ${labelMap[key]}? This cannot be undone.`)) return;
-  const binMap={t1:BIN_T1,t2:BIN_T2,t3:BIN_T3,t4:BIN_T4};
-  const bin=binMap[key];
-  try{
-    await jbWrite(bin,{scores:[]});
-    scoresCache[key]=[];
-    renderScoreTable(key,[]);
-  } catch(e){ alert('Reset failed — check network.'); }
-}
-
 // ── MANAGER PANEL ───────────────────────────────────────────────
 function openManagerModal(){
   document.getElementById('managerOverlay').classList.add('open');
@@ -790,15 +814,19 @@ async function loadManagerData(){
   const tbody=document.getElementById('managerTableBody');
   tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:1rem"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</td></tr>';
   try{
-    const [rosterData,t1,t2,t3,t4]=await Promise.all([
-      jbRead(BIN_ROSTER),jbRead(BIN_T1),jbRead(BIN_T2),jbRead(BIN_T3),jbRead(BIN_T4)
+    await authReady;
+    const [roster,t1,t2,t3,t4]=await Promise.all([
+      fsGetRoster(),
+      getDocs(collection(db,'scores_t1')),
+      getDocs(collection(db,'scores_t2')),
+      getDocs(collection(db,'scores_t3')),
+      getDocs(collection(db,'scores_t4')),
     ]);
-    const roster=rosterData.crew||{};
     const sets={
-      t1:new Set((t1.scores||[]).map(e=>e.id)),
-      t2:new Set((t2.scores||[]).map(e=>e.id)),
-      t3:new Set((t3.scores||[]).map(e=>e.id)),
-      t4:new Set((t4.scores||[]).map(e=>e.id)),
+      t1:new Set(t1.docs.map(d=>d.id)),
+      t2:new Set(t2.docs.map(d=>d.id)),
+      t3:new Set(t3.docs.map(d=>d.id)),
+      t4:new Set(t4.docs.map(d=>d.id)),
     };
     const rows=Object.entries(roster).map(([id,name])=>{
       const done=['t1','t2','t3','t4'].filter(k=>sets[k].has(id));
@@ -835,6 +863,30 @@ async function loadManagerData(){
     tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:#f4a0a0;padding:1rem">Failed to load manager data — check network.</td></tr>';
   }
 }
+
+// ── Deep-link support: index2.html?open=admin | ?open=manager ───
+(function(){
+  const target=new URLSearchParams(location.search).get('open');
+  if(target==='admin') openAdminModal();
+  if(target==='manager') openManagerModal();
+})();
+
+// ── Expose functions referenced by inline HTML onclick handlers ─────
+window.openAdminModal=openAdminModal;
+window.closeAdminModal=closeAdminModal;
+window.overlayClick=overlayClick;
+window.attemptLogin=attemptLogin;
+window.switchAdminTab=switchAdminTab;
+window.addCrew=addCrew;
+window.removeCrew=removeCrew;
+window.seedRoster=seedRoster;
+window.resetLeaderboard=resetLeaderboard;
+window.deleteScore=deleteScore;
+window.openManagerModal=openManagerModal;
+window.closeManagerModal=closeManagerModal;
+window.managerOverlayClick=managerOverlayClick;
+window.attemptManagerLogin=attemptManagerLogin;
+window.loadManagerData=loadManagerData;
 </script>
 </body>
 </html>
