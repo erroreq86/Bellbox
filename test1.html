@@ -185,6 +185,7 @@
         const FALLBACK_ROSTER = {"123123":"Test User","003274":"Gheorghe Marian Toma","004108":"Mihail Motea","007177":"Neil Francis Nelson Dias","018512":"Apollo Cuballes","020912":"Virgilio Lim Dira","246501":"Ma. Lani Apat Milloria","246963":"Jahnique Jeromie De Roche","307039":"Bilmar Estrella Beldek","315577":"Janice Sandoval","320019":"Menchie Garcia Martinez","326193":"Mark Sadiasa","341292":"Rolando Jr. Maculas","415785":"Vanessa Vitasa","423904":"Jacek Grabski","425654":"Herman Vialago Duran","431402":"Bagus Anang Mahardika","431977":"Oswin D Costa","434027":"Rico Mission Andal","443568":"Jay Lord Sina-on","445080":"Mahesh Kankania Gosh","456302":"Shekar Natta","457430":"Marvid Dimasalan Mercado","460635":"Okeeffe Patel","480493":"Hashmi Gula Gulam Abbas","541772":"Diana Szabo","606270":"Kagiso Ronald Moiloa","623375":"Ashik Suresh Shetty","633114":"Reynaldi Alfarizi","634340":"Kadek Jayadi","637362":"Shiv FNU","638480":"Ega Dwi Oktavia","656241":"Mary Grace Peligrino","658131":"Aleksander Grabski","663675":"Mark Alvin Flores","663755":"Jhovin Orozco","664933":"Michelle Fernandes Cardozo","666196":"Samuel Wanyoro","666894":"Kevin Moraes","677204":"Scarleth Zamora Timzon","677674":"Noriel Dimandal Novicio","677678":"Polondaya Michael","677689":"Sito Anggay Tomo","680325":"Made Permatabuana","680713":"Kadek Dian Sari","680943":"Josselin Yoletty Castro Vasquez","681109":"Gond Abhishek","681375":"Shubham Sharma","682690":"Saidi Ngoba Shida","683277":"Satavisha Pandi Num","683704":"Brendan Hilton Jared Fixen","683852":"Yakzari Nahomy Oporta Bodan","683953":"Vince Eric Aque","684004":"John Joven Cutarra Flores","684022":"Kevin Lao Singuan","684044":"Jerald Olea","684115":"I Gede Krisna","684204":"Jurene Bermoy","684227":"Jomar Fernandico Flandez","684244":"Keezha Mangalo","684265":"Jeff Sarsonas,Mike","684294":"Ni Putu Tia Julianti","684518":"Rashmi Rathour","684538":"Ayse Akilli","684889":"Siham Rhazaouane","685086":"Ida Ayu Made Yoni","685581":"Sneha Kumari","687244":"Milan Bera","687565":"Lloyd Anthony Guinto","687643":"John Patrick Tolentino","688253":"Dairy Eldon Omeir Goff","693031":"Ni Kadek Deni Sriantini","693720":"Anif Adzhar","697075":"Aira Orocio Soria, Mekhaela","698477":"Rholly Salazar Carino","699077":"Jay-Ar Alvarado De Guzman","699106":"Mary Rose Mercado Castro","699119":"Glendy Marilu Arita Dominguez","699435":"Francisco Garduno Nava","699778":"Clair Dixon Jinelle Briana"};
 
         loadRoster();
+        authReady.then(syncPendingFallback).catch(()=>{});
 
         const quizData = [
             {q:"1. Which of the following is the correct vertical storage order (top to bottom) in a service refrigerator?",a:["Raw poultry, Ground beef, Whole muscle cuts, Raw seafood, Ready-to-eat foods.","Ready-to-eat foods, Raw seafood, Raw whole muscle cuts, Raw ground meats, Raw poultry.","Raw seafood, Ready-to-eat foods, Raw poultry, Ground beef.","Vertical order does not matter if all items are covered with plastic wrap."]},
@@ -288,13 +289,21 @@
             return `${m}:${r.toString().padStart(2,'0')}`;
         }
 
-        function startVSPQuiz(){
+        async function startVSPQuiz(){
             const idInput=document.getElementById('crew-id').value.trim();
             const errorBox=document.getElementById('auth-error');const errorMsg=document.getElementById('auth-error-msg');const idField=document.getElementById('crew-id');
             errorBox.classList.add('hidden');idField.classList.remove('border-rose-600');
             if(!idInput){errorMsg.textContent="Please enter your Crew ID to begin.";errorBox.classList.remove('hidden');idField.focus();return;}
             if(!rosterReady){errorMsg.textContent="Roster still loading, please wait a moment.";errorBox.classList.remove('hidden');return;}
             if(!crewRoster.hasOwnProperty(idInput)){errorMsg.textContent=`ID ${idInput} is not registered. Contact your supervisor.`;errorBox.classList.remove('hidden');idField.classList.add('border-rose-600');idField.select();return;}
+            try{
+                await authReady;
+                const prior=await _readScoreDoc(idInput);
+                if(prior){
+                    const proceed=confirm(`Your best on this test: ${prior.score}% (${prior.attempts||1} attempt${(prior.attempts||1)===1?'':'s'}, ${_fmtTime(prior.time||0)}).\n\nStart a new attempt?`);
+                    if(!proceed) return;
+                }
+            } catch(e){ /* lookup failed — proceed without the nudge */ }
             currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;
             _buildShuffledQuiz();
             document.getElementById('quiz-auth-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-play-screen').classList.remove('hidden');
@@ -381,6 +390,7 @@
                 });
                 document.getElementById('final-meta-text').innerText=`Score saved ✓ — ${currentCrewName} · ${correctAnswersCount}/${shuffledQuiz.length} correct · ${_fmtTime(elapsedSeconds)}`;
             }catch(e){
+                console.error('Firestore save failed:', e);
                 let local=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');
                 const priorLocal=local.find(x=>x.id===entry.id);
                 const attempts=(priorLocal?(priorLocal.attempts||1):0)+1;
@@ -388,11 +398,26 @@
                 local=local.filter(x=>x.id!==entry.id);
                 local.push(isBetter?{...entry,attempts}:{...priorLocal,attempts});
                 localStorage.setItem('vsp_scores_fallback',JSON.stringify(local));
-                document.getElementById('final-meta-text').innerText=`Saved locally (no network) — syncs when online`;
+                document.getElementById('final-meta-text').innerText=`Saved locally — could not reach Firestore (${e.code||e.message||'unknown error'}). Open the browser console for details.`;
             }
         }
 
         function restartQuiz(){stopTimer();document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
+
+        async function syncPendingFallback(){
+            const pending=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');
+            if(!pending.length) return;
+            try{
+                await authReady;
+                for(const p of pending){
+                    const prior=await _readScoreDoc(p.id);
+                    const attempts=(prior?(prior.attempts||1):0)+(p.attempts||1);
+                    const isBetter=!prior||p.score>prior.score||(p.score===prior.score&&(p.time||Infinity)<(prior.time||Infinity));
+                    await _writeScoreDoc(p.id, isBetter?{...p,attempts}:{...prior,attempts});
+                }
+                localStorage.removeItem('vsp_scores_fallback');
+            } catch(e){ console.error('Pending score sync failed:', e); /* stays queued, will retry next load */ }
+        }
 
         async function renderLeaderboard(){
             const container=document.getElementById('leaderboard-rows');
@@ -400,19 +425,9 @@
             let scores=[];
             try{
                 await authReady;
+                await syncPendingFallback();
                 scores=await _withRetry(_readAllScores);
-                const pending=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');
-                if(pending.length>0){
-                    for(const p of pending){
-                        const prior=await _readScoreDoc(p.id);
-                        const attempts=(prior?(prior.attempts||1):0)+(p.attempts||1);
-                        const isBetter=!prior||p.score>prior.score||(p.score===prior.score&&(p.time||Infinity)<(prior.time||Infinity));
-                        await _writeScoreDoc(p.id, isBetter?{...p,attempts}:{...prior,attempts});
-                    }
-                    localStorage.removeItem('vsp_scores_fallback');
-                    scores=await _readAllScores();
-                }
-            }catch(e){scores=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server.</td></tr>`;return;}}
+            }catch(e){console.error('Firestore leaderboard load failed:', e);scores=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');if(!scores.length){container.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-xs text-rose-400"><i class="fa-solid fa-wifi block text-lg mb-1"></i>Could not reach score server (${e.code||e.message||'unknown error'}).</td></tr>`;return;}}
             scores=scores.sort((a,b)=>b.score-a.score||(a.time||Infinity)-(b.time||Infinity));
             if(!scores.length){container.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-xs text-slate-500 italic">No records yet.</td></tr>`;return;}
             container.innerHTML="";
