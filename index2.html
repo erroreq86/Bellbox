@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Room Service — Knowledge Assessments</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#060e1c">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -137,6 +142,8 @@ main{max-width:960px;margin:0 auto;padding:3rem 1.5rem 4rem}
 .scores-section h3{font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center}
 .scores-section h3 button{font-size:.65rem;background:transparent;border:1px solid rgba(192,57,43,.4);color:var(--red);padding:.18rem .5rem;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:.05em;transition:background .2s}
 .scores-section h3 button:hover{background:rgba(192,57,43,.15)}
+.scores-section h3 button.export-btn{border-color:rgba(212,176,74,.4);color:var(--brass)}
+.scores-section h3 button.export-btn:hover{background:rgba(212,176,74,.15)}
 .score-table{width:100%;border-collapse:collapse;font-size:.75rem}
 .score-table th{text-align:left;padding:.4rem .6rem;color:var(--steel);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--navy4);font-weight:600}
 .score-table td{padding:.45rem .6rem;border-bottom:1px solid rgba(26,48,80,.5);color:var(--foam)}
@@ -163,6 +170,13 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
   .card-btn,.porthole-ring,.porthole-icon{transition:none}
 }
 </style>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW registration failed:', err));
+  });
+}
+</script>
 </head>
 <body>
 
@@ -346,6 +360,7 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchAdminTab('crew')"><i class="fa-solid fa-users" style="margin-right:.4rem"></i>Crew Roster</button>
         <button class="admin-tab" onclick="switchAdminTab('scores')"><i class="fa-solid fa-chart-bar" style="margin-right:.4rem"></i>Scores</button>
+        <button class="admin-tab" onclick="switchAdminTab('analytics')"><i class="fa-solid fa-chart-pie" style="margin-right:.4rem"></i>Analytics</button>
       </div>
 
       <!-- CREW TAB -->
@@ -356,6 +371,20 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
           <input type="text" id="newCrewName" placeholder="Full name" style="flex:2">
           <button onclick="addCrew()"><i class="fa-solid fa-plus" style="margin-right:.3rem"></i>Add</button>
         </div>
+
+        <details style="margin-bottom:1rem;border:1px solid var(--navy4);border-radius:8px;">
+          <summary style="cursor:pointer;padding:.6rem .85rem;font-size:.75rem;color:var(--steel);letter-spacing:.05em;text-transform:uppercase;font-weight:600;user-select:none">
+            <i class="fa-solid fa-file-import" style="margin-right:.4rem;color:var(--brass)"></i>Bulk import
+          </summary>
+          <div style="padding:0 .85rem .85rem">
+            <div style="font-size:.7rem;color:var(--steel);margin-bottom:.5rem">One crew member per line, as <code>id,name</code>. Existing IDs get their name updated.</div>
+            <textarea id="bulkImportText" rows="4" placeholder="684518,Rashmi Rathour&#10;684538,Ayse Akilli" style="width:100%;background:var(--navy);border:1px solid var(--navy4);border-radius:8px;padding:.6rem .75rem;color:#fff;font-size:.8rem;font-family:monospace;resize:vertical;outline:none"></textarea>
+            <button onclick="bulkImportCrew()" style="margin-top:.6rem;padding:.55rem 1rem;background:var(--brass);color:var(--navy);border:none;border-radius:8px;font-weight:700;font-size:.78rem;cursor:pointer">
+              <i class="fa-solid fa-file-import" style="margin-right:.3rem"></i>Import Pasted List
+            </button>
+          </div>
+        </details>
+
         <div style="margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
           <span style="font-size:.7rem;color:var(--steel)" id="crewCount"></span>
           <button onclick="seedRoster()" style="font-size:.68rem;background:transparent;border:1px solid var(--navy4);color:var(--steel);padding:.2rem .6rem;border-radius:4px;cursor:pointer;transition:border-color .2s,color .2s" onmouseover="this.style.borderColor='var(--brass)';this.style.color='var(--brass)'" onmouseout="this.style.borderColor='var(--navy4)';this.style.color='var(--steel)'">
@@ -375,7 +404,10 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
         <div class="scores-grid">
           <div class="scores-section">
             <h3>USPH Public Health
-              <button onclick="resetLeaderboard('t1')">Reset All</button>
+              <span style="display:flex;gap:.4rem">
+                <button class="export-btn" onclick="exportScoreCSV('t1')"><i class="fa-solid fa-download"></i></button>
+                <button onclick="resetLeaderboard('t1')">Reset All</button>
+              </span>
             </h3>
             <div style="overflow-x:auto">
               <table class="score-table">
@@ -386,7 +418,10 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
           </div>
           <div class="scores-section">
             <h3>Food Safety
-              <button onclick="resetLeaderboard('t2')">Reset All</button>
+              <span style="display:flex;gap:.4rem">
+                <button class="export-btn" onclick="exportScoreCSV('t2')"><i class="fa-solid fa-download"></i></button>
+                <button onclick="resetLeaderboard('t2')">Reset All</button>
+              </span>
             </h3>
             <div style="overflow-x:auto">
               <table class="score-table">
@@ -397,7 +432,10 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
           </div>
           <div class="scores-section">
             <h3>Product Knowledge
-              <button onclick="resetLeaderboard('t3')">Reset All</button>
+              <span style="display:flex;gap:.4rem">
+                <button class="export-btn" onclick="exportScoreCSV('t3')"><i class="fa-solid fa-download"></i></button>
+                <button onclick="resetLeaderboard('t3')">Reset All</button>
+              </span>
             </h3>
             <div style="overflow-x:auto">
               <table class="score-table">
@@ -408,7 +446,10 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
           </div>
           <div class="scores-section">
             <h3>Product Knowledge B
-              <button onclick="resetLeaderboard('t4')">Reset All</button>
+              <span style="display:flex;gap:.4rem">
+                <button class="export-btn" onclick="exportScoreCSV('t4')"><i class="fa-solid fa-download"></i></button>
+                <button onclick="resetLeaderboard('t4')">Reset All</button>
+              </span>
             </h3>
             <div style="overflow-x:auto">
               <table class="score-table">
@@ -416,6 +457,29 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
                 <tbody id="scoresT4"><tr><td colspan="7" style="text-align:center;color:var(--steel);padding:.75rem"><i class="fa-solid fa-circle-notch fa-spin"></i></td></tr></tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS TAB -->
+      <div id="adminTab-analytics" class="admin-tab-content">
+        <div style="font-size:.72rem;color:var(--steel);margin-bottom:1rem">Questions ranked by miss rate across every attempt — not just the current leaderboard. Use this to spot what to retrain, not who to blame.</div>
+        <div class="scores-grid">
+          <div class="scores-section">
+            <h3>USPH Public Health</h3>
+            <div id="analyticsT1" style="font-size:.75rem;color:var(--steel);padding:.5rem 0"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+          </div>
+          <div class="scores-section">
+            <h3>Food Safety</h3>
+            <div id="analyticsT2" style="font-size:.75rem;color:var(--steel);padding:.5rem 0"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+          </div>
+          <div class="scores-section">
+            <h3>Product Knowledge</h3>
+            <div id="analyticsT3" style="font-size:.75rem;color:var(--steel);padding:.5rem 0"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+          </div>
+          <div class="scores-section">
+            <h3>Product Knowledge B</h3>
+            <div id="analyticsT4" style="font-size:.75rem;color:var(--steel);padding:.5rem 0"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
           </div>
         </div>
       </div>
@@ -464,11 +528,15 @@ footer{background:var(--navy2);border-top:1px solid var(--navy3);padding:1rem 1.
           <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--brass)" id="mgrAvgPct">–</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;gap:.75rem;flex-wrap:wrap">
         <span style="font-size:.78rem;font-weight:700;color:var(--brass);text-transform:uppercase;letter-spacing:.08em">Crew Completion</span>
-        <button onclick="loadManagerData()" style="font-size:.68rem;background:transparent;border:1px solid var(--navy4);color:var(--steel);padding:.2rem .6rem;border-radius:4px;cursor:pointer">
-          <i class="fa-solid fa-rotate" style="margin-right:.3rem"></i>Refresh
-        </button>
+        <div style="display:flex;gap:.5rem;align-items:center;flex:1;justify-content:flex-end;flex-wrap:wrap;min-width:200px">
+          <input type="text" id="managerSearchInput" placeholder="Search name or ID…" oninput="filterManagerTable()"
+            style="background:var(--navy);border:1px solid var(--navy4);border-radius:6px;padding:.4rem .7rem;color:#fff;font-size:.75rem;max-width:220px;outline:none">
+          <button onclick="loadManagerData()" style="font-size:.68rem;background:transparent;border:1px solid var(--navy4);color:var(--steel);padding:.2rem .6rem;border-radius:4px;cursor:pointer;white-space:nowrap">
+            <i class="fa-solid fa-rotate" style="margin-right:.3rem"></i>Refresh
+          </button>
+        </div>
       </div>
       <div style="overflow-x:auto;max-height:420px;overflow-y:auto;border:1px solid var(--navy4);border-radius:8px">
         <table class="crew-table" style="font-size:.75rem">
@@ -554,6 +622,7 @@ function switchAdminTab(tab){
   document.querySelector(`[onclick="switchAdminTab('${tab}')"]`).classList.add('active');
   document.getElementById('adminTab-'+tab).classList.add('active');
   if(tab==='scores') loadScores();
+  if(tab==='analytics') loadAnalytics();
 }
 
 // ── Firestore helpers ─────────────────────────────────────────────
@@ -587,10 +656,11 @@ async function loadCrew(){
     }
     renderCrewTable();
   } catch(e){
+    console.error('Firestore roster load failed:', e);
     // Fallback to original if network fails
     crewData={...ORIGINAL_ROSTER};
     renderCrewTable();
-    showStatus(document.getElementById('crewStatus'),'Network error — showing local roster, changes may not save.','err');
+    showStatus(document.getElementById('crewStatus'),`Network error (${e.code||e.message||'unknown'}) — showing local roster, changes may not save.`,'err');
   }
 }
 
@@ -629,17 +699,57 @@ async function addCrew(){
   } catch(e){ showStatus(st,'Save failed — check network.','err'); }
 }
 
+async function bulkImportCrew(){
+  const raw=document.getElementById('bulkImportText').value.trim();
+  const st=document.getElementById('crewStatus');
+  if(!raw){ showStatus(st,'Paste at least one line first — one crew member per line as id,name.','err'); return; }
+
+  const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const toImport={};
+  let errorCount=0, firstError='';
+  lines.forEach((line,i)=>{
+    const commaIdx=line.indexOf(',');
+    if(commaIdx===-1){ errorCount++; if(!firstError)firstError=`Line ${i+1}: no comma found ("${line}").`; return; }
+    const id=line.slice(0,commaIdx).trim();
+    const name=line.slice(commaIdx+1).trim();
+    if(!/^\d+$/.test(id)){ errorCount++; if(!firstError)firstError=`Line ${i+1}: ID "${id}" isn't numeric.`; return; }
+    if(!name){ errorCount++; if(!firstError)firstError=`Line ${i+1}: missing a name.`; return; }
+    toImport[id]=name;
+  });
+
+  const total=Object.keys(toImport).length;
+  if(!total){ showStatus(st,`No valid rows found. ${firstError}`,'err'); return; }
+
+  const newCount=Object.keys(toImport).filter(id=>!crewData[id]).length;
+  const updatedCount=total-newCount;
+
+  try{
+    await authReady;
+    await fsSeedRoster(toImport);
+    crewData={...crewData,...toImport};
+    document.getElementById('bulkImportText').value='';
+    renderCrewTable();
+    showStatus(st,`Imported ${newCount} new, updated ${updatedCount} existing${errorCount?`, skipped ${errorCount} invalid line${errorCount===1?'':'s'}`:''}.`,'ok');
+  } catch(e){ showStatus(st,'Bulk import failed — check network.','err'); }
+}
+
 async function removeCrew(id){
-  if(!confirm(`Remove ${crewData[id]} (${id}) from the roster?`)) return;
+  if(!confirm(`Remove ${crewData[id]} (${id}) from the roster? Their scores on all four assessments will also be permanently deleted.`)) return;
   const backup=crewData[id];
   const st=document.getElementById('crewStatus');
   try{
     await authReady;
-    await deleteDoc(doc(db,'crew',id));
+    const batch=writeBatch(db);
+    batch.delete(doc(db,'crew',id));
+    Object.values(TEST_COLLECTIONS).forEach(coll=>batch.delete(doc(db,coll,id)));
+    await batch.commit();
     delete crewData[id];
+    ['t1','t2','t3','t4'].forEach(key=>{
+      if(scoresCache[key]) scoresCache[key]=scoresCache[key].filter(e=>e.id!==id);
+    });
     renderCrewTable();
-    showStatus(st,`Removed: ${backup} (${id})`,'ok');
-  } catch(e){ showStatus(st,'Remove failed — check network.','err'); }
+    showStatus(st,`Removed: ${backup} (${id}) — including their scores on all four tests.`,'ok');
+  } catch(e){ console.error('Remove crew failed:', e); showStatus(st,'Remove failed — check network.','err'); }
 }
 
 async function seedRoster(){
@@ -676,7 +786,8 @@ async function loadScoreTable(key){
     scoresCache[key]=scores;
     renderScoreTable(key,scores);
   } catch(e){
-    tbody.innerHTML=`<tr><td colspan="7" style="color:#f4a0a0;padding:.75rem;font-size:.75rem;text-align:center">Load failed.</td></tr>`;
+    console.error('Firestore score table load failed:', e);
+    tbody.innerHTML=`<tr><td colspan="7" style="color:#f4a0a0;padding:.75rem;font-size:.75rem;text-align:center">Load failed (${e.code||e.message||'unknown error'}).</td></tr>`;
   }
 }
 
@@ -707,6 +818,28 @@ function renderScoreTable(key,scores){
   }).join('');
 }
 
+function _csvEscape(val){
+  const s=String(val ?? '');
+  if(/[",\r\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
+  return s;
+}
+
+function exportScoreCSV(key){
+  const scores=scoresCache[key]||[];
+  if(!scores.length){ alert('No scores to export yet — load the Scores tab first.'); return; }
+  const labelMap={t1:'USPH_Public_Health',t2:'Food_Safety',t3:'Product_Knowledge',t4:'Product_Knowledge_B'};
+  const header=['Rank','Crew ID','Name','Score (%)','Time','Attempts','Date'];
+  const rows=scores.map((e,i)=>[i+1,e.id,e.name,e.score,e.time?_fmtTime(e.time):'',e.attempts||1,e.date||'']);
+  const csv=[header,...rows].map(r=>r.map(_csvEscape).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`portholes_${labelMap[key]}_scores_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 async function deleteScore(key,id){
   const entry=scoresCache[key].find(e=>e.id===id);
   if(!entry) return;
@@ -732,6 +865,53 @@ async function resetLeaderboard(key){
     scoresCache[key]=[];
     renderScoreTable(key,[]);
   } catch(e){ alert('Reset failed — check network.'); }
+}
+
+// ── ANALYTICS (per-question miss rates) ──────────────────────────
+async function loadAnalytics(){
+  for(const key of ['t1','t2','t3','t4']){
+    const el=document.getElementById('analytics'+key.toUpperCase());
+    el.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>';
+    try{
+      await authReady;
+      const snap=await getDoc(doc(db,'question_stats',key));
+      renderAnalyticsSection(key, snap.exists()?snap.data():{});
+    } catch(e){
+      console.error('Analytics load failed:', e);
+      el.innerHTML=`<div style="color:#f4a0a0">Failed to load (${e.code||e.message||'unknown error'}).</div>`;
+    }
+  }
+}
+
+function renderAnalyticsSection(key, data){
+  const el=document.getElementById('analytics'+key.toUpperCase());
+  const entries=Object.entries(data||{}).map(([qkey,stats])=>({
+    text: stats.text || `Question ${qkey.replace('q','')}`,
+    attempts: stats.attempts||0,
+    misses: stats.misses||0
+  })).filter(e=>e.attempts>0);
+
+  if(!entries.length){
+    el.innerHTML='<div style="font-style:italic">No attempts recorded yet.</div>';
+    return;
+  }
+
+  entries.sort((a,b)=>(b.misses/b.attempts)-(a.misses/a.attempts) || b.misses-a.misses);
+
+  el.innerHTML=entries.slice(0,10).map(e=>{
+    const rate=Math.round((e.misses/e.attempts)*100);
+    const color=rate>=50?'#f4a0a0':rate>=25?'#fcd34d':'#6ee7b7';
+    return `<div style="padding:.55rem 0;border-top:1px solid var(--navy4)">
+      <div style="display:flex;justify-content:space-between;gap:.6rem;margin-bottom:.3rem">
+        <span style="color:var(--foam);flex:1;line-height:1.4">${e.text}</span>
+        <span style="font-weight:700;color:${color};white-space:nowrap">${rate}%</span>
+      </div>
+      <div style="height:4px;background:var(--navy4);border-radius:99px;overflow:hidden">
+        <div style="height:100%;width:${rate}%;background:${color}"></div>
+      </div>
+      <div style="font-size:.62rem;color:var(--steel);margin-top:.25rem">${e.misses} of ${e.attempts} attempts missed</div>
+    </div>`;
+  }).join('');
 }
 
 // ── OVERALL SCOREBOARD (public) ─────────────────────────────────
@@ -780,7 +960,8 @@ async function loadOverallScoreboard(){
       </tr>`;
     }).join('');
   } catch(e){
-    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:#f4a0a0;padding:1rem;font-size:.78rem">Could not load scoreboard — check network.</td></tr>';
+    console.error('Firestore overall scoreboard load failed:', e);
+    tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:#f4a0a0;padding:1rem;font-size:.78rem">Could not load scoreboard (${e.code||e.message||'unknown error'}).</td></tr>`;
   }
 }
 loadOverallScoreboard();
@@ -810,9 +991,13 @@ async function attemptManagerLogin(){
   }
 }
 
+let managerRows=[];
+
 async function loadManagerData(){
   const tbody=document.getElementById('managerTableBody');
   tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:1rem"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading…</td></tr>';
+  const searchInput=document.getElementById('managerSearchInput');
+  if(searchInput) searchInput.value='';
   try{
     await authReady;
     const [roster,t1,t2,t3,t4]=await Promise.all([
@@ -833,6 +1018,8 @@ async function loadManagerData(){
       return {id,name,done,pct:Math.round(done.length/4*100)};
     }).sort((a,b)=>a.pct-b.pct||a.name.localeCompare(b.name));
 
+    managerRows=rows;
+
     const totalCrew=rows.length;
     const fullyDone=rows.filter(r=>r.done.length===4).length;
     const notStarted=rows.filter(r=>r.done.length===0).length;
@@ -843,25 +1030,42 @@ async function loadManagerData(){
     document.getElementById('mgrNotStarted').textContent=notStarted;
     document.getElementById('mgrAvgPct').textContent=avgPct+'%';
 
-    const chk=(r,k)=>r.done.includes(k)
-      ?'<i class="fa-solid fa-circle-check" style="color:var(--green)"></i>'
-      :'<i class="fa-regular fa-circle" style="color:var(--navy4)"></i>';
-
-    tbody.innerHTML=rows.map(r=>{
-      const flagged=r.done.length===0;
-      return `<tr${flagged?' style="background:rgba(192,57,43,.08)"':''}>
-        <td style="font-family:monospace;color:var(--steel);font-size:.75rem">${r.id}</td>
-        <td style="font-size:.78rem">${r.name}${flagged?' <span style="font-size:.6rem;color:#f4a0a0;border:1px solid rgba(192,57,43,.4);padding:.05rem .4rem;border-radius:99px;margin-left:.35rem;text-transform:uppercase;letter-spacing:.05em">Not Started</span>':''}</td>
-        <td style="text-align:center">${chk(r,'t1')}</td>
-        <td style="text-align:center">${chk(r,'t2')}</td>
-        <td style="text-align:center">${chk(r,'t3')}</td>
-        <td style="text-align:center">${chk(r,'t4')}</td>
-        <td style="text-align:center;font-weight:700;color:${r.pct===100?'#6ee7b7':r.pct===0?'#f4a0a0':'var(--foam)'}">${r.pct}%</td>
-      </tr>`;
-    }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:1rem">No crew on roster.</td></tr>';
+    renderManagerRows(rows);
   } catch(e){
-    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:#f4a0a0;padding:1rem">Failed to load manager data — check network.</td></tr>';
+    console.error('Firestore manager data load failed:', e);
+    tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;color:#f4a0a0;padding:1rem">Failed to load manager data (${e.code||e.message||'unknown error'}).</td></tr>`;
   }
+}
+
+function renderManagerRows(rows){
+  const tbody=document.getElementById('managerTableBody');
+  const chk=(r,k)=>r.done.includes(k)
+    ?'<i class="fa-solid fa-circle-check" style="color:var(--green)"></i>'
+    :'<i class="fa-regular fa-circle" style="color:var(--navy4)"></i>';
+
+  tbody.innerHTML=rows.map(r=>{
+    const flagged=r.done.length===0;
+    return `<tr${flagged?' style="background:rgba(192,57,43,.08)"':''}>
+      <td style="font-family:monospace;color:var(--steel);font-size:.75rem">${r.id}</td>
+      <td style="font-size:.78rem">${r.name}${flagged?' <span style="font-size:.6rem;color:#f4a0a0;border:1px solid rgba(192,57,43,.4);padding:.05rem .4rem;border-radius:99px;margin-left:.35rem;text-transform:uppercase;letter-spacing:.05em">Not Started</span>':''}</td>
+      <td style="text-align:center">${chk(r,'t1')}</td>
+      <td style="text-align:center">${chk(r,'t2')}</td>
+      <td style="text-align:center">${chk(r,'t3')}</td>
+      <td style="text-align:center">${chk(r,'t4')}</td>
+      <td style="text-align:center;font-weight:700;color:${r.pct===100?'#6ee7b7':r.pct===0?'#f4a0a0':'var(--foam)'}">${r.pct}%</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:1rem">No crew on roster.</td></tr>';
+}
+
+function filterManagerTable(){
+  const q=document.getElementById('managerSearchInput').value.trim().toLowerCase();
+  if(!q){ renderManagerRows(managerRows); return; }
+  const filtered=managerRows.filter(r=>r.name.toLowerCase().includes(q)||r.id.includes(q));
+  if(!filtered.length){
+    document.getElementById('managerTableBody').innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--steel);padding:1rem;font-style:italic">No crew match "${q}".</td></tr>`;
+    return;
+  }
+  renderManagerRows(filtered);
 }
 
 // ── Deep-link support: index2.html?open=admin | ?open=manager ───
@@ -878,15 +1082,18 @@ window.overlayClick=overlayClick;
 window.attemptLogin=attemptLogin;
 window.switchAdminTab=switchAdminTab;
 window.addCrew=addCrew;
+window.bulkImportCrew=bulkImportCrew;
 window.removeCrew=removeCrew;
 window.seedRoster=seedRoster;
 window.resetLeaderboard=resetLeaderboard;
 window.deleteScore=deleteScore;
+window.exportScoreCSV=exportScoreCSV;
 window.openManagerModal=openManagerModal;
 window.closeManagerModal=closeManagerModal;
 window.managerOverlayClick=managerOverlayClick;
 window.attemptManagerLogin=attemptManagerLogin;
 window.loadManagerData=loadManagerData;
+window.filterManagerTable=filterManagerTable;
 </script>
 </body>
 </html>
