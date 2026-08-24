@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FOH USPH Final Examination Terminal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#060e1c">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,6 +15,13 @@
         .tab-content.active { display: block; }
         html, body { overflow-x: hidden; -webkit-overflow-scrolling: touch; }
     </style>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((err) => console.warn('SW registration failed:', err));
+      });
+    }
+    </script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col select-none">
 
@@ -137,7 +148,7 @@
         // ── Firebase ────────────────────────────────────────────────────────
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js';
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js';
-        import { getFirestore, collection, doc, getDoc, getDocs, setDoc } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js';
+        import { getFirestore, collection, doc, getDoc, getDocs, setDoc, increment } from 'https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js';
 
         const firebaseConfig = {
           apiKey: "AIzaSyDNtUZf28HhEEeaOirQvWUauIuSY3awgQY",
@@ -246,7 +257,7 @@
             {q:"56. How must food be protected when transported to cabins for room service delivery?",a:["Carried open on trays so the server can easily monitor it.","Covered with clean plastic wrap, plate cloches (lids), or placed inside a clean, enclosed transport cart.","Kept uncovered as long as the delivery takes less than 5 minutes.","Pressed tightly against the server's uniform to maintain warmth."]}
         ];
 
-        let currentCrewId="",currentCrewName="",currentQuestionIndex=0,correctAnswersCount=0,shuffledQuiz=[],selectedAnswerIdx=null,quizStartTime=0,timerInterval=null;
+        let currentCrewId="",currentCrewName="",currentQuestionIndex=0,correctAnswersCount=0,shuffledQuiz=[],selectedAnswerIdx=null,quizStartTime=0,timerInterval=null,quizInProgress=false,quizResults=[];
 
         function switchTab(tabId){
             document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
@@ -264,7 +275,7 @@
             shuffledQuiz=indices.map(origIdx=>{
                 const origCorrect=_dc(origIdx);const opts=quizData[origIdx].a;
                 const optOrder=_shuffleArray([0,1,2,3]);const newCorrectIdx=optOrder.indexOf(origCorrect);
-                return{q:quizData[origIdx].q.replace(/^\d+\.\s*/,''),a:optOrder.map(i=>opts[i]),correctIdx:newCorrectIdx};
+                return{q:quizData[origIdx].q.replace(/^\d+\.\s*/,''),a:optOrder.map(i=>opts[i]),correctIdx:newCorrectIdx,origIdx};
             });
         }
 
@@ -304,10 +315,11 @@
                     if(!proceed) return;
                 }
             } catch(e){ /* lookup failed — proceed without the nudge */ }
-            currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;
+            currentCrewId=idInput;currentCrewName=crewRoster[idInput];currentQuestionIndex=0;correctAnswersCount=0;quizResults=[];
             _buildShuffledQuiz();
             document.getElementById('quiz-auth-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-play-screen').classList.remove('hidden');
             startTimer();
+            quizInProgress=true;
             loadQuestion();
         }
 
@@ -340,6 +352,7 @@
             if(selectedAnswerIdx===null)return;
             const correctIdx=shuffledQuiz[currentQuestionIndex].correctIdx;const isCorrect=selectedAnswerIdx===correctIdx;
             if(isCorrect)correctAnswersCount++;
+            quizResults.push({idx:shuffledQuiz[currentQuestionIndex].origIdx,correct:isCorrect});
             const labels=["A","B","C","D"];
             for(let i=0;i<4;i++){const b=document.getElementById(`opt-btn-${i}`);if(b)b.onclick=null;}
             const cBtn=document.getElementById(`opt-btn-${correctIdx}`),cBadge=document.getElementById(`opt-badge-${correctIdx}`),cIcon=document.getElementById(`opt-icon-${correctIdx}`);
@@ -374,6 +387,7 @@
 
         async function endQuizAndSave(){
             stopTimer();
+            quizInProgress=false;
             document.getElementById('quiz-play-screen').classList.add('hidden');document.getElementById('quiz-end-screen').classList.remove('hidden');document.getElementById('quiz-progress').style.width='100%';
             const pct=Math.round((correctAnswersCount/shuffledQuiz.length)*100);
             const elapsedSeconds=Math.max(1,Math.round((Date.now()-quizStartTime)/1000));
@@ -400,9 +414,22 @@
                 localStorage.setItem('vsp_scores_fallback',JSON.stringify(local));
                 document.getElementById('final-meta-text').innerText=`Saved locally — could not reach Firestore (${e.code||e.message||'unknown error'}). Open the browser console for details.`;
             }
+
+            try {
+                await authReady;
+                const statsUpdate={};
+                quizResults.forEach(r=>{
+                    statsUpdate[`q${r.idx}.attempts`]=increment(1);
+                    statsUpdate[`q${r.idx}.text`]=quizData[r.idx].q.replace(/^\d+\.\s*/,'');
+                    if(!r.correct) statsUpdate[`q${r.idx}.misses`]=increment(1);
+                });
+                await setDoc(doc(db,'question_stats','t1'), statsUpdate, {merge:true});
+            } catch(e) {
+                console.error('Question stats update failed (non-critical):', e);
+            }
         }
 
-        function restartQuiz(){stopTimer();document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
+        function restartQuiz(){stopTimer();quizInProgress=false;document.getElementById('quiz-end-screen').classList.add('hidden');document.getElementById('quiz-auth-screen').classList.remove('hidden');document.getElementById('crew-id').value='';}
 
         async function syncPendingFallback(){
             const pending=JSON.parse(localStorage.getItem('vsp_scores_fallback')||'[]');
@@ -442,6 +469,13 @@
                 container.appendChild(tr);
             });
         }
+
+        window.addEventListener('beforeunload', (e) => {
+            if (quizInProgress) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         // ── Expose functions referenced by inline HTML onclick handlers ─────
         window.switchTab=switchTab;
