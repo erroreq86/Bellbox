@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR Appraisal Suite</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter & JetBrains Mono Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f5fa',
+                            100: '#dbe7f2',
+                            200: '#bdd5e7',
+                            500: '#004b87', // Royal Navy Blue
+                            600: '#003d70',
+                            700: '#002f56',
+                            800: '#00213d',
+                            900: '#001426',
+                        },
+                        gold: {
+                            100: '#f5ebd6',
+                            500: '#c5a059', // Classic Gold
+                            600: '#b08b47',
+                            700: '#947233',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Radar chart active area hover effect */
+        .radar-area {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .radar-area:hover {
+            fill-opacity: 0.35;
+            stroke-width: 3px;
+        }
+
+        /* Screen only elements versus print controls */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            #formPanel, #topHeader, #contextHeader, #previewSwitchHeader, #overallDashboardControl, #tabSwitcherBlock, #previewBlockText, .no-print {
+                display: none !important;
+            }
+            #previewPanel {
+                background: white !important;
+                padding: 0 !important;
+                width: 100% !important;
+                overflow: visible !important;
+            }
+            #previewBlockHtml {
+                display: block !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased text-slate-800 bg-slate-50 selection:bg-navy-500 selection:text-white">
+
+    <!-- TOP CORPORATE BRANDING HEADER -->
+    <header id="topHeader" class="bg-navy-900 text-white shadow-md flex-shrink-0 relative z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+            <div class="flex items-center space-x-3">
+                <span class="material-icons text-gold-500 text-3xl animate-pulse">anchor</span>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center">
+                        STAR APPRAISAL
+                        <span class="ml-2 px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase rounded-full bg-navy-500 text-blue-100">Intranet Portal</span>
+                    </h1>
+                    <p class="text-[10px] text-navy-200 font-mono">Appraisal Database • NAV_APP.NSF v4.5 (Integer Scale Standards)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <div class="hidden md:flex items-center space-x-2 border-l border-navy-700 pl-4">
+                    <span class="material-icons text-emerald-400 text-sm">cloud_done</span>
+                    <span class="font-medium text-slate-200">Active Lotus Notes Connection</span>
+                </div>
+                <button onclick="triggerResetConfirmation()" class="text-navy-100 hover:text-white transition flex items-center space-x-1 hover:underline text-xs bg-navy-800/80 px-2.5 py-1 rounded border border-navy-700">
+                    <span class="material-icons text-xs">restore</span>
+                    <span>Reset Data</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- USER CONTEXT INFO LINE -->
+    <section id="contextHeader" class="bg-navy-50 border-b border-navy-200 py-2 px-4 shadow-inner flex-shrink-0 z-20">
+        <div class="max-w-7xl mx-auto flex items-center justify-end text-xs text-navy-900 gap-2">
+            <div class="flex items-center gap-4 text-slate-600 font-mono justify-end">
+                <span class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Server Time: <strong id="serverTimeStr">07/13/2026 08:50 AM</strong>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN WORKSPACE CONTAINER -->
+    <main class="flex-1 flex overflow-hidden min-h-0 relative">
+        <div class="flex-1 flex flex-col lg:flex-row h-full">
+            
+            <!-- LEFT WORKSPACE: DATA ENTRY FORM -->
+            <section class="flex-1 p-4 sm:p-6 overflow-y-auto border-r border-slate-200 bg-slate-50 space-y-6" id="formPanel">
+                
+                <!-- HEADER CONTROLS -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
+                    <div>
+                        <h2 class="text-xl font-bold text-navy-700 flex items-center gap-2">
+                            <span class="material-icons text-gold-500">assignment</span>
+                            STAR Performance Partnership Form
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Configure integer rating scales, observation comments, and auto-generate compliance appraisals.</p>
+                    </div>
+                    <button onclick="openHelpGuide()" class="px-3 py-1.5 bg-navy-500 hover:bg-navy-600 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center gap-1">
+                        <span class="material-icons text-sm">help_outline</span>
+                        <span>View Guidelines</span>
+                    </button>
+                </div>
+
+                <!-- CREW DETAILS FIELDSET -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-navy-50/60 px-4 py-3 border-b border-slate-200 flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-navy-900 flex items-center gap-1.5">
+                            <span class="material-icons text-navy-500 text-sm font-semibold">people</span>
+                            Crewmember Profile
+                        </span>
+                    </div>
+                    
+                    <div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-white">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Surname</label>
+                            <input type="text" id="surname" placeholder="e.g., Smith" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-navy-500 focus:border-navy-500 transition outline-none bg-slate-50 hover:bg-slate-100/50 focus:bg-white" oninput="saveAndGenerate()">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Forenames</label>
+                            <input type="text" id="forenames" placeholder="e.g., John Michael" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium focus:ring-2 focus:ring-navy-500 focus:border-navy-500 transition outline-none bg-slate-50 hover:bg-slate-100/50 focus:bg-white" oninput="saveAndGenerate()">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">MAPS ID Number</label>
+                            <input type="text" id="empId" placeholder="e.g., 445080" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-navy-500 focus:border-navy-500 transition outline-none bg-slate-50 hover:bg-slate-100/50 focus:bg-white" oninput="saveAndGenerate()">
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Evaluation Position</label>
+                            <select id="position" class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-navy-500 focus:border-navy-500 transition outline-none bg-slate-50 hover:bg-slate-100/50 focus:bg-white" onchange="handlePositionChange()">
+                                <option value="Buffet Steward">Buffet Steward</option>
+                                <option value="Waiter">Waiter</option>
+                                <option value="Junior Waiter">Junior Waiter</option>
+                                <option value="Utility Dining Attendant">Utility Dining Attendant</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="estimatedRoleBanner" class="hidden px-4 py-2 bg-amber-50 border-t border-amber-200 text-[10px] text-amber-800 flex items-center gap-1.5">
+                        <span class="material-icons text-xs">info</span>
+                        <span>No official role description is on file for this position — KRA weights shown are estimated and should be verified.</span>
+                    </div>
+                </div>
+
+                <!-- PERFORMANCE KRAS (ROLE-AWARE, DYNAMICALLY RENDERED) -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-navy-900 flex items-center gap-1.5">
+                            <span class="material-icons text-navy-500 text-sm">auto_graph</span>
+                            KRA Section Evaluations (Role-Specific Weights)
+                        </h3>
+                        <p class="text-[10px] text-slate-500 italic">1 = Does Not Meet • 3 = Meet Standards • 5 = Consistently Exceeds</p>
+                    </div>
+
+                    <div id="kraContainer" class="space-y-4">
+                        <!-- KRA cards render dynamically here based on selected Evaluation Position -->
+                    </div>
+                </div>
+
+                <!-- SUMMARY CONTEXT (feeds the AI/template summary generator) -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+                    <label class="text-xs font-bold text-navy-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="material-icons text-navy-500 text-sm">summarize</span>
+                        Summary Context (Optional)
+                    </label>
+                    <p class="text-[10px] text-slate-500">Extra context used specifically when generating the summary below — not part of the official KRA record, but helps produce a more accurate, specific write-up.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Venues / Roles Worked</label>
+                            <textarea id="venuesWorked" placeholder="e.g. Crew Mess, Horizon Court, Dining Room, Room Service" class="w-full h-16 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y" oninput="saveAndGenerate()"></textarea>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Key Strengths</label>
+                            <textarea id="keyStrengths" placeholder="e.g. calm under pressure, great follow-up, technical knowledge, proactive" class="w-full h-16 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y" oninput="saveAndGenerate()"></textarea>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Areas for Development</label>
+                            <textarea id="growthAreas" placeholder="e.g. product knowledge, communication confidence, grooming consistency" class="w-full h-16 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y" oninput="saveAndGenerate()"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADDITIONAL NOTES -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-2">
+                    <label class="text-xs font-bold text-navy-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="material-icons text-navy-500 text-sm">note_add</span>
+                        Additional Notes (Optional)
+                    </label>
+                    <p class="text-[10px] text-slate-500">Anything else worth capturing that isn't tied to a specific KRA — incidents, context, or general observations. This is included when generating the summary below.</p>
+                    <textarea id="additionalNotes" placeholder="e.g. covered an extra shift during a colleague's absence, handled a difficult situation well, general attitude this contract..." class="w-full h-20 px-3 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y" oninput="saveAndGenerate()"></textarea>
+                </div>
+
+                <!-- DEVELOPMENT GOALS -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label class="text-xs font-bold text-navy-900 uppercase tracking-wider block">Future Development Goals / Summary (Required)</label>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200" id="summaryLengthToggle">
+                                <button type="button" onclick="setSummaryLength('concise')" id="lengthBtnConcise" class="px-2 py-1 rounded-md text-[10px] font-bold transition">Concise</button>
+                                <button type="button" onclick="setSummaryLength('detailed')" id="lengthBtnDetailed" class="px-2 py-1 rounded-md text-[10px] font-bold transition">Detailed</button>
+                            </div>
+                            <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200" title="Adjusts only the tone of the written summary — KRA scores and overall rating are unaffected">
+                                <button type="button" onclick="adjustSummaryStrength(-1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 hover:bg-white hover:shadow-sm transition text-xs font-bold">-</button>
+                                <span id="summaryStrengthLabel" class="text-[10px] font-bold text-slate-700 px-1 min-w-[68px] text-center">Standard</span>
+                                <button type="button" onclick="adjustSummaryStrength(1)" class="w-5 h-5 flex items-center justify-center rounded text-slate-600 hover:bg-white hover:shadow-sm transition text-xs font-bold">+</button>
+                            </div>
+                            <button type="button" onclick="toggleAiSettingsPanel()" class="px-2 py-1 rounded-lg text-[10px] font-bold border border-slate-300 text-slate-500 hover:bg-slate-50 transition flex items-center gap-1">
+                                <span class="material-icons text-xs">settings</span>
+                                AI Settings
+                            </button>
+                            <button onclick="autoGenerateSummary()" class="px-2.5 py-1 bg-navy-500 hover:bg-navy-600 text-white rounded-lg text-[10px] font-bold transition flex items-center gap-1 shadow-sm">
+                                <span class="material-icons text-xs" id="generateSummaryIcon">auto_fix_high</span>
+                                <span id="generateSummaryLabel">Generate Summary</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Gemini AI Settings Panel (collapsed by default) -->
+                    <div id="aiSettingsPanel" class="hidden bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-navy-900 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-icons text-xs text-navy-500">smart_toy</span>
+                                Gemini AI Summary Generation
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" id="useGeminiToggle" onchange="onGeminiToggleChange()" class="rounded text-navy-500 focus:ring-navy-500">
+                                <span class="text-[10px] font-bold text-slate-700">Enabled</span>
+                            </label>
+                        </div>
+                        <p class="text-[10px] text-slate-500 leading-relaxed">When enabled, summaries are generated by sending this appraisal's KRA scores and comments to Google's Gemini API using the key below. Your key is stored only in this browser. Requires an internet connection — falls back to the offline template automatically if the request fails.</p>
+                        <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+                            <input type="password" id="geminiApiKey" placeholder="Paste your Gemini API key" class="flex-1 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs font-mono outline-none focus:ring-1 focus:ring-navy-500 bg-white" oninput="saveGeminiKey()">
+                            <button type="button" onclick="toggleKeyVisibility()" id="toggleKeyVisibilityBtn" class="px-2.5 py-1.5 border border-slate-200 rounded-lg text-[10px] font-semibold text-slate-600 hover:bg-slate-100 transition whitespace-nowrap">Show</button>
+                        </div>
+                        <p class="text-[9px] text-slate-400">Get a free key at aistudio.google.com/apikey. This checkbox stays off by default — nothing is sent anywhere unless you turn it on.</p>
+                    </div>
+
+                    <textarea id="devGoals" placeholder="Describe critical development milestones, focus areas, and technical improvements for their next contract..." class="w-full h-24 px-3 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y"></textarea>
+                </div>
+
+                <!-- FORM BUTTONS -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200">
+                    <button onclick="triggerResetConfirmation()" class="px-4 py-2 text-xs border border-red-200 text-red-600 hover:bg-red-50 rounded-lg font-semibold transition flex items-center justify-center gap-1 flex-1 sm:flex-none">
+                        <span class="material-icons text-sm">delete_sweep</span>
+                        Wipe Cache
+                    </button>
+                    <button onclick="autoFillAppraisal()" class="px-4 py-2 text-xs bg-slate-800 hover:bg-slate-900 text-white rounded-lg font-semibold transition flex items-center justify-center gap-1 flex-1 sm:flex-none">
+                        <span class="material-icons text-sm">task_alt</span>
+                        Auto-fill Standards
+                    </button>
+                    <button onclick="triggerDownloadTextFile()" class="px-4 py-2 text-xs border border-navy-300 text-navy-600 hover:bg-navy-50 rounded-lg font-semibold transition flex items-center justify-center gap-1 flex-1 sm:flex-none">
+                        <span class="material-icons text-sm">description</span>
+                        Download .txt
+                    </button>
+                    <button onclick="triggerDownloadPdf()" class="px-4 py-2 text-xs border border-navy-300 text-navy-600 hover:bg-navy-50 rounded-lg font-semibold transition flex items-center justify-center gap-1 flex-1 sm:flex-none">
+                        <span class="material-icons text-sm">picture_as_pdf</span>
+                        Download PDF
+                    </button>
+                    <button onclick="triggerCopySequence()" class="px-4 py-2 text-xs bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold shadow-sm transition flex items-center justify-center gap-1 flex-1">
+                        <span class="material-icons text-sm">content_copy</span>
+                        Copy Text to Clipboard
+                    </button>
+                </div>
+            </section>
+            
+            <!-- RIGHT WORKSPACE: LIVE PREVIEW & PANE -->
+            <section class="flex-1 p-4 sm:p-6 overflow-y-auto bg-slate-900 text-white flex flex-col h-full space-y-6" id="previewPanel">
+                
+                <!-- PREVIEW SWITCHER CONTROLS -->
+                <div id="previewSwitchHeader" class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-800 flex-shrink-0">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Output Engine</span>
+                        <h2 class="text-base font-bold text-white flex items-center gap-1.5">
+                            <span class="material-icons text-gold-500">visibility</span>
+                            Appraisal Visual Workspace
+                        </h2>
+                    </div>
+                    <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700 self-stretch sm:self-auto" id="tabSwitcherBlock">
+                        <button onclick="setPreviewTab('text')" id="tabBtnText" class="flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-white bg-navy-500 shadow">
+                            <span class="material-icons text-xs">code</span>
+                            Lotus Notes Text
+                        </button>
+                        <button onclick="setPreviewTab('html')" id="tabBtnHtml" class="flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-slate-400 hover:text-white">
+                            <span class="material-icons text-xs">print</span>
+                            Print Preview
+                        </button>
+                    </div>
+                </div>
+
+                <!-- OVERALL STATUS GAUGE (Live SVG Radar Chart & Metrics) -->
+                <div id="overallDashboardControl" class="bg-slate-800 rounded-xl p-4 border border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4 flex-shrink-0 shadow-lg relative">
+                    <div class="space-y-1.5 text-center sm:text-left">
+                        <span class="text-[10px] font-bold tracking-widest text-slate-400 uppercase block">Overall Score (Average)</span>
+                        <div class="text-3xl font-black font-mono text-white tracking-tight flex items-center justify-center sm:justify-start gap-2">
+                            <span id="scoreBadge">3</span>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-navy-900/50 border border-navy-700 text-navy-200">Scale 1-5</span>
+                        </div>
+                        <p class="text-xs font-semibold uppercase tracking-wider flex items-center justify-center sm:justify-start gap-1">
+                            <span class="material-icons text-gold-500 text-xs">verified</span>
+                            <span id="ratingTierText">Pending Calibration</span>
+                        </p>
+                    </div>
+                    
+                    <!-- Beautiful Live Interactive SVG Radar Chart -->
+                    <div class="flex flex-col items-center">
+                        <svg id="radarSvg" width="160" height="160" class="overflow-visible select-none">
+                            <!-- SVG Radar Chart structure built dynamically -->
+                        </svg>
+                        <span class="text-[9px] text-slate-400 font-mono tracking-wider uppercase mt-1">Live KRA footprint</span>
+                    </div>
+                </div>
+
+                <!-- PREVIEW CONTAINER: PLAIN TEXT CODE -->
+                <div id="previewBlockText" class="flex-1 flex flex-col min-h-0 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-2xl relative">
+                    <div class="absolute top-2.5 right-2.5 z-10">
+                        <button onclick="triggerCopySequence()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1 transition shadow">
+                            <span class="material-icons text-xs">content_copy</span>
+                            Copy Output
+                        </button>
+                    </div>
+                    <div class="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
+                        <span>Intranet Text Block Output Format</span>
+                        <span class="flex items-center gap-1 text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> live</span>
+                    </div>
+                    <div class="flex-1 overflow-auto p-4 font-mono text-[11px] text-slate-300 leading-relaxed select-all selection:bg-navy-500 selection:text-white" id="outputPreview">
+                        <!-- Raw XML/Text renders here -->
+                    </div>
+                </div>
+
+                <!-- PREVIEW CONTAINER: FORMATTED PRINT SHEET -->
+                <div id="previewBlockHtml" class="flex-1 bg-white rounded-xl overflow-auto p-6 sm:p-8 shadow-2xl text-slate-950 border border-slate-300 relative hidden">
+                    <div class="max-w-4xl mx-auto space-y-6" id="printSheetContent">
+                        
+                        <!-- Print Document Header -->
+                        <div class="flex justify-between items-start border-b-2 border-navy-900 pb-3">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-black tracking-widest text-navy-500 uppercase block">STAR Evaluation Summary Compliance Slip</span>
+                                <h3 class="text-lg font-bold tracking-tight text-navy-950">Intranet Personnel Record Archive</h3>
+                                <p class="text-[9px] text-slate-500 font-mono flex items-center gap-1">
+                                    <span class="material-icons text-xs text-navy-500">verified_user</span>
+                                    INTERNAL RECRUITMENT & PERFORMANCE SYSTEMS • CONFIDENTIAL
+                                </p>
+                            </div>
+                            <span class="material-icons text-navy-950 text-3xl">anchor</span>
+                        </div>
+
+                        <!-- Info grid -->
+                        <div class="grid grid-cols-2 gap-4 text-xs">
+                            <div class="grid grid-cols-2 gap-2 border-r border-slate-200 pr-4">
+                                <div class="text-slate-500 font-semibold">Surname:</div>
+                                <div class="font-bold font-mono" id="printSurname">—</div>
+                                <div class="text-slate-500 font-semibold">Forenames:</div>
+                                <div class="font-bold" id="printForenames">—</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="text-slate-500 font-semibold">MAPS ID Number:</div>
+                                <div class="font-bold font-mono" id="printEmpNum">—</div>
+                                <div class="text-slate-500 font-semibold">Rank/Position:</div>
+                                <div class="font-bold" id="printPosition">Buffet Steward</div>
+                            </div>
+                        </div>
+
+                        <!-- Overall Summary Block -->
+                        <div class="bg-navy-900 text-white p-3 rounded-lg flex items-center justify-between">
+                            <div>
+                                <span class="text-[9px] font-bold text-navy-200 uppercase tracking-widest block">Final Combined Appraisal Score</span>
+                                <span class="text-xl font-black font-mono tracking-tight" id="printOverallScore">3</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[9px] font-bold text-navy-200 uppercase tracking-widest block">Rating Level Awarded</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-gold-500 block" id="printRatingTier">Meet Standards</span>
+                            </div>
+                        </div>
+
+                        <!-- KRAs dynamic scores (role-aware, rendered by JS) -->
+                        <div class="space-y-3 pt-2">
+                            <span class="text-xs font-bold text-navy-900 uppercase tracking-wider block border-b border-slate-200 pb-1">Performance Observation Records</span>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs" id="printKraContainer">
+                                <!-- Print KRA cards render dynamically here -->
+                            </div>
+                        </div>
+
+                        <!-- Recommendations & Sign-off footprint -->
+                        <div class="border-t border-slate-200 pt-3 text-xs space-y-3">
+                            <div>
+                                <span class="font-bold text-navy-950 block">Additional Notes:</span>
+                                <p class="text-slate-700 mt-1 leading-relaxed" id="printAdditionalNotes">No additional notes documented.</p>
+                            </div>
+                            <div>
+                                <span class="font-bold text-navy-950 block">Development Summary Goals:</span>
+                                <p class="text-slate-700 mt-1 leading-relaxed" id="printDevGoals">No development goals documented yet.</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 pt-3 text-[10px] text-slate-500 font-mono border-t border-slate-100">
+                                <div class="space-y-1">
+                                    <span class="block text-slate-400">Supervisor Signature:</span>
+                                    <span class="font-bold block text-slate-900 border-b border-slate-300 pb-2">&nbsp;</span>
+                                    <span>Date: <span id="printAppDate">07/13/2026</span></span>
+                                </div>
+                                <div class="space-y-1">
+                                    <span class="block text-slate-400">Database Stamp:</span>
+                                    <span class="font-bold block text-slate-900">Lotus Verified Server Hub</span>
+                                    <span>Audit Code: <span class="font-bold text-navy-700">[SECURE_VERIFIED]</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- CUSTOM DIALOGS & OVERLAYS (Forbidden alert/confirm replacement) -->
+    
+    <!-- CUSTOM ALERT TOAST CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 space-y-2 z-50 pointer-events-none"></div>
+
+    <!-- CUSTOM CONFIRMATION DIALOG -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-200 opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden border border-slate-200 transform scale-95 transition-transform duration-200">
+            <div class="bg-navy-900 text-white p-4 flex items-center gap-2">
+                <span class="material-icons text-gold-500">warning_amber</span>
+                <h4 class="font-bold text-sm" id="confirmTitle">Verification Prompt</h4>
+            </div>
+            <div class="p-5 text-xs text-slate-600 leading-relaxed" id="confirmText">
+                Are you sure you want to perform this operation?
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2.5">
+                <button id="confirmCancelBtn" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded text-xs font-semibold transition">Cancel</button>
+                <button id="confirmConfirmBtn" class="px-3.5 py-1.5 bg-navy-500 hover:bg-navy-600 text-white rounded text-xs font-bold transition">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help/Guidelines Guide Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-navy-900 text-white p-4 flex justify-between items-center flex-shrink-0">
+                <span class="font-bold text-sm flex items-center gap-1.5">
+                    <span class="material-icons text-gold-500">menu_book</span>
+                    Corporate STAR Appraisal Guidelines
+                </span>
+                <button onclick="closeHelpGuide()" class="text-slate-300 hover:text-white"><span class="material-icons">close</span></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-xs text-slate-700 leading-relaxed">
+                <div>
+                    <h5 class="font-bold text-navy-950 mb-1">Standard Calibration Levels:</h5>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>5 - Consistently Exceeds:</strong> Exemplary role model. Actions are completely self-directed and promote high safety standards.</li>
+                        <li><strong>4 - Meets & Sometimes Exceeds:</strong> Fully independent, proactive during embarkation surges, shows visible lido deck ownership.</li>
+                        <li><strong>3 - Meet Standards:</strong> Standard expectations met. Clean uniform, steady service delivery pace, completes courses.</li>
+                        <li><strong>2 - Needs Improvement:</strong> Occasional coaching required to maintain basic USPH standards.</li>
+                        <li><strong>1 - Fails Guidelines:</strong> Repeated safety deviations despite direct supervisor instruction.</li>
+                    </ul>
+                </div>
+                <div class="border-t border-slate-100 pt-3">
+                    <h5 class="font-bold text-navy-950 mb-1">KRA Scaling Logic:</h5>
+                    <p>The overall score shown is a simple average of the scores entered for each KRA. The weighting percentage shown on each KRA card reflects that role's official appraisal structure for reference, but does not currently affect the overall score calculation.</p>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="closeHelpGuide()" class="px-4 py-2 bg-navy-500 hover:bg-navy-600 text-white rounded-lg font-bold">Acknowledge</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATEMENT PICKER MODAL (HR APPROVED PHRASES) -->
+    <div id="statementModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl max-w-xl w-full max-h-[80vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-navy-900 text-white p-4 flex justify-between items-center flex-shrink-0">
+                <div class="flex items-center space-x-2">
+                    <span class="material-icons text-gold-500">menu_book</span>
+                    <div>
+                        <h4 class="font-bold text-sm">HR Approved Observations</h4>
+                        <p class="text-[10px] text-slate-300" id="statementModalSubtitle">Select standard compliant sentences to merge into the comments log</p>
+                    </div>
+                </div>
+                <button onclick="closeStatementModal()" class="text-slate-300 hover:text-white"><span class="material-icons">close</span></button>
+            </div>
+            <div class="px-4 pt-3 pb-1 bg-white border-b border-slate-200 flex-shrink-0 flex items-center gap-1.5 flex-wrap" id="statementFilterBar">
+                <!-- Filter chips render here -->
+            </div>
+            <div class="p-4 overflow-y-auto space-y-3 flex-1 bg-slate-50" id="statementModalBody">
+                <!-- Statements load dynamically here -->
+            </div>
+            <div class="p-3 bg-slate-100 border-t border-slate-200 flex justify-end gap-2 flex-shrink-0">
+                <button onclick="closeStatementModal()" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 rounded text-xs font-semibold text-slate-700 transition">Cancel</button>
+                <button onclick="insertSelectedStatements()" class="px-3.5 py-1.5 bg-navy-500 hover:bg-navy-600 text-white rounded text-xs font-bold transition">Apply Selected Phrases</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM ENGINE -->
+    <script>
+        // HR Standard Observations Banks mapped by KRA theme, shared across roles
+        // Roles reference themes so phrase content is reusable even though each role has different KRA names/weights
+        // Universal KRA structure — applies identically to every Evaluation Position, per the current
+        // official appraisal template. Each KRA's "criteria" and "minObservations" are shown on-screen
+        // as reference guidance (they mirror the wording in the source document verbatim).
+        const UNIVERSAL_KRAS = [
+            {
+                name: "Commitment to the Company Mission, Vision and Values; Demonstrates Culture Essential Behaviors",
+                theme: ["VALUES", "SAFETY"],
+                weight: 14,
+                minObservations: 2,
+                criteria: [
+                    "Demonstrates personal commitment to, advocates for, and effectively communicates the company's core values, goals, and initiatives.",
+                    "Treats all people with dignity and respect; shows respect for and understanding of diverse points of view.",
+                    "Prioritizes ethics and compliance, including health, environmental protection, safety, and security in day-to-day duties.",
+                    "Encourages others and demonstrates the ability to speak up, raise concerns, suggestions, and questions issues of non-compliance without fear of retaliation."
+                ]
+            },
+            {
+                name: "Contribution to Guest and Team Experience",
+                theme: "GUEST",
+                weight: 14,
+                minObservations: 2,
+                criteria: [
+                    "Contributes to a welcoming and professional environment for guests and teammates.",
+                    "Understands how their performance, directly and indirectly, impacts the guest experience."
+                ]
+            },
+            {
+                name: "Commitment to a Culture of Learning and Improvement",
+                theme: "LEARNING",
+                weight: 14,
+                minObservations: 2,
+                criteria: [
+                    "Seeks opportunities to learn and develop skill proficiency and improve work quality.",
+                    "Ensures that all mandatory/required training is completed on time.",
+                    "Learns from incidents and takes steps to ensure that they don't reoccur; thinks ahead to examine potential consequences of actions.",
+                    "Demonstrates ability to problem solve and adjust to challenges to meet new requirements."
+                ]
+            },
+            {
+                name: "Proficiency in Role Responsibilities",
+                theme: "PRODUCT",
+                weight: 30,
+                minObservations: 2,
+                criteria: [
+                    "Demonstrates an understanding and ownership of assigned tasks and responsibilities outlined by the job description.",
+                    "Performs duties with the functional and technical knowledge and skills to do the job correctly; produces high-quality, accurate work.",
+                    "Contributes to the efforts that support established team and department goals."
+                ]
+            },
+            {
+                name: "Managing Company Resources",
+                theme: "FINANCIAL",
+                weight: 14,
+                minObservations: 2,
+                criteria: [
+                    "Responsibly handles all assets (supplies, equipment, materials) with care to avoid damage, loss, or unnecessary waste.",
+                    "Displays an understanding of how the team member directly or indirectly impacts the financial success of the operations."
+                ]
+            },
+            {
+                name: "Team Engagement and Communication",
+                theme: "TEAMCOMM",
+                weight: 14,
+                minObservations: 2,
+                criteria: [
+                    "Speaks up to share ideas or information on important issues.",
+                    "Serves as a positive influence on others through supportive communication and actions."
+                ]
+            }
+        ];
+
+        const ROLES = {
+            "Buffet Steward": UNIVERSAL_KRAS,
+            "Waiter": UNIVERSAL_KRAS,
+            "Junior Waiter": UNIVERSAL_KRAS,
+            "Utility Dining Attendant": UNIVERSAL_KRAS
+        };
+        const ESTIMATED_ROLES = []; // no roles currently use estimated (non-official) weights
+
+        const PRESET_OBSERVATIONS = {
+            GUEST: {
+                5: "Consistently delivers outstanding guest interactions, drawing genuine praise and repeat positive feedback. Anticipates guest needs before they're voiced and builds lasting rapport with passengers and colleagues alike.",
+                4: "Creates a warm, welcoming environment for guests and colleagues, adapting service style to individual passenger needs with visible care. Regularly receives favorable guest feedback.",
+                3: "Maintains a polite, professional demeanor with guests and completes service tasks at a steady, reliable pace. Handles routine passenger requests appropriately.",
+                2: "Needs to improve responsiveness and warmth toward guests, particularly during high-volume periods. Service pace or attentiveness occasionally falls short of expectations.",
+                1: "Shows limited engagement with guest needs and is often slow to respond to requests or concerns. Requires direct supervision to meet basic hospitality standards."
+            },
+            PRODUCT: {
+                5: "Demonstrates masterful technical command of all role responsibilities, managing high-volume periods flawlessly and without supervision. Sets the standard for speed, accuracy, and product knowledge in the department.",
+                4: "Highly skilled in core job duties, keeping work areas well-organized and fully stocked even during peak operations. Requires minimal oversight to maintain high standards.",
+                3: "Maintains standard job performance reliably, following procedures and keeping pace with routine workload. Meets expected standards for accuracy and setup quality.",
+                2: "Requires regular prompts to keep pace with workload or maintain setup standards, particularly during busy periods. Needs continued coaching on core job tasks.",
+                1: "Struggles to complete assigned duties to the expected standard or pace. Requires close, ongoing supervision to perform core responsibilities."
+            },
+            FINANCIAL: {
+                5: "Proactively identifies ways to reduce waste and protect company resources, consistently exceeding cost and revenue targets. Sets an example for responsible stewardship of equipment and inventory.",
+                4: "Handles equipment and inventory with strong care, regularly meeting or exceeding revenue and cost targets. Promotes waste-conscious habits among colleagues.",
+                3: "Handles equipment and supplies responsibly, meeting standard cost and portion-control expectations. Generally on track with assigned revenue targets.",
+                2: "Needs to exercise greater care with equipment or supplies to reduce breakage and waste. Falls short of revenue or cost targets on a consistent basis.",
+                1: "Shows a pattern of carelessness with company resources, resulting in avoidable waste or breakage. Consistently misses cost and revenue expectations."
+            },
+            VALUES: {
+                5: "Exemplifies the company's values and ethics at every opportunity, treating colleagues and guests with genuine respect and consistently prioritizing safety and compliance. A trusted role model for the wider team.",
+                4: "Reliably upholds company values and ethical standards, treating colleagues and guests with respect and consistently following safety and compliance procedures.",
+                3: "Consistently meets expectations for professional conduct, respect toward others, and adherence to safety and compliance standards.",
+                2: "Needs occasional coaching to stay consistent with professional conduct, respectful behavior, or safety and compliance procedures.",
+                1: "Falls short of expected standards for professional conduct, respect toward others, or safety and compliance despite coaching."
+            },
+            LEARNING: {
+                5: "Actively pursues professional growth, completing all required training well ahead of schedule and applying new skills immediately. Seeks out feedback and treats every correction as a learning opportunity.",
+                4: "Highly receptive to coaching, consistently applying feedback to improve performance. Completes training modules promptly and shows genuine interest in skill development.",
+                3: "Completes required training within expected timelines. Listens attentively during briefings and follows guidance from supervisors.",
+                2: "Needs reminders to complete assigned training on schedule. Responds to feedback but is slow to apply it consistently.",
+                1: "Resists feedback and repeats avoidable errors despite coaching. Fails to complete required training within expected timeframes."
+            },
+            TEAMCOMM: {
+                5: "Exemplary communicator who proactively supports colleagues, mentors junior staff, and keeps the team well-informed during shift transitions. A trusted, steady presence the wider team relies on.",
+                4: "Maintains clear, consistent communication with the team and shares helpful updates during handovers. Actively supports newer colleagues.",
+                3: "Communicates cooperatively with shift mates and relays routine updates to supervisors in a timely manner. Works well within the team.",
+                2: "Needs to improve coordination with the team, particularly around handover communication. Occasionally misses relaying important updates.",
+                1: "Creates friction within the team and is often uncooperative in group settings. Fails to communicate essential operational details to colleagues or supervisors."
+            },
+            SAFETY: {
+                5: "Consistently exceeds expectations for safety and compliance, treating public-health and emergency procedures as a personal priority. Proactively identifies and resolves hazards before they escalate.",
+                4: "Reliably follows safety and compliance procedures with minimal oversight, and confidently performs emergency duties when required. Sets a positive example for colleagues on safety matters.",
+                3: "Consistently meets standard safety and compliance expectations, including hygiene, waste handling, and emergency procedures. Reports concerns through the appropriate channels.",
+                2: "Requires occasional reminders to stay fully compliant with safety, hygiene, or public-health procedures. Shows willingness to improve when coached.",
+                1: "Falls short of basic safety and compliance requirements despite repeated coaching. Requires close supervision to meet minimum standards."
+            }
+        };
+
+        const STATEMENT_BANK = {
+            GUEST: [
+                { id: "GUEST_1", text: "Creates a warm, welcoming presence in the service area and is quick to greet and assist guests.", label: "Warm, visible presence", category: "Meets" },
+                { id: "GUEST_2", text: "Consistently receives positive guest feedback and adapts service style to individual passenger preferences.", label: "Stellar guest reviews", category: "Exceeds" },
+                { id: "GUEST_3", text: "Anticipates guest needs ahead of time and resolves concerns with tact and confidence.", label: "Anticipates guest needs", category: "Exceeds" },
+                { id: "GUEST_4", text: "Builds genuine rapport with repeat guests and colleagues through a warm, attentive manner.", label: "Builds guest rapport", category: "Exceeds" },
+                { id: "GUEST_5", text: "Maintains positive, professional interactions with passengers throughout each shift.", label: "Consistent guest host", category: "Meets" },
+                { id: "GUEST_6", text: "Handles guest requests and minor complaints in a polite, solution-focused way.", label: "Handles complaints well", category: "Meets" },
+                { id: "GUEST_7", text: "Needs to improve response time and warmth toward guests during high-volume periods.", label: "Needs faster response", category: "Needs Improvement" },
+                { id: "GUEST_8", text: "Shows limited engagement with guests and needs encouragement to be more proactive in service.", label: "Needs guest engagement", category: "Needs Improvement" },
+                { id: "GUEST_9", text: "Uses clear, friendly communication to make guests feel informed and well cared for.", label: "Clear, friendly guest communication", category: "Meets" },
+                { id: "GUEST_10", text: "Goes out of their way to personalize service for guests with special requests or dietary needs.", label: "Personalizes guest service", category: "Exceeds" },
+                { id: "GUEST_11", text: "Remains composed and courteous even when handling difficult or frustrated guests.", label: "Composed with difficult guests", category: "Exceeds" },
+                { id: "GUEST_12", text: "Needs to build confidence handling guest complaints without escalating to a supervisor unnecessarily.", label: "Needs complaint-handling confidence", category: "Needs Improvement" },
+                { id: "GUEST_13", text: "Handles guest complaints and sensitive situations with tact, avoiding unnecessary friction.", label: "Tactful with complaints", category: "Exceeds" },
+                { id: "GUEST_14", text: "Uses polished, courteous communication that leaves guests with a positive impression.", label: "Polished guest communication", category: "Meets" },
+                { id: "GUEST_15", text: "Confidently and pleasantly guides guests toward suitable options, such as menu suggestions or service add-ons.", label: "Confident guest guidance", category: "Exceeds" },
+                { id: "GUEST_16", text: "Displays genuine warmth and good manners in every guest interaction.", label: "Genuine warmth with guests", category: "Meets" },
+                { id: "GUEST_17", text: "Needs to develop more tactful phrasing when declining guest requests or delivering unwelcome news.", label: "Needs tactful phrasing", category: "Needs Improvement" },
+                { id: "GUEST_18", text: "Struggles to defuse tense guest situations and often needs supervisor support to de-escalate.", label: "Needs de-escalation support", category: "Needs Improvement" },
+                { id: "GUEST_19", text: "Helps create a positive, welcoming atmosphere for colleagues as well as guests, not just during guest-facing moments.", label: "Welcoming to colleagues too", category: "Exceeds" },
+                { id: "GUEST_20", text: "Understands that even small lapses in service can affect the overall guest experience, and adjusts accordingly.", label: "Aware of impact on guest experience", category: "Meets" }
+            ],
+            PRODUCT: [
+                { id: "PRODUCT_1", text: "Exhibits strong technical command of role responsibilities and keeps work areas fully stocked and organized.", label: "Strong technical command", category: "Meets" },
+                { id: "PRODUCT_2", text: "Executes high-volume tasks accurately and efficiently with minimal supervision.", label: "Zero-supervision operator", category: "Exceeds" },
+                { id: "PRODUCT_3", text: "Sets the pace for the team during peak operations without sacrificing quality or standards.", label: "Sets the pace at peak times", category: "Exceeds" },
+                { id: "PRODUCT_4", text: "Demonstrates strong product knowledge and consistently follows correct procedures.", label: "Strong product knowledge", category: "Meets" },
+                { id: "PRODUCT_5", text: "Maintains reliable accuracy and attention to detail across all assigned tasks.", label: "Reliable accuracy", category: "Meets" },
+                { id: "PRODUCT_6", text: "Adapts quickly to new systems, equipment, or procedural changes.", label: "Adapts quickly", category: "Exceeds" },
+                { id: "PRODUCT_7", text: "Requires direct prompts to maintain pace or setup standards during busy periods.", label: "Needs pace correction", category: "Needs Improvement" },
+                { id: "PRODUCT_8", text: "Needs to strengthen technical knowledge and consistency in completing core duties.", label: "Needs technical development", category: "Needs Improvement" },
+                { id: "PRODUCT_9", text: "Consistently delivers high-quality, accurate work even during high-pressure periods.", label: "High quality under pressure", category: "Exceeds" },
+                { id: "PRODUCT_10", text: "Identifies and resolves minor operational issues independently before they affect service.", label: "Resolves issues independently", category: "Exceeds" },
+                { id: "PRODUCT_11", text: "Maintains a steady, dependable output that meets departmental productivity expectations.", label: "Steady, dependable output", category: "Meets" },
+                { id: "PRODUCT_12", text: "Needs to improve consistency in output and quality, particularly during peak service periods.", label: "Needs consistency at peak times", category: "Needs Improvement" },
+                { id: "PRODUCT_13", text: "Performs assigned tasks with a high degree of accuracy and consistently avoids avoidable errors.", label: "High accuracy, few errors", category: "Exceeds" },
+                { id: "PRODUCT_14", text: "Makes efficient use of time during service, keeping pace without cutting corners on quality.", label: "Efficient use of time", category: "Meets" },
+                { id: "PRODUCT_15", text: "Keeps the work area well-organized and systematic, even during high-volume shifts.", label: "Well-organized work area", category: "Meets" },
+                { id: "PRODUCT_16", text: "Consistently delivers strong, measurable results and is recognized as a reliable performer in the role.", label: "Consistently strong results", category: "Exceeds" },
+                { id: "PRODUCT_17", text: "Needs to improve accuracy and attention to detail, particularly when tasks pile up.", label: "Needs closer attention to detail", category: "Needs Improvement" },
+                { id: "PRODUCT_18", text: "Struggles to manage time effectively during busy periods, leading to backlog or rushed work.", label: "Needs better time management", category: "Needs Improvement" },
+                { id: "PRODUCT_19", text: "Takes clear ownership of assigned responsibilities without needing to be reminded of what's expected.", label: "Takes ownership of tasks", category: "Meets" },
+                { id: "PRODUCT_20", text: "Actively contributes to broader team and department goals, not just their own individual tasks.", label: "Contributes to team goals", category: "Exceeds" },
+                { id: "PRODUCT_21", text: "Tends to focus narrowly on individual tasks and needs encouragement to consider how their work supports the wider team.", label: "Needs broader team focus", category: "Needs Improvement" }
+            ],
+            FINANCIAL: [
+                { id: "FINANCIAL_1", text: "Handles company equipment and inventory with consistent care, minimizing breakage and waste.", label: "Careful with equipment", category: "Meets" },
+                { id: "FINANCIAL_2", text: "Proactively identifies opportunities to reduce waste and protect company resources.", label: "Resource champion", category: "Exceeds" },
+                { id: "FINANCIAL_3", text: "Consistently meets or exceeds assigned cost and revenue targets.", label: "Exceeds revenue targets", category: "Exceeds" },
+                { id: "FINANCIAL_4", text: "Makes good use of available sales tools and training to support revenue goals.", label: "Uses sales tools well", category: "Meets" },
+                { id: "FINANCIAL_5", text: "Follows portion-control and inventory procedures accurately.", label: "Accurate portion control", category: "Meets" },
+                { id: "FINANCIAL_6", text: "Encourages resource-conscious habits among colleagues.", label: "Promotes waste reduction", category: "Exceeds" },
+                { id: "FINANCIAL_7", text: "Needs to exercise greater care with equipment and supplies to reduce avoidable waste.", label: "Needs care with supplies", category: "Needs Improvement" },
+                { id: "FINANCIAL_8", text: "Falls short of assigned revenue or cost targets on a consistent basis.", label: "Below revenue targets", category: "Needs Improvement" },
+                { id: "FINANCIAL_9", text: "Makes effective use of available resources and prioritizes tasks well during busy periods.", label: "Prioritizes resources well", category: "Meets" },
+                { id: "FINANCIAL_10", text: "Finds practical, cost-conscious solutions when supplies or equipment run short.", label: "Cost-conscious problem solver", category: "Exceeds" },
+                { id: "FINANCIAL_11", text: "Prioritizes high-impact tasks effectively, minimizing downtime and wasted effort.", label: "Minimizes downtime", category: "Exceeds" },
+                { id: "FINANCIAL_12", text: "Needs to improve prioritization of tasks to avoid unnecessary resource use or delays.", label: "Needs task prioritization", category: "Needs Improvement" },
+                { id: "FINANCIAL_13", text: "Plans ahead for busy periods, ensuring supplies and equipment are ready without over-ordering.", label: "Plans ahead for busy periods", category: "Exceeds" },
+                { id: "FINANCIAL_14", text: "Uses sound judgement when deciding how to allocate limited supplies during a shift.", label: "Sound judgement with supplies", category: "Meets" },
+                { id: "FINANCIAL_15", text: "Sets realistic personal targets for cost control and consistently works toward them.", label: "Sets realistic cost targets", category: "Meets" },
+                { id: "FINANCIAL_16", text: "Makes confident, well-reasoned decisions when resources are tight or unexpected shortages arise.", label: "Confident under resource pressure", category: "Exceeds" },
+                { id: "FINANCIAL_17", text: "Needs to plan further ahead to avoid last-minute shortages or wasted supplies.", label: "Needs more advance planning", category: "Needs Improvement" },
+                { id: "FINANCIAL_18", text: "Decision-making around resource use needs more consistency, particularly under time pressure.", label: "Needs consistent resource decisions", category: "Needs Improvement" },
+                { id: "FINANCIAL_19", text: "Confidently suggests wine pairings and beverage add-ons that suit each table's preferences.", label: "Confident wine/beverage suggestions", category: "Exceeds" },
+                { id: "FINANCIAL_20", text: "Actively promotes specialty dining and beverage options in a natural, unpressured way.", label: "Natural specialty dining promotion", category: "Meets" },
+                { id: "FINANCIAL_21", text: "Consistently meets or exceeds targets for beverage and specialty dining promotion.", label: "Exceeds promotion targets", category: "Exceeds" },
+                { id: "FINANCIAL_22", text: "Turns guest recommendations into a genuine value-add, consistently receiving positive reactions to suggested items.", label: "Recommendations well received", category: "Exceeds" },
+                { id: "FINANCIAL_23", text: "Uses menu knowledge effectively to suggest upgrades guests are likely to enjoy.", label: "Uses menu knowledge to upsell", category: "Meets" },
+                { id: "FINANCIAL_24", text: "Accurately processes guest transactions and payments through the onboard system with minimal errors.", label: "Accurate transaction processing", category: "Meets" },
+                { id: "FINANCIAL_25", text: "Rarely mentions optional add-ons or specialty dining options to guests, missing easy revenue opportunities.", label: "Misses promotion opportunities", category: "Needs Improvement" },
+                { id: "FINANCIAL_26", text: "Needs to build more confidence recommending wine pairings or beverage upgrades to guests.", label: "Needs upselling confidence", category: "Needs Improvement" },
+                { id: "FINANCIAL_27", text: "Occasionally makes errors when processing guest transactions, requiring correction.", label: "Needs transaction accuracy", category: "Needs Improvement" }
+            ],
+            VALUES: [
+                { id: "VALUES_1", text: "Acts as a visible role model for company values, encouraging colleagues to follow safe, ethical practices.", label: "Values role model", category: "Exceeds" },
+                { id: "VALUES_2", text: "Displays impeccable personal integrity and consistently follows through on commitments.", label: "High personal integrity", category: "Exceeds" },
+                { id: "VALUES_3", text: "Respectful and polite to all crewmembers; maintains a clean, professional appearance.", label: "Colleague respect & grooming", category: "Meets" },
+                { id: "VALUES_4", text: "Displays a calm, even temperament and handles pressure with composure.", label: "Steady under pressure", category: "Meets" },
+                { id: "VALUES_5", text: "Reliably shows up prepared and ready for duty, with a strong track record of attendance and punctuality.", label: "Strong attendance record", category: "Meets" },
+                { id: "VALUES_6", text: "Needs to work on maintaining composure under pressure during high-stress service periods.", label: "Needs composure under pressure", category: "Needs Improvement" },
+                { id: "VALUES_7", text: "Actively advocates for company values and helps colleagues understand how daily work connects to broader goals and initiatives.", label: "Advocates for company values", category: "Exceeds" },
+                { id: "VALUES_8", text: "Treats colleagues and guests from all backgrounds with equal dignity and respect, valuing different perspectives.", label: "Values diverse perspectives", category: "Meets" },
+                { id: "VALUES_9", text: "Creates a climate where colleagues feel safe raising concerns or suggestions without fear of it affecting how they're treated.", label: "Encourages speaking up safely", category: "Exceeds" },
+                { id: "VALUES_10", text: "Rarely speaks up about values-related concerns, even when it could help the team.", label: "Rarely raises concerns", category: "Needs Improvement" }
+            ],
+            LEARNING: [
+                { id: "LEARNING_1", text: "Rapidly completes required training modules ahead of deadline and applies new knowledge immediately.", label: "Fast training completion", category: "Exceeds" },
+                { id: "LEARNING_2", text: "Actively seeks out feedback and uses it to make visible improvements in performance.", label: "Actively seeks feedback", category: "Exceeds" },
+                { id: "LEARNING_3", text: "Completes required courses and safety training within expected timelines.", label: "Reliable learner", category: "Meets" },
+                { id: "LEARNING_4", text: "Listens attentively during briefings and applies guidance consistently.", label: "Attentive at briefings", category: "Meets" },
+                { id: "LEARNING_5", text: "Needs reminders to complete training modules by their deadlines.", label: "Needs training reminders", category: "Needs Improvement" },
+                { id: "LEARNING_6", text: "Slow to apply feedback consistently; repeats avoidable errors between coaching sessions.", label: "Inconsistent feedback follow-up", category: "Needs Improvement" },
+                { id: "LEARNING_7", text: "Reflects on mistakes or incidents and makes clear, lasting changes so they don't happen again.", label: "Learns from incidents", category: "Exceeds" },
+                { id: "LEARNING_8", text: "Thinks ahead about how a decision might play out, catching potential problems before they occur.", label: "Thinks ahead of problems", category: "Exceeds" },
+                { id: "LEARNING_9", text: "Adjusts well when procedures or requirements change, adapting without needing much guidance.", label: "Adapts to new requirements", category: "Meets" },
+                { id: "LEARNING_10", text: "Tends to repeat the same mistakes rather than learning from them; needs more encouragement to reflect on incidents.", label: "Repeats past mistakes", category: "Needs Improvement" },
+                { id: "LEARNING_11", text: "Shows genuine curiosity about how things work and often asks thoughtful questions to deepen understanding.", label: "Genuinely curious learner", category: "Exceeds" },
+                { id: "LEARNING_12", text: "Picks up new procedures and systems quickly, needing only minimal explanation.", label: "Quick to pick up new systems", category: "Exceeds" },
+                { id: "LEARNING_13", text: "Takes detailed notes during training and refers back to them when needed.", label: "Takes thorough training notes", category: "Meets" },
+                { id: "LEARNING_14", text: "Applies lessons learned from one situation to similar situations later on.", label: "Applies past lessons", category: "Meets" },
+                { id: "LEARNING_15", text: "Shows steady, gradual improvement over the course of the contract.", label: "Steady gradual improvement", category: "Meets" },
+                { id: "LEARNING_16", text: "Willingly takes on unfamiliar tasks as a way to build new skills.", label: "Seeks out unfamiliar tasks", category: "Exceeds" },
+                { id: "LEARNING_17", text: "Needs more repetition or hands-on practice before fully grasping new procedures.", label: "Needs more practice time", category: "Needs Improvement" },
+                { id: "LEARNING_18", text: "Shows little curiosity about improving beyond the minimum required.", label: "Limited improvement curiosity", category: "Needs Improvement" },
+                { id: "LEARNING_19", text: "Requires significant follow-up to confirm that corrective feedback was actually understood.", label: "Needs feedback follow-up", category: "Needs Improvement" },
+                { id: "LEARNING_20", text: "Actively researches or asks about the reasoning behind procedures, not just the steps.", label: "Seeks the reasoning behind steps", category: "Exceeds" }
+            ],
+            TEAMCOMM: [
+                { id: "TEAMCOMM_1", text: "Maintains clear, supportive communication with colleagues during shift handovers.", label: "Clear handover communication", category: "Meets" },
+                { id: "TEAMCOMM_2", text: "Proactively coaches and supports newer team members.", label: "Coaches newer staff", category: "Exceeds" },
+                { id: "TEAMCOMM_3", text: "Acts as a steady, reliable presence the wider team relies on during busy periods.", label: "Steady team presence", category: "Exceeds" },
+                { id: "TEAMCOMM_4", text: "Works cooperatively across shifts and departments.", label: "Cooperative across shifts", category: "Meets" },
+                { id: "TEAMCOMM_5", text: "Needs to improve coordination and follow-through on handover communication.", label: "Needs handover follow-through", category: "Needs Improvement" },
+                { id: "TEAMCOMM_6", text: "Occasionally uncooperative in group settings; needs to strengthen team communication.", label: "Needs team cooperation", category: "Needs Improvement" },
+                { id: "TEAMCOMM_7", text: "Proactively shares ideas and information on important issues, rather than waiting to be asked.", label: "Proactively shares ideas", category: "Exceeds" },
+                { id: "TEAMCOMM_8", text: "Serves as a positive influence on the team through supportive, encouraging communication.", label: "Positive team influence", category: "Meets" },
+                { id: "TEAMCOMM_9", text: "Speaks up early when something important needs attention, helping the team stay ahead of issues.", label: "Speaks up early on issues", category: "Exceeds" },
+                { id: "TEAMCOMM_10", text: "Rarely shares ideas or flags important information, even when it would help the team.", label: "Rarely shares ideas", category: "Needs Improvement" },
+                { id: "TEAMCOMM_11", text: "Explains things clearly to colleagues, adjusting the level of detail to who they're talking to.", label: "Clear, adaptable explanations", category: "Meets" },
+                { id: "TEAMCOMM_12", text: "Actively listens to colleagues' concerns and follows up on them rather than letting them drop.", label: "Follows up on concerns", category: "Exceeds" },
+                { id: "TEAMCOMM_13", text: "Keeps communication calm and constructive even when discussing a problem or disagreement.", label: "Calm, constructive communicator", category: "Exceeds" },
+                { id: "TEAMCOMM_14", text: "Checks in with quieter or newer colleagues to make sure they have what they need.", label: "Checks in on newer colleagues", category: "Exceeds" },
+                { id: "TEAMCOMM_15", text: "Passes along information reliably, without distorting or leaving out important details.", label: "Reliable information relay", category: "Meets" },
+                { id: "TEAMCOMM_16", text: "Contributes useful input during team meetings or briefings when asked.", label: "Contributes when asked", category: "Meets" },
+                { id: "TEAMCOMM_17", text: "Tends to stay quiet in group settings even when they likely have something useful to add.", label: "Stays quiet in groups", category: "Needs Improvement" },
+                { id: "TEAMCOMM_18", text: "Sometimes shares information selectively or inconsistently, leaving gaps for colleagues.", label: "Inconsistent information sharing", category: "Needs Improvement" },
+                { id: "TEAMCOMM_19", text: "Builds genuine working relationships across departments, not just their immediate team.", label: "Builds cross-department relationships", category: "Exceeds" },
+                { id: "TEAMCOMM_20", text: "Needs to work on tone when raising concerns, as it can come across as short with colleagues.", label: "Needs softer tone with concerns", category: "Needs Improvement" }
+            ],
+            SAFETY: [
+                { id: "SAFETY_1", text: "Demonstrates consistent personal commitment to safety, strictly adhering to public health and hygiene standards.", label: "Strong safety compliance", category: "Meets" },
+                { id: "SAFETY_2", text: "Proactively flags safety or compliance concerns and supports the training of newer team members.", label: "Proactive safety reporting", category: "Exceeds" },
+                { id: "SAFETY_3", text: "Requires occasional reminders regarding grooming or hygiene standards during busy periods.", label: "Needs hygiene reminders", category: "Needs Improvement" },
+                { id: "SAFETY_4", text: "Needs closer supervision to consistently meet safety and public-health expectations.", label: "Needs safety supervision", category: "Needs Improvement" },
+                { id: "SAFETY_5", text: "Follows all safety and security procedures without exception, and reports hazards or concerns promptly.", label: "Diligent safety reporting", category: "Meets" },
+                { id: "SAFETY_6", text: "Occasionally overlooks safety or security procedures and needs reminders to stay compliant.", label: "Needs safety compliance reminders", category: "Needs Improvement" },
+                { id: "SAFETY_7", text: "Consistently follows correct procedures for handling and sorting waste, including hazardous materials.", label: "Correct waste handling", category: "Meets" },
+                { id: "SAFETY_8", text: "Confidently performs emergency procedures and drills with a clear sense of urgency.", label: "Confident in emergency drills", category: "Exceeds" },
+                { id: "SAFETY_9", text: "Maintains up-to-date knowledge of public health standards and promptly reports any compliance gaps.", label: "Current on public health standards", category: "Meets" },
+                { id: "SAFETY_10", text: "Promptly reports any responsible-service-of-alcohol concerns to a supervisor.", label: "Reports RSA concerns promptly", category: "Meets" },
+                { id: "SAFETY_11", text: "Sets a strong example during emergency drills, helping guide less experienced colleagues.", label: "Leads by example in drills", category: "Exceeds" },
+                { id: "SAFETY_12", text: "Needs to review emergency procedures more closely to respond with greater confidence.", label: "Needs emergency procedure review", category: "Needs Improvement" },
+                { id: "SAFETY_13", text: "Rarely reports safety concerns, even when they are noticeable to others.", label: "Rarely reports concerns", category: "Needs Improvement" },
+                { id: "SAFETY_14", text: "Actively supports increased sanitation protocols during elevated compliance periods.", label: "Supports elevated sanitation", category: "Exceeds" },
+                { id: "SAFETY_15", text: "Maintains accurate, compliant records related to timekeeping and safety documentation.", label: "Accurate compliance records", category: "Meets" },
+                { id: "SAFETY_16", text: "Requires repeated correction to properly sort or handle waste and hazardous materials.", label: "Needs waste-handling correction", category: "Needs Improvement" },
+                { id: "SAFETY_17", text: "Demonstrates thorough, current knowledge of health and safety protocols relevant to the role.", label: "Thorough safety knowledge", category: "Exceeds" },
+                { id: "SAFETY_18", text: "Shows minimal awareness of public health or safety obligations relevant to daily duties.", label: "Needs safety awareness", category: "Needs Improvement" },
+                { id: "SAFETY_19", text: "Takes visible care to minimize environmental impact, from proper waste sorting to conserving energy and water where possible.", label: "Environmentally conscious", category: "Exceeds" }
+            ]
+        };
+        // State
+        let currentTab = "text";
+        let currentRoleKras = [];
+        let previousPosition = "Buffet Steward";
+        let summaryLength = "detailed";
+        let summaryStrength = 0; // -2 (much softer) to +2 (much stronger); affects only the written summary's tone
+        let activeKraForModal = 0;
+        let activeStatementFilter = "Meets";
+        let selectedStatements = [];
+
+        window.onload = () => {
+            const d = new Date();
+            document.getElementById('serverTimeStr').innerText = d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            setSummaryLength('detailed');
+            loadGeminiSettings();
+
+            const savedPosition = localStorage.getItem('pc_star_position');
+            if (savedPosition && ROLES[savedPosition]) {
+                document.getElementById('position').value = savedPosition;
+            }
+            previousPosition = document.getElementById('position').value;
+            changeRole(true);
+
+            if (localStorage.getItem('pc_star_surname') !== null) {
+                loadFromStorage();
+            }
+            saveAndGenerate();
+        };
+
+        // Custom interactive toasts replacing forbidden alert()
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-3.5 rounded-xl shadow-2xl border text-xs font-bold text-white transition-all duration-300 transform translate-y-5 opacity-0 flex items-center gap-2 max-w-sm pointer-events-auto ${
+                type === 'success' ? 'bg-emerald-600 border-emerald-500' :
+                type === 'warning' ? 'bg-amber-600 border-amber-500' :
+                'bg-navy-800 border-navy-700'
+            }`;
+
+            const icon = document.createElement('span');
+            icon.className = 'material-icons text-sm';
+            icon.innerText = type === 'success' ? 'check_circle' : type === 'warning' ? 'warning' : 'info';
+
+            const text = document.createElement('span');
+            text.innerText = message;
+
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-5', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-5', 'opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Custom Confirmation dialog replacing forbidden confirm()
+        function showConfirmModal(title, text, onConfirm, onCancel) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmTitle').innerText = title;
+            document.getElementById('confirmText').innerText = text;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+
+            const closeHandler = () => {
+                modal.classList.add('opacity-0');
+                modal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200);
+            };
+
+            document.getElementById('confirmCancelBtn').onclick = () => {
+                closeHandler();
+                if (onCancel) onCancel();
+            };
+            document.getElementById('confirmConfirmBtn').onclick = () => {
+                closeHandler();
+                onConfirm();
+            };
+        }
+
+        // ===== ROLE-AWARE KRA RENDERING =====
+
+        function handlePositionChange() {
+            const newPosition = document.getElementById('position').value;
+
+            const hasData = currentRoleKras.some((kra, i) => {
+                const scoreEl = document.getElementById('kra' + i + 's');
+                const obsEl = document.getElementById('kra' + i + 'obs');
+                const score = scoreEl ? scoreEl.value : "3";
+                const obs = obsEl ? obsEl.value : "";
+                const defaultObs = getThemePreset(kra.theme, 3);
+                return score !== "3" || (obs.trim() !== "" && obs !== defaultObs);
+            });
+
+            if (hasData && newPosition !== previousPosition) {
+                showConfirmModal(
+                    "Switch Evaluation Position",
+                    `Switching to ${newPosition} will reset all KRA scores and comments currently entered for ${previousPosition}. This cannot be undone. Continue?`,
+                    () => {
+                        previousPosition = newPosition;
+                        changeRole(false);
+                    },
+                    () => {
+                        document.getElementById('position').value = previousPosition;
+                    }
+                );
+            } else {
+                previousPosition = newPosition;
+                changeRole(false);
+            }
+        }
+
+        function changeRole(isInitialLoad) {
+            const position = document.getElementById('position').value;
+            currentRoleKras = ROLES[position] || ROLES["Buffet Steward"];
+
+            const banner = document.getElementById('estimatedRoleBanner');
+            if (ESTIMATED_ROLES.includes(position)) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            renderKraCards();
+
+            if (!isInitialLoad) {
+                currentRoleKras.forEach((kra, i) => {
+                    document.getElementById('kra' + i + 's').value = "3";
+                    document.getElementById('kra' + i + 'obs').value = getThemePreset(kra.theme, 3);
+                });
+                saveAndGenerate();
+                showToast(`Loaded KRA structure for ${position}.`, 'info');
+            }
+        }
+
+        function renderKraCards() {
+            const container = document.getElementById('kraContainer');
+            container.innerHTML = '';
+
+            currentRoleKras.forEach((kra, i) => {
+                const isPrimary = kra.weight === Math.max(...currentRoleKras.map(k => k.weight));
+                const criteriaHtml = (kra.criteria || []).map(c => `<li class="pl-1">${c}</li>`).join('');
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow transition-shadow ${isPrimary ? 'ring-1 ring-blue-200 border-slate-200' : 'border-slate-200'}`;
+                card.innerHTML = `
+                    <div class="${isPrimary ? 'bg-blue-50/50 border-b border-blue-100' : 'bg-navy-50/40 border-b border-slate-150'} px-4 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="${isPrimary ? 'bg-blue-600' : 'bg-navy-500'} text-white font-mono font-bold text-[11px] w-5 h-5 flex items-center justify-center rounded-full">${i + 1}</span>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <h4 class="font-bold text-xs text-navy-900">${kra.name}</h4>
+                                    ${isPrimary ? '<span class="px-1.5 py-0.2 text-[8px] font-bold bg-navy-100 text-navy-700 rounded uppercase">Primary KPI</span>' : ''}
+                                </div>
+                                <p class="text-[10px] text-slate-500"><strong class="text-navy-900">${kra.weight}% weighting</strong></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold text-navy-900 uppercase">Rating Score:</span>
+                            <div class="flex items-center shadow-sm rounded-lg overflow-hidden border border-slate-200 bg-white">
+                                <button onclick="adjustScore(${i}, -1)" class="px-2.5 py-0.5 bg-slate-50 hover:bg-slate-100 text-navy-900 font-bold text-sm transition focus:outline-none select-none">-</button>
+                                <input type="text" id="kra${i}s" value="3" readonly class="w-10 text-center font-mono font-bold text-xs text-navy-600 bg-white border-none select-none pointer-events-none focus:outline-none">
+                                <button onclick="adjustScore(${i}, 1)" class="px-2.5 py-0.5 bg-slate-50 hover:bg-slate-100 text-navy-900 font-bold text-sm transition focus:outline-none select-none">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-1.5 border-b border-slate-100 bg-slate-50/60">
+                        <button type="button" onclick="document.getElementById('kraCriteria${i}').classList.toggle('hidden')" class="text-[10px] font-semibold text-navy-500 hover:text-navy-700 transition flex items-center gap-1">
+                            <span class="material-icons text-xs">checklist</span>
+                            View rating criteria
+                        </button>
+                        <div id="kraCriteria${i}" class="hidden mt-1.5 pb-1 text-[10px] text-slate-600 leading-relaxed">
+                            <p class="italic text-slate-400 mb-1">Minimum of ${kra.minObservations || 2} observations to be entered here based on: what the teammember did, how they did it, and how consistently they did it.</p>
+                            <ul class="list-disc pl-4 space-y-0.5">${criteriaHtml}</ul>
+                        </div>
+                    </div>
+                    <div class="p-3 space-y-3">
+                        <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                            <button onclick="openStatementModal(${i})" class="px-2 py-1 text-[10px] border border-navy-500 text-navy-500 hover:bg-navy-50 transition rounded-md font-semibold flex items-center gap-1">
+                                <span class="material-icons text-xs">post_add</span>
+                                <span>Approved Phrasing</span>
+                            </button>
+                            <span class="text-[10px] text-slate-400 italic">Adjusting +/- resets to default observation preset</span>
+                        </div>
+                        <textarea id="kra${i}obs" placeholder="Comments for this KRA..." class="w-full h-20 px-3 py-1.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-navy-500 bg-slate-50 focus:bg-white resize-y" oninput="saveAndGenerate()"></textarea>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ===== GEMINI AI SETTINGS & INTEGRATION (optional, opt-in, client-side key) =====
+        const GEMINI_MODEL = "gemini-3.6-flash";
+
+        function toggleAiSettingsPanel() {
+            document.getElementById('aiSettingsPanel').classList.toggle('hidden');
+        }
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('geminiApiKey');
+            const btn = document.getElementById('toggleKeyVisibilityBtn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
+        }
+
+        function saveGeminiKey() {
+            localStorage.setItem('pc_star_gemini_key', document.getElementById('geminiApiKey').value);
+        }
+
+        function onGeminiToggleChange() {
+            const enabled = document.getElementById('useGeminiToggle').checked;
+            localStorage.setItem('pc_star_gemini_enabled', enabled ? '1' : '0');
+            if (enabled && !document.getElementById('geminiApiKey').value.trim()) {
+                showToast("Add a Gemini API key below to use AI generation.", "warning");
+            }
+        }
+
+        function loadGeminiSettings() {
+            const savedKey = localStorage.getItem('pc_star_gemini_key');
+            const savedEnabled = localStorage.getItem('pc_star_gemini_enabled');
+            if (savedKey) document.getElementById('geminiApiKey').value = savedKey;
+            if (savedEnabled === '1') document.getElementById('useGeminiToggle').checked = true;
+        }
+
+        const SUMMARY_STRENGTH_PROMPT = {
+            "-2": "Write with a notably more reserved, measured tone than the score alone might suggest — understate achievements slightly and lean into areas needing attention, without contradicting or inventing anything.",
+            "-1": "Write with a slightly more measured, cautious tone than a strictly neutral read of the score would suggest.",
+            "0": "",
+            "1": "Write with a slightly more confident, positive tone than a strictly neutral read of the score would suggest.",
+            "2": "Write with a notably more confident, enthusiastic tone than the score alone might suggest — emphasize strengths and achievements more strongly, without contradicting or inventing anything."
+        };
+
+        function buildGeminiPrompt(kraScores, kraObs, overallDisplay, pos, forename, length, additionalNotes, venuesWorked, keyStrengths, growthAreas, strength) {
+            const kraLines = currentRoleKras.map((kra, i) =>
+                `- ${kra.name} (${kra.weight}% of role structure): score ${kraScores[i]}/5. Comments: "${kraObs[i] || 'No comments entered.'}"`
+            ).join("\n");
+
+            const notesBlock = additionalNotes && additionalNotes.trim()
+                ? `\nAdditional notes from the appraiser: "${additionalNotes.trim()}"`
+                : "";
+
+            const venuesLine = venuesWorked && venuesWorked.trim()
+                ? venuesWorked.trim()
+                : `${pos} (no specific venue transitions noted — keep this brief and general)`;
+            const strengthsLine = keyStrengths && keyStrengths.trim()
+                ? keyStrengths.trim()
+                : "not explicitly listed by the appraiser — infer from the highest-scoring KRAs and their comments below";
+            const growthLine = growthAreas && growthAreas.trim()
+                ? growthAreas.trim()
+                : "not explicitly listed by the appraiser — infer from the lowest-scoring KRA(s) and their comments below";
+
+            const lengthInstruction = length === 'concise'
+                ? "Condense all four components below into ONE tight paragraph of no more than 60 words — still touch briefly on scope, strengths, impact, and a growth/next-step note."
+                : "Write 1-3 paragraphs, approximately 150-250 words total, covering all four components below in order.";
+
+            const toneInstruction = SUMMARY_STRENGTH_PROMPT[(strength || 0).toString()] || "";
+
+            return `Act as a Shipboard Food & Beverage Management Specialist writing a professional appraisal final summary comment for a crew performance appraisal. Base everything strictly on the data below — do not invent facts, achievements, or venues that aren't mentioned. Do not use markdown formatting (no asterisks, no headers) — plain prose only.
+
+Always refer to the crewmember by their actual name, "${forename}" — never use generic terms like "the crewmember," "the employee," or "the individual" as a substitute.
+
+EMPLOYEE DATA:
+- Name: ${forename}
+- Position: ${pos}
+- Venues / Roles Worked This Contract: ${venuesLine}
+- Key Strengths (if provided by the appraiser): ${strengthsLine}
+- Areas for Development (if provided by the appraiser): ${growthLine}
+- Overall average score: ${overallDisplay} out of 5
+
+KRA BREAKDOWN:
+${kraLines}${notesBlock}
+
+Write the summary covering these four components, in order, in flowing prose:
+1. Scope & Adaptability — the venues/roles worked, any transitions, and adaptability shown during the contract.
+2. Core Strengths & Conduct — operational execution, leadership traits, problem-solving, guest/team interaction, and adherence to company values, drawing on the KRA comments and any listed strengths.
+3. Specific Impact — concrete achievements, follow-up, resource management, revenue/efficiency contributions, or initiative mentioned in the comments.
+4. Growth & Future Potential — 1-2 constructive focus areas (from the listed development areas or the lowest-scoring KRAs), and an explicit, honest statement on readiness for promotion or next career steps based on the overall score of ${overallDisplay}/5.
+
+Tone: professional, objective, encouraging, and clear — written the way an experienced supervisor who actually knows this person would write it, not generic corporate language.${toneInstruction ? " " + toneInstruction : ""}
+
+${lengthInstruction}
+
+Output ONLY the summary text, nothing else.`;
+        }
+
+        async function generateSummaryViaGemini(kraScores, kraObs, overallDisplay, pos, forename, additionalNotes, venuesWorked, keyStrengths, growthAreas, strength) {
+            const apiKey = document.getElementById('geminiApiKey').value.trim();
+            if (!apiKey) {
+                throw new Error("No API key set");
+            }
+
+            const prompt = buildGeminiPrompt(kraScores, kraObs, overallDisplay, pos, forename, summaryLength, additionalNotes, venuesWorked, keyStrengths, growthAreas, strength);
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": apiKey
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { maxOutputTokens: 2048, thinkingConfig: { thinkingLevel: "low" } }
+                })
+            });
+
+            if (!response.ok) {
+                const errBody = await response.text().catch(() => "");
+                throw new Error(`Gemini API error (${response.status}): ${errBody.slice(0, 200)}`);
+            }
+
+            const data = await response.json();
+            const candidate = data?.candidates?.[0];
+            const text = candidate?.content?.parts?.[0]?.text;
+
+            if (!text) {
+                throw new Error("Gemini returned an empty response");
+            }
+            // A response cut off by the token limit (or missing its closing punctuation) is
+            // incomplete — better to fall back to the template than show a truncated sentence.
+            // Recognizes both straight quotes (" ') and typographic/curly quotes (" " ' '), since
+            // Gemini tends to write natural prose with curly closing quotes around cited text.
+            const trimmed = text.trim();
+            const endsCleanly = /[.!?]['")\u2019\u201D]?\s*$/.test(trimmed);
+            if (candidate.finishReason === "MAX_TOKENS" || !endsCleanly) {
+                console.warn("Gemini response flagged as truncated. finishReason:", candidate.finishReason, "| Full text:", trimmed);
+                throw new Error("Gemini response was truncated");
+            }
+            return trimmed;
+        }
+
+        function setSummaryLength(mode) {
+            summaryLength = mode;
+            const btnConcise = document.getElementById('lengthBtnConcise');
+            const btnDetailed = document.getElementById('lengthBtnDetailed');
+            const activeCls = "px-2 py-1 rounded-md text-[10px] font-bold transition bg-white text-navy-700 shadow-sm";
+            const inactiveCls = "px-2 py-1 rounded-md text-[10px] font-bold transition text-slate-500 hover:text-slate-700";
+            btnConcise.className = mode === 'concise' ? activeCls : inactiveCls;
+            btnDetailed.className = mode === 'detailed' ? activeCls : inactiveCls;
+        }
+
+        const SUMMARY_STRENGTH_LABELS = {
+            "-2": "Much Softer",
+            "-1": "Softer",
+            "0": "Standard",
+            "1": "Stronger",
+            "2": "Much Stronger"
+        };
+
+        function adjustSummaryStrength(delta) {
+            summaryStrength = Math.max(-2, Math.min(2, summaryStrength + delta));
+            document.getElementById('summaryStrengthLabel').textContent = SUMMARY_STRENGTH_LABELS[summaryStrength.toString()];
+        }
+
+        function setPreviewTab(tab) {
+            currentTab = tab;
+            const btnText = document.getElementById('tabBtnText');
+            const btnHtml = document.getElementById('tabBtnHtml');
+            const blockText = document.getElementById('previewBlockText');
+            const blockHtml = document.getElementById('previewBlockHtml');
+
+            if (tab === 'text') {
+                btnText.className = "flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-white bg-navy-500 shadow";
+                btnHtml.className = "flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-slate-400 hover:text-white";
+                blockText.classList.remove('hidden');
+                blockHtml.classList.add('hidden');
+            } else {
+                btnHtml.className = "flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-slate-900 bg-white shadow";
+                btnText.className = "flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-bold transition flex items-center justify-center gap-1 text-slate-400 hover:text-white";
+                blockHtml.classList.remove('hidden');
+                blockText.classList.add('hidden');
+            }
+        }
+
+        function loadFromStorage() {
+            const fields = ['surname', 'forenames', 'empId', 'devGoals', 'additionalNotes', 'venuesWorked', 'keyStrengths', 'growthAreas'];
+            fields.forEach(f => {
+                const val = localStorage.getItem('pc_star_' + f);
+                if (val !== null) {
+                    const el = document.getElementById(f);
+                    if (el) el.value = val;
+                }
+            });
+
+            currentRoleKras.forEach((kra, i) => {
+                const sVal = localStorage.getItem('pc_star_kra' + i + 's');
+                const oVal = localStorage.getItem('pc_star_kra' + i + 'obs');
+                if (sVal !== null) document.getElementById('kra' + i + 's').value = sVal;
+                if (oVal !== null) document.getElementById('kra' + i + 'obs').value = oVal;
+            });
+        }
+
+        function saveToStorage() {
+            const fields = ['surname', 'forenames', 'empId', 'position', 'devGoals', 'additionalNotes', 'venuesWorked', 'keyStrengths', 'growthAreas'];
+            fields.forEach(f => {
+                const el = document.getElementById(f);
+                if (el) localStorage.setItem('pc_star_' + f, el.value);
+            });
+
+            currentRoleKras.forEach((kra, i) => {
+                const sEl = document.getElementById('kra' + i + 's');
+                const oEl = document.getElementById('kra' + i + 'obs');
+                if (sEl) localStorage.setItem('pc_star_kra' + i + 's', sEl.value);
+                if (oEl) localStorage.setItem('pc_star_kra' + i + 'obs', oEl.value);
+            });
+        }
+
+        // Plus/Minus Score Adjuster
+        function adjustScore(kraIndex, delta) {
+            const input = document.getElementById('kra' + kraIndex + 's');
+            let currentVal = parseInt(input.value) || 3;
+            currentVal += delta;
+
+            if (currentVal < 1) currentVal = 1;
+            if (currentVal > 5) currentVal = 5;
+
+            input.value = currentVal.toString();
+
+            const theme = currentRoleKras[kraIndex].theme;
+            const obsTextarea = document.getElementById('kra' + kraIndex + 'obs');
+            const matchingObservation = getThemePreset(theme, currentVal);
+            if (matchingObservation) {
+                obsTextarea.value = matchingObservation;
+            }
+
+            saveAndGenerate();
+        }
+
+        function getRatingTier(score) {
+            const rounded = Math.round(score);
+            if (rounded >= 5) return "Consistently Exceeds Standards";
+            if (rounded === 4) return "Meets and Sometimes Exceeds Standards";
+            if (rounded === 3) return "Meet Standards";
+            if (rounded === 2) return "Needs Improvement - Sometimes Meets Standards";
+            return "Does Not Meet Standards";
+        }
+
+        function getRatingColor(score) {
+            const rounded = Math.round(score);
+            if (rounded >= 5) return "#10b981";
+            if (rounded === 4) return "#3b82f6";
+            if (rounded === 3) return "#e5c158";
+            if (rounded === 2) return "#f59e0b";
+            return "#ef4444";
+        }
+
+        // ===== STATEMENT MODAL (THEME-AWARE) =====
+        function scoreToCategory(score) {
+            const s = parseInt(score) || 3;
+            if (s >= 4) return "Exceeds";
+            if (s === 3) return "Meets";
+            return "Needs Improvement";
+        }
+
+        function openStatementModal(kraIndex) {
+            activeKraForModal = kraIndex;
+            selectedStatements = [];
+
+            const currentScore = document.getElementById('kra' + kraIndex + 's').value;
+            activeStatementFilter = scoreToCategory(currentScore);
+
+            document.getElementById('statementModalSubtitle').textContent =
+                `${currentRoleKras[kraIndex].name} — current score: ${currentScore} — showing phrases scaled to match`;
+
+            renderStatementFilterBar(kraIndex, currentScore);
+            renderStatementList(kraIndex);
+
+            document.getElementById('statementModal').classList.remove('hidden');
+        }
+
+        function renderStatementFilterBar(kraIndex, currentScore) {
+            const bar = document.getElementById('statementFilterBar');
+            bar.innerHTML = '';
+            const defaultCategory = scoreToCategory(currentScore);
+            const filters = ["Needs Improvement", "Meets", "Exceeds", "All"];
+
+            filters.forEach(f => {
+                const btn = document.createElement('button');
+                const isActive = activeStatementFilter === f;
+                const isSuggested = f === defaultCategory && f !== "All";
+                btn.type = "button";
+                btn.className = `px-2.5 py-1 rounded-full text-[10px] font-bold border transition mb-2 ${
+                    isActive
+                        ? 'bg-navy-500 text-white border-navy-500'
+                        : 'bg-white text-slate-600 border-slate-300 hover:bg-slate-50'
+                }`;
+                btn.innerHTML = f + (isSuggested ? ' <span class="opacity-80">(current score)</span>' : '');
+                btn.onclick = () => {
+                    activeStatementFilter = f;
+                    renderStatementFilterBar(kraIndex, currentScore);
+                    renderStatementList(kraIndex);
+                };
+                bar.appendChild(btn);
+            });
+        }
+
+        function renderStatementList(kraIndex) {
+            const container = document.getElementById('statementModalBody');
+            container.innerHTML = '';
+
+            const theme = currentRoleKras[kraIndex].theme;
+            const list = getThemeStatements(theme);
+            const filtered = activeStatementFilter === "All"
+                ? list
+                : list.filter(s => s.category === activeStatementFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-6">No phrases in this category.</p>`;
+                return;
+            }
+
+            filtered.forEach(statement => {
+                const div = document.createElement('div');
+                div.className = "flex items-start space-x-3 p-3 rounded-lg bg-white hover:bg-navy-50/50 border border-slate-200 transition cursor-pointer shadow-sm";
+                div.onclick = () => toggleStatementCheck(statement.id);
+                div.innerHTML = `
+                    <input type="checkbox" id="chk_${statement.id}" value="${statement.id}" class="mt-1 rounded text-navy-500 focus:ring-navy-500" onclick="event.stopPropagation(); toggleStatementCheck('${statement.id}')">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-navy-900">${statement.label}</span>
+                            <span class="px-1.5 py-0.2 text-[8px] font-bold rounded uppercase ${
+                                statement.category === 'Exceeds' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                                statement.category === 'Meets' ? 'bg-blue-50 text-blue-800 border border-blue-200' :
+                                'bg-amber-50 text-amber-800 border border-amber-200'
+                            }">${statement.category}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">${statement.text}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleStatementCheck(id) {
+            const chk = document.getElementById('chk_' + id);
+            chk.checked = !chk.checked;
+            if (chk.checked) {
+                selectedStatements.push(id);
+            } else {
+                selectedStatements = selectedStatements.filter(sid => sid !== id);
+            }
+        }
+
+        function closeStatementModal() {
+            document.getElementById('statementModal').classList.add('hidden');
+        }
+
+        function insertSelectedStatements() {
+            const txt = document.getElementById('kra' + activeKraForModal + 'obs');
+            const theme = currentRoleKras[activeKraForModal].theme;
+            const kraStatements = getThemeStatements(theme);
+
+            let additions = [];
+            selectedStatements.forEach(sid => {
+                const sObj = kraStatements.find(s => s.id === sid);
+                if (sObj) additions.push(sObj.text);
+            });
+
+            if (additions.length > 0) {
+                const joined = additions.join(" ");
+                txt.value = txt.value ? txt.value + " " + joined : joined;
+                showToast(`Applied approved phrase(s) to KRA ${activeKraForModal + 1}.`, 'success');
+            }
+
+            closeStatementModal();
+            saveAndGenerate();
+        }
+
+        // ===== RADAR CHART (VARIABLE POINT COUNT) =====
+        function drawRadarChart(rawScores) {
+            const scores = rawScores.map(s => Math.max(1, Math.min(5, parseInt(s) || 3)));
+            const svg = document.getElementById('radarSvg');
+            svg.innerHTML = '';
+
+            const size = 160;
+            const cx = size / 2;
+            const cy = size / 2;
+            const maxVal = 5;
+            const radius = 60;
+            const numPoints = scores.length;
+
+            for (let level = 1; level <= maxVal; level++) {
+                const levelRadius = (radius / maxVal) * level;
+                let gridPoints = [];
+                for (let i = 0; i < numPoints; i++) {
+                    const angle = (i * 2 * Math.PI / numPoints) - Math.PI / 2;
+                    const x = cx + levelRadius * Math.cos(angle);
+                    const y = cy + levelRadius * Math.sin(angle);
+                    gridPoints.push(`${x},${y}`);
+                }
+
+                const gridPolygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                gridPolygon.setAttribute("points", gridPoints.join(" "));
+                gridPolygon.setAttribute("fill", "none");
+                gridPolygon.setAttribute("stroke", "rgba(255, 255, 255, 0.08)");
+                gridPolygon.setAttribute("stroke-width", "1");
+                svg.appendChild(gridPolygon);
+
+                if (level === 3 || level === 5) {
+                    const gridLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    gridLabel.setAttribute("x", cx + 2);
+                    gridLabel.setAttribute("y", cy - levelRadius + 3);
+                    gridLabel.setAttribute("fill", "rgba(255, 255, 255, 0.3)");
+                    gridLabel.setAttribute("font-size", "7");
+                    gridLabel.setAttribute("font-family", "monospace");
+                    gridLabel.textContent = level;
+                    svg.appendChild(gridLabel);
+                }
+            }
+
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i * 2 * Math.PI / numPoints) - Math.PI / 2;
+                const ax = cx + radius * Math.cos(angle);
+                const ay = cy + radius * Math.sin(angle);
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", cx);
+                line.setAttribute("y1", cy);
+                line.setAttribute("x2", ax);
+                line.setAttribute("y2", ay);
+                line.setAttribute("stroke", "rgba(255, 255, 255, 0.15)");
+                line.setAttribute("stroke-width", "1");
+                svg.appendChild(line);
+
+                const lx = cx + (radius + 12) * Math.cos(angle);
+                const ly = cy + (radius + 12) * Math.sin(angle);
+                const labelText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                labelText.setAttribute("x", lx);
+                labelText.setAttribute("y", ly);
+                labelText.setAttribute("fill", "rgba(255,255,255,0.6)");
+                labelText.setAttribute("font-size", "8");
+                labelText.setAttribute("font-weight", "bold");
+                labelText.setAttribute("text-anchor", "middle");
+                labelText.setAttribute("alignment-baseline", "central");
+                labelText.textContent = "K" + (i + 1);
+                svg.appendChild(labelText);
+            }
+
+            let scorePoints = [];
+            for (let i = 0; i < numPoints; i++) {
+                const score = scores[i];
+                const scoreRadius = (radius / maxVal) * score;
+                const angle = (i * 2 * Math.PI / numPoints) - Math.PI / 2;
+                const x = cx + scoreRadius * Math.cos(angle);
+                const y = cy + scoreRadius * Math.sin(angle);
+                scorePoints.push(`${x},${y}`);
+
+                const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                dot.setAttribute("cx", x);
+                dot.setAttribute("cy", y);
+                dot.setAttribute("r", "2.5");
+                dot.setAttribute("fill", "#c5a059");
+                svg.appendChild(dot);
+            }
+
+            const footprint = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            footprint.setAttribute("points", scorePoints.join(" "));
+            footprint.setAttribute("fill", "rgba(197, 160, 89, 0.2)");
+            footprint.setAttribute("stroke", "#c5a059");
+            footprint.setAttribute("stroke-width", "2");
+            footprint.setAttribute("class", "radar-area");
+            svg.insertBefore(footprint, svg.firstChild);
+        }
+
+        // ===== CORE COMPILATION LOGIC (ROLE-AWARE WEIGHTING) =====
+        function saveAndGenerate() {
+            saveToStorage();
+
+            const today = new Date();
+            const todayStr = (today.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                today.getDate().toString().padStart(2, '0') + '/' +
+                today.getFullYear();
+            document.getElementById('printAppDate').innerText = todayStr;
+
+            const sName = document.getElementById('surname').value || "";
+            const fNames = document.getElementById('forenames').value || "";
+            const empNo = document.getElementById('empId').value || "";
+            const pos = document.getElementById('position').value;
+
+            const kraScores = currentRoleKras.map((kra, i) => parseInt(document.getElementById('kra' + i + 's').value) || 3);
+            const kraObs = currentRoleKras.map((kra, i) => document.getElementById('kra' + i + 'obs').value || "");
+
+            const goals = document.getElementById('devGoals').value || "";
+            const additionalNotes = document.getElementById('additionalNotes').value || "";
+
+            // Overall score as a simple average of KRA scores (not weighted by KRA %)
+            let overallRaw = 0;
+            currentRoleKras.forEach((kra, i) => {
+                overallRaw += kraScores[i];
+            });
+            overallRaw = overallRaw / currentRoleKras.length;
+            const overallInteger = Math.round(overallRaw);
+            const overallDisplay = Number.isInteger(overallRaw) ? overallRaw.toString() : overallRaw.toFixed(1);
+            const tierStr = getRatingTier(overallInteger);
+            const rColor = getRatingColor(overallInteger);
+
+            drawRadarChart(kraScores);
+
+            document.getElementById('scoreBadge').innerText = overallDisplay;
+            document.getElementById('ratingTierText').innerText = tierStr;
+            document.getElementById('ratingTierText').style.color = rColor;
+
+            document.getElementById('printSurname').innerText = sName ? sName.toUpperCase() : "—";
+            document.getElementById('printForenames').innerText = fNames || "—";
+            document.getElementById('printEmpNum').innerText = empNo || "—";
+            document.getElementById('printPosition').innerText = pos;
+
+            document.getElementById('printOverallScore').innerText = overallDisplay;
+            document.getElementById('printRatingTier').innerText = tierStr;
+            document.getElementById('printRatingTier').style.color = rColor;
+            document.getElementById('printDevGoals').innerText = goals || "No developmental summary logged yet.";
+            document.getElementById('printAdditionalNotes').innerText = additionalNotes || "No additional notes documented.";
+
+            // Dynamic print sheet KRA cards
+            const printContainer = document.getElementById('printKraContainer');
+            printContainer.innerHTML = '';
+            currentRoleKras.forEach((kra, i) => {
+                const isPrimary = kra.weight === Math.max(...currentRoleKras.map(k => k.weight));
+                const div = document.createElement('div');
+                div.className = `border rounded p-2.5 ${isPrimary ? 'border-blue-100 bg-blue-50/30' : 'border-slate-100 bg-slate-50/50'}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="font-bold ${isPrimary ? 'text-blue-900' : 'text-slate-800'}">${i + 1}. ${kra.name} (${kra.weight}%)</span>
+                        <span class="font-mono text-xs font-bold ${isPrimary ? 'text-blue-700' : 'text-navy-600'}">${kraScores[i]}</span>
+                    </div>
+                    <p class="text-slate-600 text-xs italic">${kraObs[i] || "No observations documented."}</p>
+                `;
+                printContainer.appendChild(div);
+            });
+
+            // Plain text output block, matching the official appraisal document pattern
+            let kraTextBlocks = currentRoleKras.map((kra, i) => {
+                const criteriaLines = (kra.criteria || []).map(c => ` ${c}`).join("\n");
+                return `${kra.name}\n${kra.weight}% of Appraisal\n${criteriaLines}\nRating: ${getRatingTier(kraScores[i])}\nObservations:\n${kraObs[i] || "No observation comments provided."}\nSection Score: ${kraScores[i].toFixed(2)}`;
+            }).join("\n\n");
+
+            const formattedNotesBlock = `Surname: ${sName}
+Forenames: ${fNames}
+Employee Number: ${empNo}
+Position: ${pos}
+
+${kraTextBlocks}
+
+Development Goals / Summary
+Additional Notes:
+${additionalNotes || "No additional notes documented."}
+
+Development Goals:
+${goals || "No development goals documented yet."}
+
+Overall Score & Rating: ${overallDisplay} - ${tierStr}`;
+
+            document.getElementById('outputPreview').textContent = formattedNotesBlock;
+        }
+
+        // Theme-specific, actionable coaching language for development summaries
+        const THEME_GROWTH_ACTION = {
+            GUEST: "engaging more proactively with guests and building stronger rapport",
+            PRODUCT: "tightening technical execution and consistency during high-volume periods",
+            FINANCIAL: "sharpening cost-consciousness and care with equipment and supplies",
+            VALUES: "reinforcing professional conduct, respect toward others, and safety/compliance habits",
+            LEARNING: "following through on training and applying feedback more consistently",
+            TEAMCOMM: "strengthening communication and follow-through with the wider team",
+            SAFETY: "reinforcing safety, hygiene, and compliance habits"
+        };
+
+        // Resolves a KRA's theme (a single key, or an array of keys for a blended KRA) to helper lookups
+        function themeKeys(theme) {
+            return Array.isArray(theme) ? theme : [theme];
+        }
+        function getThemeStatements(theme) {
+            return themeKeys(theme).flatMap(t => STATEMENT_BANK[t] || []);
+        }
+        function getThemePreset(theme, score) {
+            return PRESET_OBSERVATIONS[themeKeys(theme)[0]][score];
+        }
+        function getThemeGrowthAction(theme) {
+            return THEME_GROWTH_ACTION[themeKeys(theme)[0]];
+        }
+
+        function joinWithAnd(names) {
+            if (names.length === 1) return names[0];
+            if (names.length === 2) return names.join(" and ");
+            return names.slice(0, -1).join(", ") + ", and " + names[names.length - 1];
+        }
+
+        // Pulls a short, naturally-embeddable clause from an observation textarea (whatever text is
+        // there — typed manually or inserted via the Approved Phrasing picker) so the summary can
+        // reference the actual chosen wording instead of just the KRA name.
+        function firstClause(text) {
+            if (!text) return "";
+            const match = text.trim().match(/^[^.!?]+[.!?]?/);
+            let snippet = match ? match[0].trim() : text.trim();
+            if (!snippet) return "";
+            if (snippet.length > 110) snippet = snippet.slice(0, 107).trim() + "...";
+            return snippet;
+        }
+
+        // Wraps a quoted snippet from the actual KRA comments in a natural, varied lead-in sentence
+        // instead of a clinical "(noted in the KRA comments: ...)" citation.
+        function humanCitation(quote) {
+            if (!quote) return "";
+            let q = quote.trim();
+            if (!q) return "";
+            if (!q.endsWith("...")) {
+                q = q.replace(/[.!?]+$/, "").trim() + ".";
+            }
+            const leadins = [
+                `As one comment puts it, "${q}"`,
+                `As the notes describe it, "${q}"`,
+                `One of the observations sums it up: "${q}"`,
+                `It's worth quoting directly here: "${q}"`
+            ];
+            return leadins[Math.floor(Math.random() * leadins.length)];
+        }
+
+        // Occasionally adds a brief mention of a KRA that's neither the strongest nor weakest, so the
+        // summary draws on more than just the two extremes when there's a real comment to pull from.
+        function buildExtraColor(kraObs, extremeIndices) {
+            const extremeSet = new Set(extremeIndices);
+            const candidates = currentRoleKras
+                .map((kra, i) => i)
+                .filter(i => !extremeSet.has(i) && kraObs[i] && kraObs[i].trim() !== "");
+            if (candidates.length === 0) return "";
+            const idx = candidates[Math.floor(Math.random() * candidates.length)];
+            const snippet = firstClause(kraObs[idx]);
+            if (!snippet) return "";
+            const name = currentRoleKras[idx].name;
+            const openers = [
+                `Worth mentioning too — ${name} came through solidly, `,
+                `Elsewhere, ${name} also stood out: `,
+                `On ${name}, there's more to like as well — `
+            ];
+            const q = snippet.trim().endsWith("...")
+                ? snippet.trim()
+                : snippet.replace(/[.!?]+$/, "").trim() + ".";
+            return ` ${openers[Math.floor(Math.random() * openers.length)]}"${q}"`;
+        }
+
+        // Weaves in a brief mention of the free-text Additional Notes field, if present
+        function buildAdditionalNotesColor(additionalNotes, brief) {
+            const snippet = firstClause(additionalNotes);
+            if (!snippet) return "";
+            const q = snippet.trim().endsWith("...") ? snippet.trim() : snippet.replace(/[.!?]+$/, "").trim() + ".";
+            if (brief) {
+                return ` Also worth noting: "${q}"`;
+            }
+            const leadins = [
+                `Beyond the KRAs, it's also worth noting: "${q}"`,
+                `One additional note from this period: "${q}"`,
+                `It's also worth flagging: "${q}"`
+            ];
+            return " " + leadins[Math.floor(Math.random() * leadins.length)];
+        }
+
+        function buildVenuesColor(venuesWorked) {
+            if (!venuesWorked || !venuesWorked.trim()) return "";
+            return ` This contract included time across ${venuesWorked.trim()}.`;
+        }
+
+        function buildStrengthsGrowthColor(keyStrengths, growthAreas) {
+            let result = "";
+            if (keyStrengths && keyStrengths.trim()) {
+                result += ` Particular strengths noted this period include ${keyStrengths.trim()}.`;
+            }
+            if (growthAreas && growthAreas.trim()) {
+                result += ` Development focus areas going forward include ${growthAreas.trim()}.`;
+            }
+            return result;
+        }
+
+        function buildTemplateSummary(kraScores, kraObs, overallDisplay, overallInteger, pos, forename, additionalNotes, venuesWorked, keyStrengths, growthAreas) {
+            const maxScore = Math.max(...kraScores);
+            const minScore = Math.min(...kraScores);
+            const hasVariation = maxScore > minScore;
+            const strongestIndices = kraScores.map((s, i) => s === maxScore ? i : -1).filter(i => i >= 0);
+            const weakestIndices = kraScores.map((s, i) => s === minScore ? i : -1).filter(i => i >= 0);
+
+            const strongestNames = joinWithAnd(strongestIndices.map(i => currentRoleKras[i].name));
+            const weakestNames = joinWithAnd(weakestIndices.map(i => currentRoleKras[i].name));
+            const weakestTheme = currentRoleKras[weakestIndices[0]].theme;
+            const growthAction = getThemeGrowthAction(weakestTheme);
+
+            const strongVerb = strongestIndices.length > 1 ? "were consistent strengths" : "was a consistent strength";
+            const weakVerbOffer = weakestIndices.length > 1 ? "offer room" : "offers room";
+            const weakVerbOpportunity = weakestIndices.length > 1 ? "are the clearest opportunities" : "is the clearest opportunity";
+
+            const strongestSnippet = firstClause(kraObs[strongestIndices[0]]);
+            const weakestSnippet = firstClause(kraObs[weakestIndices[0]]);
+            const strongestEvidence = humanCitation(strongestSnippet);
+            const weakestEvidence = humanCitation(weakestSnippet);
+
+            const ctx = { forename, pos, overallDisplay, strongestNames, weakestNames, growthAction, hasVariation,
+                strongVerb, weakVerbOffer, weakVerbOpportunity, strongestEvidence, weakestEvidence };
+
+            // Strength adjuster shifts which tier's *language* is used (more/less confident tone),
+            // while overallDisplay above still reports the real, unmodified average score.
+            const effectiveTier = Math.max(1, Math.min(5, overallInteger + summaryStrength));
+
+            if (summaryLength === 'concise') {
+                let summary = buildConciseSummary(effectiveTier, ctx);
+                summary += buildAdditionalNotesColor(additionalNotes, true);
+                return summary;
+            }
+
+            let summary = buildDetailedSummary(effectiveTier, ctx);
+            summary += buildVenuesColor(venuesWorked);
+            if (hasVariation && currentRoleKras.length > 2) {
+                summary += buildExtraColor(kraObs, [...strongestIndices, ...weakestIndices]);
+            }
+            summary += buildStrengthsGrowthColor(keyStrengths, growthAreas);
+            summary += buildAdditionalNotesColor(additionalNotes, false);
+            return summary;
+        }
+
+        function setGenerateButtonLoading(isLoading) {
+            const icon = document.getElementById('generateSummaryIcon');
+            const label = document.getElementById('generateSummaryLabel');
+            if (isLoading) {
+                icon.textContent = 'progress_activity';
+                icon.classList.add('animate-spin');
+                label.textContent = 'Generating...';
+            } else {
+                icon.textContent = 'auto_fix_high';
+                icon.classList.remove('animate-spin');
+                label.textContent = 'Generate Summary';
+            }
+        }
+
+        async function autoGenerateSummary() {
+            const kraScores = currentRoleKras.map((kra, i) => parseInt(document.getElementById('kra' + i + 's').value) || 3);
+            const kraObs = currentRoleKras.map((kra, i) => document.getElementById('kra' + i + 'obs').value || "");
+            const additionalNotes = document.getElementById('additionalNotes').value || "";
+            const venuesWorked = document.getElementById('venuesWorked').value || "";
+            const keyStrengths = document.getElementById('keyStrengths').value || "";
+            const growthAreas = document.getElementById('growthAreas').value || "";
+            let overallRaw = 0;
+            currentRoleKras.forEach((kra, i) => {
+                overallRaw += kraScores[i];
+            });
+            overallRaw = overallRaw / currentRoleKras.length;
+            const overallInteger = Math.round(overallRaw);
+            const overallDisplay = Number.isInteger(overallRaw) ? overallRaw.toString() : overallRaw.toFixed(1);
+            const pos = document.getElementById('position').value;
+            const forenamesVal = document.getElementById('forenames').value.trim();
+            const surnameVal = document.getElementById('surname').value.trim();
+            const forename = (forenamesVal ? forenamesVal.split(' ')[0] : "") || surnameVal || "The crewmember";
+
+            const geminiEnabled = document.getElementById('useGeminiToggle').checked;
+            const apiKey = document.getElementById('geminiApiKey').value.trim();
+
+            if (geminiEnabled && apiKey) {
+                setGenerateButtonLoading(true);
+                try {
+                    const summary = await generateSummaryViaGemini(kraScores, kraObs, overallDisplay, pos, forename, additionalNotes, venuesWorked, keyStrengths, growthAreas, summaryStrength);
+                    document.getElementById('devGoals').value = summary;
+                    saveAndGenerate();
+                    showToast("Summary generated via Gemini AI.", "success");
+                } catch (err) {
+                    console.error("Gemini summary generation failed:", err);
+                    const fallback = buildTemplateSummary(kraScores, kraObs, overallDisplay, overallInteger, pos, forename, additionalNotes, venuesWorked, keyStrengths, growthAreas);
+                    document.getElementById('devGoals').value = fallback;
+                    saveAndGenerate();
+                    showToast("Gemini unavailable — used offline template instead.", "warning");
+                } finally {
+                    setGenerateButtonLoading(false);
+                }
+                return;
+            }
+
+            const summary = buildTemplateSummary(kraScores, kraObs, overallDisplay, overallInteger, pos, forename, additionalNotes, venuesWorked, keyStrengths, growthAreas);
+            document.getElementById('devGoals').value = summary;
+            saveAndGenerate();
+            showToast("Generated development summary.", "success");
+        }
+
+        function pickVariant(variants) {
+            return variants[Math.floor(Math.random() * variants.length)]();
+        }
+
+        function buildConciseSummary(overallInteger, c) {
+            const variants = {
+                5: [
+                    () => `${c.forename} had an excellent period as a ${c.pos} (overall average: ${c.overallDisplay}) — strong across the board and a good candidate for promotion.`,
+                    () => `A genuinely outstanding stretch for ${c.forename} as a ${c.pos} (average ${c.overallDisplay}). Worth considering for promotion.`
+                ],
+                4: [
+                    () => `${c.forename} put in a strong period as a ${c.pos} (overall average: ${c.overallDisplay}), consistently going beyond expectations. Recommended for advancement.`,
+                    () => `A solid, above-standard contract from ${c.forename} as a ${c.pos} (average ${c.overallDisplay}) — recommended for advancement.`
+                ],
+                3: [
+                    () => `${c.forename} met expectations as a ${c.pos} this period (overall average: ${c.overallDisplay}) — steady and dependable throughout.`,
+                    () => `A consistent, on-standard performance from ${c.forename} as a ${c.pos} (average ${c.overallDisplay}).`
+                ],
+                2: [
+                    () => `${c.forename}'s performance as a ${c.pos} came in below standard this period (average ${c.overallDisplay}) — ${c.weakestNames} needs the most attention.`,
+                    () => `Below standard this period for ${c.forename} as a ${c.pos} (average ${c.overallDisplay}), particularly in ${c.weakestNames}.`
+                ],
+                1: [
+                    () => `This was a difficult period for ${c.forename} as a ${c.pos} (average ${c.overallDisplay}), especially in ${c.weakestNames} — a structured improvement plan is needed.`,
+                    () => `${c.forename}'s performance as a ${c.pos} fell well short this period (average ${c.overallDisplay}), particularly in ${c.weakestNames}. An improvement plan is recommended.`
+                ]
+            };
+            const tier = overallInteger >= 5 ? 5 : overallInteger;
+            return pickVariant(variants[tier]);
+        }
+
+        function buildDetailedSummary(overallInteger, c) {
+            if (overallInteger >= 5) {
+                const variants = [
+                    () => `${c.forename} has had a genuinely excellent period as a ${c.pos} — every area came in strong, for an overall average of ${c.overallDisplay}. ${c.strongestNames} really stood out.${c.strongestEvidence ? " " + c.strongestEvidence : ""} Going forward, it'd be great to see ${c.forename} start mentoring newer crew and taking on more responsibility — this is someone worth considering for promotion.`,
+                    () => `This has been an outstanding stretch for ${c.forename} as a ${c.pos}, with an overall average of ${c.overallDisplay} and no weak spots to speak of. ${c.strongestNames} in particular shone through.${c.strongestEvidence ? " " + c.strongestEvidence : ""} The natural next step is more responsibility — mentoring junior crew, and a serious look at promotion.`
+                ];
+                return pickVariant(variants);
+            } else if (overallInteger === 4) {
+                if (c.hasVariation) {
+                    const variants = [
+                        () => `${c.forename} has put together a strong period as a ${c.pos}, consistently going beyond what's expected, for an overall average of ${c.overallDisplay}. ${c.strongestNames} ${c.strongVerb} this time around.${c.strongestEvidence ? " " + c.strongestEvidence : ""} There's still a bit more to unlock in ${c.weakestNames} — mainly around ${c.growthAction} — but overall this is a solid case for advancement.`,
+                        () => `With an overall average of ${c.overallDisplay}, ${c.forename} has turned in a genuinely strong contract as a ${c.pos}. ${c.strongestNames} was a clear highlight.${c.strongestEvidence ? " " + c.strongestEvidence : ""} A little more focus on ${c.growthAction} in ${c.weakestNames} would round things out nicely — recommended for advancement either way.`
+                    ];
+                    return pickVariant(variants);
+                } else {
+                    const variants = [
+                        () => `${c.forename} has been consistently strong across the board as a ${c.pos} this period — every area came in above standard, for an overall average of ${c.overallDisplay}. Nothing here needs fixing so much as maintaining. Recommended for advancement.`,
+                        () => `A genuinely even, above-standard performance from ${c.forename} as a ${c.pos} — overall average of ${c.overallDisplay}, with no real gaps anywhere. Recommended for advancement.`
+                    ];
+                    return pickVariant(variants);
+                }
+            } else if (overallInteger === 3) {
+                if (c.hasVariation) {
+                    const variants = [
+                        () => `${c.forename} has met expectations as a ${c.pos} this period, for an overall average of ${c.overallDisplay}. ${c.strongestNames} ${c.strongVerb}. ${c.weakestNames} is where the clearest opportunity sits for next contract — mainly by ${c.growthAction}.${c.weakestEvidence ? " " + c.weakestEvidence : ""}`,
+                        () => `With an overall average of ${c.overallDisplay}, ${c.forename} met standard expectations as a ${c.pos} this time around. ${c.strongestNames} came through well.${c.weakestEvidence ? " " + c.weakestEvidence : ""} The most useful place to focus next contract is ${c.weakestNames}, specifically ${c.growthAction}.`
+                    ];
+                    return pickVariant(variants);
+                } else {
+                    const variants = [
+                        () => `${c.forename} has had a steady, dependable period as a ${c.pos} — nothing stood out as a particular strength or weakness, for an overall average of ${c.overallDisplay}. Building a bit more consistency during busier periods would help push this toward a stronger rating.`,
+                        () => `A consistent, even performance from ${c.forename} as a ${c.pos} this period, with an overall average of ${c.overallDisplay} and no real standouts either way. More consistency during high-volume periods is the main opportunity here.`
+                    ];
+                    return pickVariant(variants);
+                }
+            } else if (overallInteger === 2) {
+                const variants = [
+                    () => `${c.forename}'s performance as a ${c.pos} came in below standard this period, for an overall average of ${c.overallDisplay} — ${c.weakestNames} needs the most attention.${c.weakestEvidence ? " " + c.weakestEvidence : ""} The priority for next contract is ${c.growthAction}, with closer supervision in the meantime.` + (c.hasVariation ? ` ${c.strongestNames} held up better and is a reasonable foundation to build from.` : ``),
+                    () => `With an overall average of ${c.overallDisplay}, ${c.forename} didn't quite meet standard expectations as a ${c.pos} this period. ${c.weakestNames} is the main concern.${c.weakestEvidence ? " " + c.weakestEvidence : ""} ${c.growthAction} should be the focus next contract, alongside closer day-to-day supervision.` + (c.hasVariation ? ` ${c.strongestNames} is a reasonable foundation to build from.` : ``)
+                ];
+                return pickVariant(variants);
+            } else {
+                const variants = [
+                    () => `This was a difficult period for ${c.forename} as a ${c.pos} — an overall average of ${c.overallDisplay}, with ${c.weakestNames} the biggest concern.${c.weakestEvidence ? " " + c.weakestEvidence : ""} A clear, structured improvement plan is needed here, focused on ${c.growthAction}, with close supervisor follow-up throughout next contract.`,
+                    () => `${c.forename}'s performance as a ${c.pos} fell well short of expectations this period, for an overall average of ${c.overallDisplay} — particularly in ${c.weakestNames}.${c.weakestEvidence ? " " + c.weakestEvidence : ""} Next contract needs a structured improvement plan centered on ${c.growthAction}, with regular supervisor check-ins.`
+                ];
+                return pickVariant(variants);
+            }
+        }
+
+        // Preload standard average meets
+        function autoFillAppraisal() {
+            currentRoleKras.forEach((kra, i) => {
+                document.getElementById('kra' + i + 's').value = "3";
+                document.getElementById('kra' + i + 'obs').value = getThemePreset(kra.theme, 3);
+            });
+
+            autoGenerateSummary();
+            showToast("Default expectations applied to all metrics.", "info");
+        }
+
+        // Trigger safe clipboard action and feedback notifications
+        async function triggerCopySequence() {
+            const previewText = document.getElementById('outputPreview').textContent;
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(previewText);
+                } else {
+                    const tempEl = document.createElement('textarea');
+                    tempEl.value = previewText;
+                    document.body.appendChild(tempEl);
+                    tempEl.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempEl);
+                }
+                showToast("Form details copied! Paste directly into Lotus Notes.", "success");
+            } catch (err) {
+                showToast("Copy error. Select the visual text manually.", "warning");
+            }
+        }
+
+        // Builds a safe, readable filename from crew details + today's date
+        function buildExportFilename(extension) {
+            const surname = (document.getElementById('surname').value || "Appraisal").trim();
+            const forenames = (document.getElementById('forenames').value || "").trim();
+            const namePart = [surname, forenames].filter(Boolean).join("_").replace(/[^a-zA-Z0-9_\-]/g, "");
+            const today = new Date();
+            const dateStr = today.getFullYear() + "-" +
+                (today.getMonth() + 1).toString().padStart(2, '0') + "-" +
+                today.getDate().toString().padStart(2, '0');
+            return `STAR_Appraisal_${namePart || "Crewmember"}_${dateStr}.${extension}`;
+        }
+
+        // Downloads the Lotus Notes plain-text output as a standalone .txt file
+        function triggerDownloadTextFile() {
+            const previewText = document.getElementById('outputPreview').textContent;
+            const blob = new Blob([previewText], { type: "text/plain;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = buildExportFilename("txt");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            showToast("Text file downloaded.", "success");
+        }
+
+        // Downloads the formatted print sheet as a PDF via the browser's native print dialog
+        // (choose "Save as PDF" as the destination) — works fully offline, no extra libraries needed
+        function triggerDownloadPdf() {
+            setPreviewTab('html');
+            showToast("Choose \"Save as PDF\" in the print dialog to download.", "info");
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+
+        // Confirmation system triggers
+        function triggerResetConfirmation() {
+            showConfirmModal(
+                "Reset Portal Database",
+                "Are you sure you want to clear your local form state? All dynamic changes will be permanently discarded.",
+                () => {
+                    localStorage.clear();
+                    const fields = ['surname', 'forenames', 'empId', 'devGoals', 'additionalNotes', 'venuesWorked', 'keyStrengths', 'growthAreas'];
+                    fields.forEach(f => {
+                        const el = document.getElementById(f);
+                        if (el) el.value = "";
+                    });
+                    document.getElementById('position').value = "Buffet Steward";
+                    previousPosition = "Buffet Steward";
+                    changeRole(false);
+
+                    saveAndGenerate();
+                    showToast("Workspace wiped successfully.", "warning");
+                }
+            );
+        }
+
+        // Guidelines manual modal
+        function openHelpGuide() {
+            document.getElementById('helpModal').classList.remove('hidden');
+        }
+
+        function closeHelpGuide() {
+            document.getElementById('helpModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
