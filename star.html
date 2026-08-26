@@ -1104,28 +1104,26 @@
 
             const toneInstruction = SUMMARY_STRENGTH_PROMPT[(strength || 0).toString()] || "";
 
-            return `Act as a Shipboard Food & Beverage Management Specialist writing a professional appraisal final summary comment for a crew performance appraisal. Base everything strictly on the data below — do not invent facts, achievements, or venues that aren't mentioned. Do not use markdown formatting (no asterisks, no headers) — plain prose only.
+            return `Act as an experienced shipboard Food & Beverage supervisor writing a short, honest final appraisal summary for someone on your team — the way you'd actually describe them to another manager over coffee, not the way an HR system auto-generates boilerplate. Base everything strictly on the data below; never invent facts, achievements, or venues that aren't mentioned. Do not use markdown formatting (no asterisks, no headers) — plain prose only.
 
-Always refer to the crewmember by their actual name, "${forename}" — never use generic terms like "the crewmember," "the employee," or "the individual" as a substitute.
+Always call them by their real name, "${forename}" — never generic terms like "the crewmember," "the employee," "the individual," or "this team member."
 
-EMPLOYEE DATA:
-- Name: ${forename}
-- Position: ${pos}
-- Venues / Roles Worked This Contract: ${venuesLine}
-- Key Strengths (if provided by the appraiser): ${strengthsLine}
-- Areas for Development (if provided by the appraiser): ${growthLine}
-- Overall average score: ${overallDisplay} out of 5
+Avoid stiff, corporate phrasing entirely. Don't write things like "demonstrates a commitment to," "exhibits strong proficiency in," "leverages operational knowledge," "contributes to departmental objectives," or "adherence to company values." Write the way a person actually talks: plain words, specific details, sentences of different lengths. If a KRA comment gives you something concrete and interesting, use it directly — don't just restate the KRA's name in fancier words.
 
-KRA BREAKDOWN:
+For example, instead of writing "Demonstrates strong technical proficiency in role responsibilities and produces high-quality, accurate work," write something like "He runs the buffet line like he's done it for years — fast, clean, never rattled even during the breakfast rush."
+
+Never narrate the scoring mechanics. Don't write phrases like "scoring 4 out of 5 in Guest Experience" or "achieved a 14% weighted rating." The scores below should shape your tone and what you emphasize, not appear as numbers in the prose — except the one overall average, which you can mention naturally near the end if it's useful.
+
+EMPLOYEE: ${forename}, ${pos}
+OVERALL AVERAGE: ${overallDisplay} out of 5
+VENUES/ROLES THIS CONTRACT: ${venuesLine}
+LISTED STRENGTHS: ${strengthsLine}
+LISTED GROWTH AREAS: ${growthLine}
+
+WHAT WAS OBSERVED, BY KRA:
 ${kraLines}${notesBlock}
 
-Write the summary covering these four components, in order, in flowing prose:
-1. Scope & Adaptability — the venues/roles worked, any transitions, and adaptability shown during the contract.
-2. Core Strengths & Conduct — operational execution, leadership traits, problem-solving, guest/team interaction, and adherence to company values, drawing on the KRA comments and any listed strengths.
-3. Specific Impact — concrete achievements, follow-up, resource management, revenue/efficiency contributions, or initiative mentioned in the comments.
-4. Growth & Future Potential — 1-2 constructive focus areas (from the listed development areas or the lowest-scoring KRAs), and an explicit, honest statement on readiness for promotion or next career steps based on the overall score of ${overallDisplay}/5.
-
-Tone: professional, objective, encouraging, and clear — written the way an experienced supervisor who actually knows this person would write it, not generic corporate language.${toneInstruction ? " " + toneInstruction : ""}
+Write one natural, flowing summary — not a bulleted checklist and not four separate mini-paragraphs stitched together with topic sentences. Somewhere across it, cover: what they actually did this contract and how they adapted, their real day-to-day strengths, anything specific they achieved or contributed, and where they could grow next — closing with an honest, specific read on whether they're ready for the next step.${toneInstruction ? " " + toneInstruction : ""}
 
 ${lengthInstruction}
 
