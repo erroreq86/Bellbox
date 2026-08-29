@@ -111,7 +111,7 @@
     transition:color .2s, background .2s;
   }
   .nav-links a:hover{color:var(--ink);background:rgba(255,255,255,0.04);}
-  .nav-links-cta{display:none;}
+  .nav-links-cta.btn{display:none;}
   .nav-actions{display:flex;align-items:center;gap:14px;}
   .nav-toggle{display:none;width:38px;height:38px;align-items:center;justify-content:center;border-radius:8px;}
   .nav-toggle span,.nav-toggle span::before,.nav-toggle span::after{
@@ -482,7 +482,7 @@
     }
     .nav-links.open{transform:translateY(0);opacity:1;pointer-events:auto;}
     .nav-links a{padding:14px 16px;border-radius:8px;}
-    .nav-links-cta{display:inline-flex;margin-top:6px;justify-content:center;}
+    .nav-links-cta.btn{display:inline-flex;margin-top:6px;justify-content:center;}
     .nav-toggle{display:flex;}
     .nav-actions .btn-ghost,.nav-actions .btn-primary{display:none;}
     .feature-grid{grid-template-columns:1fr;}
@@ -514,7 +514,7 @@
       <a href="index2.html" class="nav-links-cta btn btn-primary btn-sm">Begin Assessment</a>
     </nav>
     <div class="nav-actions">
-      <a href="index2.html" class="btn btn-ghost btn-sm">Leaderboard</a>
+      <a href="index2.html#leaderboard" class="btn btn-ghost btn-sm">Leaderboard</a>
       <a href="index2.html" class="btn btn-primary btn-sm">Begin Assessment</a>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks"><span></span></button>
     </div>
@@ -949,7 +949,7 @@
       <div class="foot-col">
         <h4>Support</h4>
         <a href="#faq">FAQ</a>
-        <a href="index2.html">Leaderboard</a>
+        <a href="index2.html#leaderboard">Leaderboard</a>
         <a href="index2.html?open=manager">Manager panel</a>
         <a href="index2.html?open=admin">Admin panel</a>
       </div>
